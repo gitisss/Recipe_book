@@ -1,22 +1,22 @@
-import express from "express";
+import { Request, Response } from 'express';
+import { User } from '../models/UserModel';
 
-export const login = (req: express.Request, res: express.Response): void => {
-  checkLogIn(req, res);
-};
-
-const checkLogIn = (req: express.Request, res: express.Response): void => {
-  console.log(req.body);
-
+export const login = async (req: Request, res: Response): Promise<void> => {
   const { username, password } = req.body;
+//   const username = req.body.username;
+//   const password = req.body.password;
+
   try {
-    if (username === "admin" && password === "admin") {
-      res.status(200).json({ message: "Login successful" });
-    } else {
-      console.log("Invalid credentials");
-      res.status(401).json({ error: "Invalid credentials" });
+    const user = await User.findOne({ username });
+
+    if (!user || user.password !== password) {
+      res.status(401).json({ error: 'Invalid credentials' });
+      return;
     }
+
+    res.status(200).json({ message: 'Login successful' });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error('Login error:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
