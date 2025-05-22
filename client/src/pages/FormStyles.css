@@ -1,0 +1,89 @@
+.form-container {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  text-align: center;
+  color: #333; /* צבע טקסט כללי לטופס */
+}
+
+.form-container h2 {
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.auth-form .form-group {
+  margin-bottom: 1rem;
+  text-align: right; /* יישור תוויות לימין */
+}
+
+.auth-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: #555;
+}
+
+.auth-form .form-control {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box; /* כדי ש-padding לא ישפיע על הרוחב הכולל */
+  text-align: right; /* יישור טקסט בתיבות לימין */
+}
+
+.submit-button {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s;
+}
+
+.submit-button:hover {
+  background-color: #0056b3;
+}
+
+.submit-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.message {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  border-radius: 4px;
+}
+
+.success-message {
+  color: #155724;
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+}
+
+.error-message {
+  color: #721c24;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+}
+
+.form-link {
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+}
+
+.form-link a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.form-link a:hover {
+  text-decoration: underline;
+}

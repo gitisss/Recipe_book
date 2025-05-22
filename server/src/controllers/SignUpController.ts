@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
-import { User } from '../models/UserModel'; // ודא שהנתיב למודל המשתמש נכון
+import { User } from '../models/UserModel';
 
 export const signup = async (req: Request, res: Response): Promise<void> => {
   const { username, password } = req.body;
@@ -20,7 +20,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
     }
 
     // הצפנת הסיסמה
-    const saltRounds = 10; // מספר סבבי ההצפנה, ערך מקובל
+    const saltRounds = 5; // מספר סבבי ההצפנה, ערך מקובל
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     // יצירת משתמש חדש

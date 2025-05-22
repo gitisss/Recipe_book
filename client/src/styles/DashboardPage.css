@@ -1,0 +1,84 @@
+
+.dashboard-container {
+  max-width: 900px; /* רוחב מקסימלי לדאשבורד */
+  margin: 2rem auto; /* מרכוז הדף עם רווחים למעלה ולמטה */
+  padding: 2rem;
+  background-color: #ffffff; /* רקע לבן לדאשבורד */
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* הצללה קלה */
+  text-align: right; /* יישור טקסט כללי לימין */
+  color: #333; /* צבע טקסט בסיסי */
+}
+
+.dashboard-container h1 {
+  color: #2c3e50; /* צבע כהה יותר לכותרת ראשית */
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #3498db; /* קו תחתון לכותרת */
+  padding-bottom: 0.5rem;
+}
+
+.dashboard-container h2 {
+  color: #34495e; /* צבע לכותרות משנה */
+  margin-top: 2rem; /* רווח מעל כותרות משנה */
+  margin-bottom: 1rem;
+}
+
+.dashboard-welcome-message {
+  font-size: 1.1rem;
+  color: #555;
+  margin-bottom: 2rem;
+}
+
+.recipe-list {
+  list-style-type: none; /* הסרת תבליטים מהרשימה */
+  padding-right: 0; /* איפוס ריפוד ימני של הרשימה */
+}
+
+.recipe-item {
+  background-color: #f8f9fa; /* רקע בהיר לכל פריט מתכון */
+  border: 1px solid #e0e0e0; /* מסגרת עדינה */
+  padding: 1.5rem;
+  margin-bottom: 1rem; /* רווח בין פריטי המתכונים */
+  border-radius: 6px;
+  transition: box-shadow 0.3s ease; /* אנימציה להצללה במעבר עכבר */
+}
+
+.recipe-item:hover {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15); /* הצללה קלה יותר במעבר עכבר */
+}
+
+.recipe-item h3 {
+  color: #3498db; /* צבע לכותרת המתכון */
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.recipe-item p {
+  color: #666; /* צבע לתיאור המתכון */
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.no-recipes-message {
+  color: #777;
+  font-style: italic;
+  margin-top: 1rem;
+}
+
+/* אפשר להוסיף כאן סגנונות לכפתורים אם יהיו בדאשבורד, למשל "הוסף מתכון חדש" */
+.add-recipe-button {
+  display: inline-block;
+  background-color: #28a745; /* צבע ירוק */
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+  margin-bottom: 2rem; /* רווח מתחת לכפתור */
+  transition: background-color 0.2s;
+}
+
+.add-recipe-button:hover {
+  background-color: #218838;
+}
+
