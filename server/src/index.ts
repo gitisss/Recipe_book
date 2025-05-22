@@ -5,7 +5,7 @@ import { connectDB } from "./DB/mongoConnector";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
+ //לאיזה כתובות אייפי מותר לגשת לשרת
 app.use(cors({
   origin: 'http://localhost:5173',
   credentials: true
