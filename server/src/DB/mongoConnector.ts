@@ -1,9 +1,14 @@
 import mongoose from 'mongoose';
 
-const MONGO_URI = "mongodb+srv://8526656:1WThE3gaYOUDeLta@cluster0.87rl3.mongodb.net/Recipe_book?retryWrites=true&w=majority&appName=Cluster0"
-;
+// קריאת ה-URI ממשתנה סביבה
+// חשוב ש-dotenv.config() יקרא בקובץ הראשי (index.ts) לפני שהקוד הזה רץ
+const MONGO_URI = process.env.MONGO_URI;
 
 export const connectDB = async () => {
+  if (!MONGO_URI) {
+    console.error('❌ MONGO_URI is not defined in environment variables.');
+    process.exit(1);
+  }
   try {
     await mongoose.connect(MONGO_URI);
     console.log('✅ מחובר ל־MongoDB בענן');

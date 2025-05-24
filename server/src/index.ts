@@ -1,44 +1,37 @@
 import express from "express";
 import cors from "cors";
-import { login } from "./controllers/LogInController"; // נתיב לקונטרולר ההתחברות
-import { signup } from "./controllers/SignUpController"; // ייבוא קונטרולר ההרשמה החדש
+import dotenv from 'dotenv'; 
+import { login } from "./controllers/LogInController";
+import { signup } from "./controllers/SignUpController";
 import { connectDB } from "./DB/mongoConnector";
 
-const app = express();
-const PORT = process.env.PORT || 3000;
 
-// הגדרות CORS - ודא שהן מתאימות לכתובת הלקוח שלך
+dotenv.config();
+
+const app = express();
+
+const PORT = process.env.PORT || 3001; // שיניתי ל-3001 כדי למנוע התנגשות אם יש משהו אחר על 3000
+
 app.use(cors({
-  origin: 'http://localhost:5173', // או כל כתובת אחרת של הלקוח שלך
+  origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173', // אפשר להגדיר גם את זה ב-.env
   credentials: true
 }));
 
-// Middleware לקריאת גוף הבקשה בפורמט JSON
 app.use(express.json());
 
-// נתיב בדיקה ראשי
 app.get("/", (req, res) => {
   res.json({ message: "שלום עולם מ-Express + TypeScript!" });
 });
 
-// נתיב להתחברות משתמש קיים
-//POST api/logIn
-app.post("/api/logIn", (req, res) => {
-  login(req, res);
-});
+app.post("/api/logIn", login); 
+app.post("/api/signup", signup); 
 
-// נתיב להרשמת משתמש חדש
-//POST api/signup
-app.post("/api/signup", (req, res) => {
-  signup(req, res);
-});
 
-// התחברות למסד הנתונים והפעלת השרת
 connectDB().then(() => {
   app.listen(PORT, () => {
     console.log(`🚀 השרת רץ על http://localhost:${PORT}`);
   });
 }).catch(error => {
   console.error("❌ Failed to connect to the database, server not started.", error);
-  process.exit(1); // יציאה מהתהליך אם החיבור למסד הנתונים נכשל
+  process.exit(1);
 });
