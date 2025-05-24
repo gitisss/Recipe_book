@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+// import axios from 'axios'; // כבר לא צריך לייבא axios ישירות כאן
 import { useNavigate, Link } from 'react-router-dom';
-import './FormStyles.css'; // שימוש בקובץ ה-CSS המשותף
+import './FormStyles.css';
+import apiClient from '../apiClient'; // ייבוא apiClient
 
 interface LoginPageProps {
-  onLoginSuccess: () => void; // פונקציה שתקרא בהתחברות מוצלחת
+  onLoginSuccess: (token: string, userData: any) => void;
 }
 
 const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
@@ -19,15 +20,21 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
     setMessage('');
     setIsLoading(true);
     try {
-      const response = await axios.post('http://localhost:3000/api/logIn', { username, password });
-      setMessage('התחברות מוצלחת!');
-      // כאן נשמור את הטוקן האמיתי מהתגובה בעתיד
-      // localStorage.setItem('authToken', response.data.token); 
-      onLoginSuccess(); // קריאה לפונקציה שקיבלנו כ-prop
-      navigate('/dashboard');
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        setMessage(error.response.data.message || 'שגיאת התחברות. בדוק שם משתמש וסיסמה.');
+      // שימוש ב-apiClient במקום axios ישירות
+      const response = await apiClient.post('/logIn', { username, password }); 
+      
+      if (response.data && response.data.token) {
+        setMessage('התחברות מוצלחת!');
+        onLoginSuccess(response.data.token, response.data.user);
+        navigate('/dashboard');
+      } else {
+        setMessage('התחברות הצליחה אך לא התקבל טוקן אימות.');
+      }
+    } catch (error: any) { // שיניתי ל-any כדי לגשת ל-response בצורה פשוטה יותר
+      if (error.response && error.response.data && error.response.data.message) {
+        setMessage(error.response.data.message);
+      } else if (error.message) {
+        setMessage(`שגיאת התחברות: ${error.message}`);
       } else {
         setMessage('שגיאת התחברות: אירעה שגיאה לא צפויה.');
       }
@@ -41,6 +48,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
     <div className="form-container">
       <h2>התחברות</h2>
       <form onSubmit={handleSubmit} className="auth-form">
+        {/* ... שאר הטופס נשאר זהה ... */}
         <div className="form-group">
           <label htmlFor="username">שם משתמש:</label>
           <input
@@ -67,7 +75,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
           {isLoading ? 'מתחבר...' : 'התחבר'}
         </button>
       </form>
-      {message && <p className={`message ${message.startsWith('שגיאת התחברות') ? 'error-message' : 'success-message'}`}>{message}</p>}
+      {message && <p className={`message ${message.includes('שגיאת') ? 'error-message' : 'success-message'}`}>{message}</p>}
       <p className="form-link">
         אין לך חשבון? <Link to="/signup">הירשם כאן</Link>
       </p>
