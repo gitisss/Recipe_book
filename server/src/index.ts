@@ -20,7 +20,7 @@ app.use(cors({
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.json({ message: "שלום עולם מ-Express + TypeScript!" });
+  res.json({ message: "היי!! האתר שלי באויררררר" });
 });
 
 app.post("/api/logIn", login); 
