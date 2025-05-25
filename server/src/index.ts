@@ -10,8 +10,7 @@ dotenv.config();
 
 const app = express();
 
-const PORT = process.env.PORT || 3001; // שיניתי ל-3001 כדי למנוע התנגשות אם יש משהו אחר על 3000
-
+const PORT = process.env.PORT || 3000;
 app.use(cors({
   origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173', // אפשר להגדיר גם את זה ב-.env
   credentials: true

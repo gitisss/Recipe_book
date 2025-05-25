@@ -1,16 +1,13 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { User } from '../models/UserModel'; // ודא שהנתיב למודל המשתמש נכון
+import { User } from '../models/UserModel';
 
-// קריאת הסוד ממשתנה סביבה
-// חשוב ש-dotenv.config() יקרא בקובץ הראשי (index.ts) של השרת
-const JWT_SECRET = process.env.JWT_SECRET;
 
 export const login = async (req: Request, res: Response): Promise<void> => {
+  const JWT_SECRET = process.env.JWT_SECRET;
   const { username, password } = req.body;
 
-  // בדיקה קריטית - אם אין סוד מוגדר, אי אפשר להמשיך
   if (!JWT_SECRET) {
     console.error('FATAL ERROR: JWT_SECRET is not defined in environment variables.');
     res.status(500).json({ message: 'Internal server error: JWT secret not configured.' });
@@ -44,7 +41,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     // אם שם המשתמש והסיסמה נכונים, ניצור טוקן JWT
     const payload = {
-      userId: user._id, // מזהה המשתמש ממסד הנתונים
+      userId: user._id,
       username: user.username,
       // אפשר להוסיף עוד פרטים רלוונטיים ל-payload, כמו תפקיד המשתמש
     };

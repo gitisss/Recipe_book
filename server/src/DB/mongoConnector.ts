@@ -1,10 +1,7 @@
 import mongoose from 'mongoose';
 
-// קריאת ה-URI ממשתנה סביבה
-// חשוב ש-dotenv.config() יקרא בקובץ הראשי (index.ts) לפני שהקוד הזה רץ
-const MONGO_URI = process.env.MONGO_URI;
-
 export const connectDB = async () => {
+  const MONGO_URI = process.env.MONGO_URI;
   if (!MONGO_URI) {
     console.error('❌ MONGO_URI is not defined in environment variables.');
     process.exit(1);
