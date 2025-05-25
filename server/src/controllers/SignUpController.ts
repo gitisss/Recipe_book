@@ -20,7 +20,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
     }
 
     // הצפנת הסיסמה
-    const saltRounds = 5; // מספר סבבי ההצפנה, ערך מקובל
+    const saltRounds = 5; // מספר סבבי ההצפנה  
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     // יצירת משתמש חדש
@@ -33,12 +33,11 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
     await newUser.save();
 
     // החזרת תשובת הצלחה
-    // בעתיד, אפשר להחזיר כאן גם טוקן JWT אם רוצים שהמשתמש יתחבר אוטומטית אחרי הרשמה
     res.status(201).json({ message: 'ההרשמה בוצעה בהצלחה!' }); // 201 Created
 
   } catch (error) {
     console.error('Signup error:', error);
-    // טיפול בשגיאות כלליות, למשל בעיות בגישה למסד הנתונים
+
     if (error instanceof Error) {
         res.status(500).json({ message: 'אירעה שגיאה פנימית בשרת.', error: error.message });
     } else {

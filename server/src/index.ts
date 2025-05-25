@@ -12,14 +12,14 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 app.use(cors({
-  origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173', // אפשר להגדיר גם את זה ב-.env
-  credentials: true
+  origin: '*'
+
 }));
 
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.json({ message: "היי!! האתר שלי באויררררר" });
+  res.json({ message: "השרת עובד!" });
 });
 
 app.post("/api/logIn", login); 

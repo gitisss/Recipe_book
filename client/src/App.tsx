@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-ro
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import SignUpPage from './pages/SignUpPage';
-import apiClient from './apiClient'; // ייבוא apiClient מהקובץ הנפרד
+import apiClient from './apiClient';
 import './App.css';
 
 interface UserData {
@@ -13,7 +13,7 @@ interface UserData {
 }
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);//אוטנטיקייטד
   const [currentUser, setCurrentUser] = useState<UserData | null>(null);
   const [isLoadingAuth, setIsLoadingAuth] = useState<boolean>(true);
 
@@ -25,8 +25,9 @@ function App() {
     if (token && userDataString) {
       try {
         const userData = JSON.parse(userDataString) as UserData;
-        // כאן אפשר להוסיף בעתיד בדיקה אסינכרונית מול השרת אם הטוקן עדיין תקף
+        // צריך להוסיף בדיקה מול השרת אם הטוקן עדיין תקף
         // לדוגמה, קריאה ל- apiClient.get('/auth/verify-token');
+       
         // אם הבדיקה מצליחה:
         setIsAuthenticated(true);
         setCurrentUser(userData);

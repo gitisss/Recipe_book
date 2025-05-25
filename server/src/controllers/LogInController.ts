@@ -26,7 +26,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     // אם המשתמש לא נמצא במסד הנתונים
     if (!user) {
-      res.status(401).json({ message: 'שם משתמש או סיסמה שגויים.' }); // Unauthorized
+      res.status(401).json({ message: 'שם משתמש או סיסמה שגויים.' });
       return;
     }
 
@@ -35,7 +35,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     // אם הסיסמאות אינן תואמות
     if (!isMatch) {
-      res.status(401).json({ message: 'שם משתמש או סיסמה שגויים.' }); // Unauthorized
+      res.status(401).json({ message: 'שם משתמש או סיסמה שגויים.' });
       return;
     }
 
