@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-  baseURL: 'http://localhost:3000/api', // או ה-URL של ה-API שלך מ-process.env
+  baseURL: 'https://recipe-book-oxv7.onrender.com/api'
 });
 
 apiClient.interceptors.request.use(
