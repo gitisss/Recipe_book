@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate, Link } from 'react-router-dom'; // הוספנו Link לקישור לדף התחברות
-import './FormStyles.css'; // ניצור קובץ CSS משותף לטפסים
+import { useNavigate, Link } from 'react-router-dom'; 
+import './FormStyles.css';
 
 const SignUpPage: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -27,13 +27,11 @@ const SignUpPage: React.FC = () => {
 
     setIsLoading(true);
     try {
-      // ודא שהכתובת תואמת לשרת שלך (http://localhost:3000/api/signup)
       const response = await axios.post('http://localhost:3000/api/signup', {
         username,
         password,
       });
       setMessage(response.data.message || 'ההרשמה בוצעה בהצלחה!');
-      // אפשר להוסיף השהייה קצרה ואז ניווט לדף התחברות
       setTimeout(() => {
         navigate('/login');
       }, 2000); // השהייה של 2 שניות

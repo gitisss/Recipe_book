@@ -13,9 +13,9 @@ interface UserData {
 }
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);//אוטנטיקייטד
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);//אוטנטיקייטד- מאומת
   const [currentUser, setCurrentUser] = useState<UserData | null>(null);
-  const [isLoadingAuth, setIsLoadingAuth] = useState<boolean>(true);
+  const [isLoadingAuth, setIsLoadingAuth] = useState<boolean>(true);//טוען אימות
 
   // פונקציה לבדיקת הטוקן בעת טעינת האפליקציה
   useEffect(() => {

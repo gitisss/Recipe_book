@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-// import axios from 'axios'; // כבר לא צריך לייבא axios ישירות כאן
 import { useNavigate, Link } from 'react-router-dom';
 import './FormStyles.css';
 import apiClient from '../apiClient'; // ייבוא apiClient
@@ -20,17 +19,16 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
     setMessage('');
     setIsLoading(true);
     try {
-      // שימוש ב-apiClient במקום axios ישירות
       const response = await apiClient.post('/logIn', { username, password }); 
       
       if (response.data && response.data.token) {
-        setMessage('התחברות מוצלחת!');
+        setMessage('התחברת בהצלחה');
         onLoginSuccess(response.data.token, response.data.user);
         navigate('/dashboard');
       } else {
         setMessage('התחברות הצליחה אך לא התקבל טוקן אימות.');
       }
-    } catch (error: any) { // שיניתי ל-any כדי לגשת ל-response בצורה פשוטה יותר
+    } catch (error: any) { 
       if (error.response && error.response.data && error.response.data.message) {
         setMessage(error.response.data.message);
       } else if (error.message) {
@@ -48,7 +46,6 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
     <div className="form-container">
       <h2>התחברות</h2>
       <form onSubmit={handleSubmit} className="auth-form">
-        {/* ... שאר הטופס נשאר זהה ... */}
         <div className="form-group">
           <label htmlFor="username">שם משתמש:</label>
           <input

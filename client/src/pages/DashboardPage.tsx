@@ -11,17 +11,16 @@ import {
   Chip,
   Divider,
   IconButton,
-  CircularProgress, // הוספתי CircularProgress בחזרה
-  Card,             // הוספתי Card בחזרה
-  CardContent,      // הוספתי CardContent בחזרה
-  CardActions       // הוספתי CardActions בחזרה
+  CircularProgress, 
+  Card,       
+  CardContent,    
+  CardActions   
 } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import SearchIcon from '@mui/icons-material/Search';
 import FilterListIcon from '@mui/icons-material/FilterList';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import VisibilityIcon from '@mui/icons-material/Visibility'; // הוספתי אייקונים לכרטיסים
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
@@ -38,12 +37,11 @@ interface DashboardPageProps { // שיניתי את שם האינטרפייס ל
   onLogout: () => void;
 }
 
-// דוגמה למבנה מתכון (לצורך נתוני הדמה)
 interface RecipePlaceholder {
   id: string;
   name: string;
   description: string;
-  imageUrl?: string; // אופציונלי
+  imageUrl?: string;
 }
 
 
@@ -54,7 +52,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) 
   useEffect(() => {
     setIsLoadingRecipes(true);
     const dummyRecipes: RecipePlaceholder[] = [
-      { id: '1', name: 'עוגת גבינה קרה', description: 'מתכון קלאסי ומרענן ללא אפייה.', imageUrl: 'https://via.placeholder.com/300x200.png?text=עוגת+גבינה' },
+      { id: '1', name: 'עוגת גבינה', description: 'מתכון קלאסי ומרענן ללא אפייה.', imageUrl: 'https://via.placeholder.com/300x200.png?text=עוגת+גבינה' },
       { id: '2', name: 'קציצות בקר ברוטב עגבניות', description: 'מנה ביתית אהובה ומנחמת.', imageUrl: 'https://via.placeholder.com/300x200.png?text=קציצות+בקר' },
       { id: '3', name: 'סלט עדשים שחורות', description: 'סלט בריא, משביע וקל להכנה.', imageUrl: 'https://via.placeholder.com/300x200.png?text=סלט+עדשים' },
     ];
@@ -221,7 +219,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) 
         {/* 7. אזור פגינציה (Placeholder) */}
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4, mb: 2 }}>
           <Typography color="text.secondary">
-            [כאן תופיע פגינציה במידת הצורך]
+            [Pagination במידת הצורך]
           </Typography>
         </Box>
 
