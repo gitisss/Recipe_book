@@ -1,12 +1,13 @@
+// client/src/apiClient.ts
 import axios from 'axios';
 
 const apiClient = axios.create({
-  baseURL: 'https://recipe-book-oxv7.onrender.com/api'
+  baseURL: 'http://localhost:3000/api',
 });
 
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem('authToken'); // ודא שהמפתח כאן תואם את מה שנשמר בלוגין
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -17,7 +18,6 @@ apiClient.interceptors.request.use(
   }
 );
 
-// אפשר להוסיף כאן גם interceptor לתגובות, למשל לטיפול בשגיאות 401 גלובליות
 apiClient.interceptors.response.use(
   response => response,
   error => {
@@ -26,9 +26,9 @@ apiClient.interceptors.response.use(
       // אפשר לנקות את הטוקן ולנתק את המשתמש
       localStorage.removeItem('authToken');
       localStorage.removeItem('currentUser');
-      // אפשר לנווט לדף התחברות, אבל זה ידרוש גישה ל-navigate
-      // window.location.href = '/login'; // פתרון פשוט אך פחות אלגנטי
+      // שימו לב: כאן אין ניווט אוטומטי, רק הודעה לקונסול
       console.error("Unauthorized request or token expired. Logging out.");
+      // כאן ניתן להפעיל ניתוק וניווט ידני אם רוצים, אך זה מחוץ לסקופ הקומפוננטה הנוכחית
     }
     return Promise.reject(error);
   }

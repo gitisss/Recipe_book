@@ -1,5 +1,5 @@
 // client/src/components/AddRecipeModal.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -19,24 +19,57 @@ import PsychologyIcon from '@mui/icons-material/Psychology';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-import type { IFullRecipeData, IIngredient} from '../types/Recipe';
+import type { IFullRecipeData, IIngredient, IRecipe } from '../types/Recipe';
 
 
 interface AddRecipeModalProps {
   open: boolean;
   onClose: () => void;
-  onAddRecipe: (recipeData: IFullRecipeData) => void; // השתמש ב-IFullRecipeData
+  onAddRecipe?: (recipeData: IFullRecipeData) => void;
+  onEditRecipe?: (id: string, recipeData: IFullRecipeData) => void;
+  initialRecipeData?: IRecipe | null;
 }
 
-const AddRecipeModal: React.FC<AddRecipeModalProps> = ({ open, onClose, onAddRecipe }) => {
-  // ... שאר הקוד של הקומפוננטה (לוגיקה ו-JSX) נשאר זהה
+const AddRecipeModal: React.FC<AddRecipeModalProps> = ({
+  open,
+  onClose,
+  onAddRecipe,
+  onEditRecipe,
+  initialRecipeData
+}) => {
   const [recipeName, setRecipeName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [instructions, setInstructions] = useState<string>('');
-  const [ingredients, setIngredients] = useState<IIngredient[]>([{ name: '', quantity: 0, unit: '' }]); // השתמש ב-IIngredient
+  const [ingredients, setIngredients] = useState<IIngredient[]>([{ name: '', quantity: 0, unit: '' }]);
   const [imageUrl, setImageUrl] = useState<string>('');
+  const [isEditMode, setIsEditMode] = useState<boolean>(false);
 
-  const handleIngredientChange = (index: number, field: keyof IIngredient, value: string | number) => { // השתמש ב-IIngredient
+  // useEffect זה יטען נתונים רק כשהמודאל נפתח במצב עריכה
+  useEffect(() => {
+    if (open && initialRecipeData) {
+      setRecipeName(initialRecipeData.name);
+      setDescription(initialRecipeData.description || '');
+      setInstructions(initialRecipeData.instructions);
+      setIngredients(initialRecipeData.ingredients.length > 0 ? initialRecipeData.ingredients : [{ name: '', quantity: 0, unit: '' }]);
+      setImageUrl(initialRecipeData.imageUrl || '');
+      setIsEditMode(true);
+    } else if (open && !initialRecipeData) {
+      // אם המודאל נפתח במצב הוספה, וודא שהטופס נקי
+      resetFormFields(); // קורא לפונקציית איפוס חדשה שתטפל רק בשדות
+      setIsEditMode(false);
+    }
+  }, [open, initialRecipeData]);
+
+  // פונקציה לאיפוס שדות הטופס בלבד, ללא קריאה ל-onClose
+  const resetFormFields = () => {
+    setRecipeName('');
+    setDescription('');
+    setInstructions('');
+    setIngredients([{ name: '', quantity: 0, unit: '' }]);
+    setImageUrl('');
+  };
+
+  const handleIngredientChange = (index: number, field: keyof IIngredient, value: string | number) => {
     const newIngredients = [...ingredients];
     if (field === 'quantity') {
       newIngredients[index][field] = Number(value);
@@ -55,32 +88,33 @@ const AddRecipeModal: React.FC<AddRecipeModalProps> = ({ open, onClose, onAddRec
     setIngredients(newIngredients);
   };
 
-  const handleCreateRecipe = () => {
-    // Basic validation
+  const handleSubmit = () => {
     if (!recipeName.trim() || !instructions.trim() || ingredients.some(ing => !ing.name.trim() || ing.quantity <= 0 || !ing.unit.trim())) {
       alert('אנא מלא את כל שדות החובה של המתכון והרכיבים.');
       return;
     }
 
-    const newRecipe: IFullRecipeData = { // השתמש ב-IFullRecipeData
+    const recipeData: IFullRecipeData = {
       name: recipeName,
       description: description,
       instructions: instructions,
       ingredients: ingredients.filter(ing => ing.name.trim() !== ''),
       imageUrl: imageUrl,
     };
-    onAddRecipe(newRecipe);
-    handleResetForm();
+
+    if (isEditMode && initialRecipeData?._id && onEditRecipe) {
+      onEditRecipe(initialRecipeData._id, recipeData);
+    } else if (onAddRecipe) {
+      onAddRecipe(recipeData);
+    }
+    onClose(); // קורא ל-onClose רק לאחר סיום הפעולה
   };
 
-  const handleResetForm = () => {
-    setRecipeName('');
-    setDescription('');
-    setInstructions('');
-    setIngredients([{ name: '', quantity: 0, unit: '' }]);
-    setImageUrl('');
+  const handleModalClose = () => {
+    resetFormFields(); // איפוס שדות כאשר המודאל נסגר (למשל על ידי לחיצה מחוץ למודאל)
     onClose();
   };
+
 
   const isFormValid = () => {
     return recipeName.trim() !== '' && instructions.trim() !== '' &&
@@ -88,9 +122,9 @@ const AddRecipeModal: React.FC<AddRecipeModalProps> = ({ open, onClose, onAddRec
   };
 
   return (
-    <Dialog open={open} onClose={handleResetForm} fullWidth maxWidth="md">
+    <Dialog open={open} onClose={handleModalClose} fullWidth maxWidth="md"> {/* שנה ל-handleModalClose */}
       <DialogTitle sx={{ textAlign: 'center', pb: 1 }}>
-        הוסף מתכון חדש
+        {isEditMode ? 'ערוך מתכון קיים' : 'הוסף מתכון חדש'}
         <Typography variant="body2" color="text.secondary">
           הזן את פרטי המתכון ידנית או השתמש באחת מהאפשרויות המתקדמות
         </Typography>
@@ -241,16 +275,16 @@ const AddRecipeModal: React.FC<AddRecipeModalProps> = ({ open, onClose, onAddRec
         </Paper>
       </DialogContent>
       <DialogActions sx={{ p: 3 }}>
-        <Button onClick={handleResetForm} color="primary">
+        <Button onClick={handleModalClose} color="primary"> {/* שנה ל-handleModalClose */}
           ביטול
         </Button>
         <Button
-          onClick={handleCreateRecipe}
+          onClick={handleSubmit}
           color="primary"
           variant="contained"
           disabled={!isFormValid()}
         >
-          צור מתכון
+          {isEditMode ? 'שמור שינויים' : 'צור מתכון'}
         </Button>
       </DialogActions>
     </Dialog>

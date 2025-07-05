@@ -39,18 +39,15 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    // אם שם המשתמש והסיסמה נכונים, ניצור טוקן JWT
     const payload = {
-      userId: user._id,
+      userId: user._id, // מוגדר כ-userId
       username: user.username,
-      // אפשר להוסיף עוד פרטים רלוונטיים ל-payload, כמו תפקיד המשתמש
     };
-
     // יצירת הטוקן עם הסוד ותאריך תפוגה (למשל, שעה אחת)
     const token = jwt.sign(
       payload,
       JWT_SECRET, // שימוש בסוד ממשתנה הסביבה
-      { expiresIn: '1h' } // הטוקן יהיה תקף לשעה. אפשר לשנות (למשל, '7d' לשבוע)
+      { expiresIn: '10h' } // הטוקן יהיה תקף לשעה. אפשר לשנות (למשל, '7d' לשבוע)
     );
 
     // שלח את הטוקן חזרה ללקוח, יחד עם הודעת הצלחה ופרטי משתמש בסיסיים (ללא הסיסמה)
