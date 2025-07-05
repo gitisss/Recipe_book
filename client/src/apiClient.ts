@@ -1,7 +1,8 @@
+// client/src/apiClient.ts
 import axios from 'axios';
 
 const apiClient = axios.create({
-  baseURL: 'https://recipe-book-oxv7.onrender.com/api'
+  baseURL: 'http://localhost:3000/api',
 });
 
 apiClient.interceptors.request.use(
