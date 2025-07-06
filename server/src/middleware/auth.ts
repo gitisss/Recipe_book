@@ -24,19 +24,18 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction) => 
   }
 
   try {
-    const JWT_SECRET = process.env.JWT_SECRET; // ודא שאתה לוקח את המשתנה מה-process.env
+    const JWT_SECRET = process.env.JWT_SECRET;
     if (!JWT_SECRET) {
         console.error('FATAL ERROR: JWT_SECRET is not defined in environment variables.');
         return res.status(500).json({ message: 'שגיאת שרת פנימית: JWT secret לא מוגדר.' });
     }
 
     // אימות הטוקן
-    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string }; // השתמש ב-JWT_SECRET שנטען
+    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
 
     // הוספת מזהה המשתמש לאובייקט ה-request
-    req.userId = decoded.userId; // שנה מ-decoded.id ל-decoded.userId
-    // req.user = { id: decoded.id }; // ניתן להשאיר גם את זה אם יש שימוש ב-req.user
-
+    req.userId = decoded.userId; 
+    
     // המשך לפונקציית הבקר הבאה בשרשרת
     next();
   } catch (error) {

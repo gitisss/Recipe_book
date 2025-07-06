@@ -1,15 +1,13 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom'; // ודא ש-Link מיובא
+import { useState, useEffect, useCallback } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import SignUpPage from './pages/SignUpPage';
-import apiClient from './apiClient';
 import './App.css';
 
 interface UserData {
   id: string;
   username: string;
-  // אפשר להוסיף כאן עוד שדות אם השרת מחזיר אותם
 }
 
 function App() {

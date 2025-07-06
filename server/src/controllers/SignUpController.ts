@@ -15,7 +15,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
     // בדיקה אם שם המשתמש כבר קיים במערכת
     const existingUser = await User.findOne({ username });
     if (existingUser) {
-      res.status(409).json({ message: 'שם המשתמש כבר קיים במערכת.' }); // 409 Conflict
+      res.status(409).json({ message: 'שם המשתמש כבר קיים במערכת.' });
       return;
     }
 
