@@ -43,7 +43,6 @@ const ViewRecipeModal: React.FC<ViewRecipeModalProps> = ({
     }
   };
 
-  
   // const handleMultiplierChange = (event: React.ChangeEvent<HTMLInputElement>) => {
   //   const value = parseFloat(event.target.value);
   //   if (!isNaN(value) && value > 0) {
