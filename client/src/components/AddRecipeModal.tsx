@@ -1,4 +1,5 @@
 // client/src/components/AddRecipeModal.tsx
+
 import React, { useState, useEffect } from 'react';
 import {
   Dialog,
@@ -12,7 +13,9 @@ import {
   IconButton,
   Tooltip,
   Paper,
-  Divider
+  Divider,
+  Checkbox,
+  FormControlLabel
 } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import PsychologyIcon from '@mui/icons-material/Psychology';
@@ -20,7 +23,6 @@ import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 import type { IFullRecipeData, IIngredient, IRecipe } from '../types/Recipe';
-
 
 interface AddRecipeModalProps {
   open: boolean;
@@ -40,39 +42,48 @@ const AddRecipeModal: React.FC<AddRecipeModalProps> = ({
   const [recipeName, setRecipeName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [instructions, setInstructions] = useState<string>('');
-  const [ingredients, setIngredients] = useState<IIngredient[]>([{ name: '', quantity: 0, unit: '' }]);
+  const [ingredients, setIngredients] = useState<IIngredient[]>([
+    { name: '', quantity: 0, unit: '', isDivisible: true }
+  ]);
   const [imageUrl, setImageUrl] = useState<string>('');
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
 
-  // useEffect זה יטען נתונים רק כשהמודאל נפתח במצב עריכה
   useEffect(() => {
     if (open && initialRecipeData) {
       setRecipeName(initialRecipeData.name);
       setDescription(initialRecipeData.description || '');
       setInstructions(initialRecipeData.instructions);
-      setIngredients(initialRecipeData.ingredients.length > 0 ? initialRecipeData.ingredients : [{ name: '', quantity: 0, unit: '' }]);
+      setIngredients(
+        initialRecipeData.ingredients.length > 0
+          ? initialRecipeData.ingredients
+          : [{ name: '', quantity: 0, unit: '', isDivisible: true }]
+      );
       setImageUrl(initialRecipeData.imageUrl || '');
       setIsEditMode(true);
     } else if (open && !initialRecipeData) {
-      // אם המודאל נפתח במצב הוספה, וודא שהטופס נקי
-      resetFormFields(); // קורא לפונקציית איפוס חדשה שתטפל רק בשדות
+      resetFormFields();
       setIsEditMode(false);
     }
   }, [open, initialRecipeData]);
 
-  // פונקציה לאיפוס שדות הטופס בלבד, ללא קריאה ל-onClose
   const resetFormFields = () => {
     setRecipeName('');
     setDescription('');
     setInstructions('');
-    setIngredients([{ name: '', quantity: 0, unit: '' }]);
+    setIngredients([{ name: '', quantity: 0, unit: '', isDivisible: true }]);
     setImageUrl('');
   };
 
-  const handleIngredientChange = (index: number, field: keyof IIngredient, value: string | number) => {
+  const handleIngredientChange = (
+    index: number,
+    field: keyof IIngredient,
+    value: string | number | boolean
+  ) => {
     const newIngredients = [...ingredients];
     if (field === 'quantity') {
       newIngredients[index][field] = Number(value);
+    } else if (field === 'isDivisible') {
+      newIngredients[index][field] = value as boolean;
     } else {
       newIngredients[index][field] = value as string;
     }
@@ -80,7 +91,10 @@ const AddRecipeModal: React.FC<AddRecipeModalProps> = ({
   };
 
   const handleAddIngredient = () => {
-    setIngredients([...ingredients, { name: '', quantity: 0, unit: '' }]);
+    setIngredients([
+      ...ingredients,
+      { name: '', quantity: 0, unit: '', isDivisible: true }
+    ]);
   };
 
   const handleRemoveIngredient = (index: number) => {
@@ -89,7 +103,14 @@ const AddRecipeModal: React.FC<AddRecipeModalProps> = ({
   };
 
   const handleSubmit = () => {
-    if (!recipeName.trim() || !instructions.trim() || ingredients.some(ing => !ing.name.trim() || ing.quantity <= 0 || !ing.unit.trim())) {
+    if (
+      !recipeName.trim() ||
+      !instructions.trim() ||
+      ingredients.some(
+        (ing) =>
+          !ing.name.trim() || ing.quantity <= 0 || !ing.unit.trim()
+      )
+    ) {
       alert('אנא מלא את כל שדות החובה של המתכון והרכיבים.');
       return;
     }
@@ -98,8 +119,8 @@ const AddRecipeModal: React.FC<AddRecipeModalProps> = ({
       name: recipeName,
       description: description,
       instructions: instructions,
-      ingredients: ingredients.filter(ing => ing.name.trim() !== ''),
-      imageUrl: imageUrl,
+      ingredients: ingredients.filter((ing) => ing.name.trim() !== ''),
+      imageUrl: imageUrl
     };
 
     if (isEditMode && initialRecipeData?._id && onEditRecipe) {
@@ -107,22 +128,27 @@ const AddRecipeModal: React.FC<AddRecipeModalProps> = ({
     } else if (onAddRecipe) {
       onAddRecipe(recipeData);
     }
-    onClose(); // קורא ל-onClose רק לאחר סיום הפעולה
-  };
-
-  const handleModalClose = () => {
-    resetFormFields(); // איפוס שדות כאשר המודאל נסגר (למשל על ידי לחיצה מחוץ למודאל)
     onClose();
   };
 
+  const handleModalClose = () => {
+    resetFormFields();
+    onClose();
+  };
 
   const isFormValid = () => {
-    return recipeName.trim() !== '' && instructions.trim() !== '' &&
-           ingredients.every(ing => ing.name.trim() !== '' && ing.quantity > 0 && ing.unit.trim() !== '');
+    return (
+      recipeName.trim() !== '' &&
+      instructions.trim() !== '' &&
+      ingredients.every(
+        (ing) =>
+          ing.name.trim() !== '' && ing.quantity > 0 && ing.unit.trim() !== ''
+      )
+    );
   };
 
   return (
-    <Dialog open={open} onClose={handleModalClose} fullWidth maxWidth="md"> {/* שנה ל-handleModalClose */}
+    <Dialog open={open} onClose={handleModalClose} fullWidth maxWidth="md">
       <DialogTitle sx={{ textAlign: 'center', pb: 1 }}>
         {isEditMode ? 'ערוך מתכון קיים' : 'הוסף מתכון חדש'}
         <Typography variant="body2" color="text.secondary">
@@ -130,7 +156,8 @@ const AddRecipeModal: React.FC<AddRecipeModalProps> = ({
         </Typography>
       </DialogTitle>
       <DialogContent dividers>
-        <Box sx={{
+        <Box
+          sx={{
             display: 'flex',
             flexDirection: { xs: 'column', sm: 'row' },
             gap: 2,
@@ -139,7 +166,8 @@ const AddRecipeModal: React.FC<AddRecipeModalProps> = ({
             backgroundColor: 'action.hover',
             borderRadius: 2,
             justifyContent: 'center'
-        }}>
+          }}
+        >
           <Tooltip title="בקש רעיונות למתכון מבוססי AI על פי קלט שתספק">
             <Button
               variant="contained"
@@ -169,9 +197,9 @@ const AddRecipeModal: React.FC<AddRecipeModalProps> = ({
         </Box>
 
         <Divider sx={{ my: 3 }}>
-            <Typography variant="body2" color="text.secondary">
-                או הזן ידנית
-            </Typography>
+          <Typography variant="body2" color="text.secondary">
+            או הזן ידנית
+          </Typography>
         </Divider>
 
         <Paper elevation={0} sx={{ p: 2 }}>
@@ -212,17 +240,32 @@ const AddRecipeModal: React.FC<AddRecipeModalProps> = ({
             sx={{ mb: 3 }}
           />
 
-          <Typography variant="h6" gutterBottom sx={{ mt: 3, mb: 2 }}>
+          <Typography variant="h6" gutterBottom sx={{ mt: 3, mb: 1 }}>
             רכיבים *
           </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            סמן "ניתן לחלוקה?" אם אפשרי לחלק את הכמות (למשל סוכר, קמח). אם זה רכיב שלם כמו ביצה — עדיף לא לסמן.
+          </Typography>
+
           {ingredients.map((ingredient, index) => (
-            <Box key={index} sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 2 }}>
+            <Box
+              key={index}
+              sx={{
+                display: 'flex',
+                gap: 2,
+                alignItems: 'center',
+                mb: 2,
+                flexWrap: 'wrap'
+              }}
+            >
               <TextField
                 label="שם רכיב"
                 variant="outlined"
                 size="small"
                 value={ingredient.name}
-                onChange={(e) => handleIngredientChange(index, 'name', e.target.value)}
+                onChange={(e) =>
+                  handleIngredientChange(index, 'name', e.target.value)
+                }
                 sx={{ flex: 3 }}
                 required
               />
@@ -232,7 +275,9 @@ const AddRecipeModal: React.FC<AddRecipeModalProps> = ({
                 size="small"
                 type="number"
                 value={ingredient.quantity === 0 ? '' : ingredient.quantity}
-                onChange={(e) => handleIngredientChange(index, 'quantity', e.target.value)}
+                onChange={(e) =>
+                  handleIngredientChange(index, 'quantity', e.target.value)
+                }
                 sx={{ flex: 1 }}
                 required
                 inputProps={{ min: 0 }}
@@ -242,17 +287,38 @@ const AddRecipeModal: React.FC<AddRecipeModalProps> = ({
                 variant="outlined"
                 size="small"
                 value={ingredient.unit}
-                onChange={(e) => handleIngredientChange(index, 'unit', e.target.value)}
+                onChange={(e) =>
+                  handleIngredientChange(index, 'unit', e.target.value)
+                }
                 sx={{ flex: 1.5 }}
                 required
               />
+
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={ingredient.isDivisible !== false}
+                    onChange={(e) =>
+                      handleIngredientChange(index, 'isDivisible', e.target.checked)
+                    }
+                  />
+                }
+                label="ניתן לחלוקה?"
+                sx={{ flex: 2 }}
+              />
+
               {ingredients.length > 1 && (
-                <IconButton onClick={() => handleRemoveIngredient(index)} color="error" size="small">
+                <IconButton
+                  onClick={() => handleRemoveIngredient(index)}
+                  color="error"
+                  size="small"
+                >
                   <DeleteIcon />
                 </IconButton>
               )}
             </Box>
           ))}
+
           <Button
             startIcon={<AddCircleOutlineIcon />}
             onClick={handleAddIngredient}
@@ -275,7 +341,7 @@ const AddRecipeModal: React.FC<AddRecipeModalProps> = ({
         </Paper>
       </DialogContent>
       <DialogActions sx={{ p: 3 }}>
-        <Button onClick={handleModalClose} color="primary"> {/* שנה ל-handleModalClose */}
+        <Button onClick={handleModalClose} color="primary">
           ביטול
         </Button>
         <Button

@@ -5,6 +5,7 @@ export interface IIngredient {
     name: string;
     quantity: number;
     unit: string;
+    isDivisible?: boolean; // ברירת מחדל: true אם לא צוין
   }
   
   // הגדרת הממשק עבור מתכון מלא (כפי שמועבר ל-Backend ביצירה/עדכון)

@@ -104,7 +104,7 @@ const ViewRecipeModal: React.FC<ViewRecipeModalProps> = ({
           </Typography>
           {recipe.ingredients && recipe.ingredients.length > 0 ? (
             <ul>
-              {recipe.ingredients.map(
+              {/* {recipe.ingredients.map(
                 (ingredient: IIngredient, index: number) => (
                   <li key={index}>
                     <Typography variant="body1">
@@ -114,6 +114,26 @@ const ViewRecipeModal: React.FC<ViewRecipeModalProps> = ({
                     </Typography>
                   </li>
                 )
+              )} */}
+              {recipe.ingredients && recipe.ingredients.length > 0 ? (
+                <ul>
+                  {recipe.ingredients.map(
+                    (ingredient: IIngredient, index: number) => (
+                      <li key={index}>
+                        <Typography variant="body1">
+                          {ingredient.name} -{" "}
+                          {(ingredient.isDivisible !== false
+                            ? ingredient.quantity * multiplier
+                            : ingredient.quantity
+                          ).toFixed(2)}{" "}
+                          {ingredient.unit}
+                        </Typography>
+                      </li>
+                    )
+                  )}
+                </ul>
+              ) : (
+                <Typography variant="body1">אין רכיבים זמינים.</Typography>
               )}
             </ul>
           ) : (
