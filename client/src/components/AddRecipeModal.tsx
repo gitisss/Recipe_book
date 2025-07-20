@@ -1,34 +1,38 @@
 // client/src/components/AddRecipeModal.tsx
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  TextField,
+  Modal,
   Box,
   Typography,
+  TextField,
+  Button,
   IconButton,
-  Tooltip,
-  Paper,
-  Divider,
-  Checkbox,
-  FormControlLabel
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+  CircularProgress,
 } from '@mui/material';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import PsychologyIcon from '@mui/icons-material/Psychology';
-import CameraAltIcon from '@mui/icons-material/CameraAlt';
-import DeleteIcon from '@mui/icons-material/Delete';
+import type { SelectChangeEvent } from '@mui/material'; // <--- שינוי כאן! הוספת 'type'
+import CloseIcon from '@mui/icons-material/Close';
+
+import apiClient from '../apiClient';
 
 import type { IFullRecipeData, IIngredient, IRecipe } from '../types/Recipe';
+
+import AiRecipeRequestSection from './AiRecipeRequestSection';
+import RecipeFormFields from './RecipeFormFields';
+import IngredientsSection from './IngredientsSection';
+import InstructionsSection from './InstructionsSection';
+
+
+// ... שאר הקוד של AddRecipeModal.tsx נשאר זהה ...
 
 interface AddRecipeModalProps {
   open: boolean;
   onClose: () => void;
-  onAddRecipe?: (recipeData: IFullRecipeData) => void;
-  onEditRecipe?: (id: string, recipeData: IFullRecipeData) => void;
+  onAddRecipe?: (recipeData: IFullRecipeData) => Promise<void>;
+  onEditRecipe?: (id: string, recipeData: IFullRecipeData) => Promise<void>;
   initialRecipeData?: IRecipe | null;
 }
 
@@ -37,323 +41,311 @@ const AddRecipeModal: React.FC<AddRecipeModalProps> = ({
   onClose,
   onAddRecipe,
   onEditRecipe,
-  initialRecipeData
+  initialRecipeData,
 }) => {
-  const [recipeName, setRecipeName] = useState<string>('');
-  const [description, setDescription] = useState<string>('');
-  const [instructions, setInstructions] = useState<string>('');
-  const [ingredients, setIngredients] = useState<IIngredient[]>([
-    { name: '', quantity: 0, unit: '', isDivisible: true }
-  ]);
-  const [imageUrl, setImageUrl] = useState<string>('');
-  const [isEditMode, setIsEditMode] = useState<boolean>(false);
+  const [formData, setFormData] = useState<IFullRecipeData>(
+    initialRecipeData ? {
+      title: initialRecipeData.title,
+      description: initialRecipeData.description || '',
+      ingredients: initialRecipeData.ingredients,
+      instructions: initialRecipeData.instructions,
+      imageUrl: initialRecipeData.imageUrl || '',
+      prepTime: initialRecipeData.prepTime || '',
+      cookTime: initialRecipeData.cookTime || '',
+      servings: initialRecipeData.servings || '',
+      category: initialRecipeData.category || '',
+      cuisine: initialRecipeData.cuisine || '',
+      dietaryRestrictions: initialRecipeData.dietaryRestrictions || [],
+    } : {
+      title: '',
+      description: '',
+      ingredients: [{ name: '', quantity: '', unit: '' }],
+      instructions: [''],
+      prepTime: '',
+      cookTime: '',
+      servings: '',
+      category: '',
+      cuisine: '',
+      dietaryRestrictions: [],
+    }
+  );
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const [aiCriteria, setAiCriteria] = useState<string>('');
+  const [isGeneratingAiRecipe, setIsGeneratingAiRecipe] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
+
 
   useEffect(() => {
-    if (open && initialRecipeData) {
-      setRecipeName(initialRecipeData.name);
-      setDescription(initialRecipeData.description || '');
-      setInstructions(initialRecipeData.instructions);
-      setIngredients(
-        initialRecipeData.ingredients.length > 0
-          ? initialRecipeData.ingredients
-          : [{ name: '', quantity: 0, unit: '', isDivisible: true }]
-      );
-      setImageUrl(initialRecipeData.imageUrl || '');
-      setIsEditMode(true);
-    } else if (open && !initialRecipeData) {
-      resetFormFields();
-      setIsEditMode(false);
+    if (initialRecipeData) {
+      setFormData({
+        title: initialRecipeData.title,
+        description: initialRecipeData.description || '',
+        ingredients: initialRecipeData.ingredients,
+        instructions: initialRecipeData.instructions,
+        imageUrl: initialRecipeData.imageUrl || '',
+        prepTime: initialRecipeData.prepTime || '',
+        cookTime: initialRecipeData.cookTime || '',
+        servings: initialRecipeData.servings || '',
+        category: initialRecipeData.category || '',
+        cuisine: initialRecipeData.cuisine || '',
+        dietaryRestrictions: initialRecipeData.dietaryRestrictions || [],
+      });
+    } else {
+      setFormData({
+        title: '',
+        description: '',
+        ingredients: [{ name: '', quantity: '', unit: '' }],
+        instructions: [''],
+        prepTime: '',
+        cookTime: '',
+        servings: '',
+        category: '',
+        cuisine: '',
+        dietaryRestrictions: [],
+      });
     }
+    setAiCriteria('');
+    setAiError(null);
   }, [open, initialRecipeData]);
 
-  const resetFormFields = () => {
-    setRecipeName('');
-    setDescription('');
-    setInstructions('');
-    setIngredients([{ name: '', quantity: 0, unit: '', isDivisible: true }]);
-    setImageUrl('');
+  const handleChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string | string[]>
+  ) => {
+    const { name, value } = event.target;
+    if (name === 'dietaryRestrictions') {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: typeof value === 'string' ? value.split(',') : value,
+      }));
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name as keyof IFullRecipeData]: value,
+      }));
+    }
   };
 
   const handleIngredientChange = (
     index: number,
     field: keyof IIngredient,
-    value: string | number | boolean
+    value: string
   ) => {
-    const newIngredients = [...ingredients];
-    if (field === 'quantity') {
-      newIngredients[index][field] = Number(value);
-    } else if (field === 'isDivisible') {
-      newIngredients[index][field] = value as boolean;
-    } else {
-      newIngredients[index][field] = value as string;
-    }
-    setIngredients(newIngredients);
+    const newIngredients = [...formData.ingredients];
+    newIngredients[index] = { ...newIngredients[index], [field]: value };
+    setFormData({ ...formData, ingredients: newIngredients });
   };
 
-  const handleAddIngredient = () => {
-    setIngredients([
-      ...ingredients,
-      { name: '', quantity: 0, unit: '', isDivisible: true }
-    ]);
+  const addIngredientField = () => {
+    setFormData((prevData) => ({
+      ...prevData,
+      ingredients: [...prevData.ingredients, { name: '', quantity: '', unit: '' }],
+    }));
   };
 
-  const handleRemoveIngredient = (index: number) => {
-    const newIngredients = ingredients.filter((_, i) => i !== index);
-    setIngredients(newIngredients);
+  const removeIngredientField = (index: number) => {
+    const newIngredients = formData.ingredients.filter((_, i) => i !== index);
+    setFormData({ ...formData, ingredients: newIngredients });
   };
 
-  const handleSubmit = () => {
-    if (
-      !recipeName.trim() ||
-      !instructions.trim() ||
-      ingredients.some(
-        (ing) =>
-          !ing.name.trim() || ing.quantity <= 0 || !ing.unit.trim()
-      )
-    ) {
-      alert('אנא מלא את כל שדות החובה של המתכון והרכיבים.');
+  const handleInstructionChange = (index: number, value: string) => {
+    const newInstructions = [...formData.instructions];
+    newInstructions[index] = value;
+    setFormData({ ...formData, instructions: newInstructions });
+  };
+
+  const addInstructionField = () => {
+    setFormData((prevData) => ({
+      ...prevData,
+      instructions: [...prevData.instructions, ''],
+    }));
+  };
+
+  const removeInstructionField = (index: number) => {
+    const newInstructions = formData.instructions.filter((_, i) => i !== index);
+    setFormData({ ...formData, instructions: newInstructions });
+  };
+
+  const handleRequestRecipeFromAI = useCallback(async () => {
+    if (!aiCriteria.trim()) {
+      setAiError('אנא הזן קריטריונים לבקשת מתכון מה-AI (לדוגמה: מרכיבים, סוג ארוחה).');
       return;
     }
 
-    const recipeData: IFullRecipeData = {
-      name: recipeName,
-      description: description,
-      instructions: instructions,
-      ingredients: ingredients.filter((ing) => ing.name.trim() !== ''),
-      imageUrl: imageUrl
-    };
+    setIsGeneratingAiRecipe(true);
+    setAiError(null);
+    try {
+      const response = await apiClient.post('/ai/suggest-recipe', {
+        ingredients: aiCriteria,
+      });
 
-    if (isEditMode && initialRecipeData?._id && onEditRecipe) {
-      onEditRecipe(initialRecipeData._id, recipeData);
-    } else if (onAddRecipe) {
-      onAddRecipe(recipeData);
+      const aiSuggestedRecipe = response.data;
+      console.log('AI Suggested Recipe:', aiSuggestedRecipe);
+
+      setFormData({
+        title: aiSuggestedRecipe.title || '',
+        description: aiSuggestedRecipe.description || '',
+        ingredients: aiSuggestedRecipe.ingredients.map((ing: any) => ({
+          name: ing.name || '',
+          quantity: ing.quantity ? String(ing.quantity) : '',
+          unit: ing.unit || '',
+        })) || [{ name: '', quantity: '', unit: '' }],
+        instructions: aiSuggestedRecipe.instructions || [''],
+        imageUrl: aiSuggestedRecipe.imageUrl || '',
+        prepTime: aiSuggestedRecipe.prepTime || '',
+        cookTime: aiSuggestedRecipe.cookTime || '',
+        servings: aiSuggestedRecipe.servings || '',
+        category: aiSuggestedRecipe.category || '',
+        cuisine: aiSuggestedRecipe.cuisine || '',
+        dietaryRestrictions: aiSuggestedRecipe.dietaryRestrictions || [],
+      });
+      setAiCriteria('');
+      alert('מתכון הוצע על ידי ה-AI בהצלחה! תוכל לערוך אותו ולשמור.');
+
+    } catch (err: any) {
+      console.error('Error requesting recipe from AI:', err);
+      setAiError(err.response?.data?.message || 'אירעה שגיאה בבקשת מתכון מה-AI.');
+    } finally {
+      setIsGeneratingAiRecipe(false);
     }
-    onClose();
+  }, [aiCriteria]);
+
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setSubmitError(null);
+    setIsSubmitting(true);
+
+    if (!formData.title.trim()) {
+      setSubmitError('כותרת המתכון הינה שדה חובה.');
+      setIsSubmitting(false);
+      return;
+    }
+    if (formData.ingredients.length === 0 || formData.ingredients.every(ing => !ing.name.trim())) {
+      setSubmitError('יש להזין לפחות מרכיב אחד למתכון.');
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      if (initialRecipeData) {
+        if (onEditRecipe) {
+          await onEditRecipe(initialRecipeData._id, formData);
+        }
+      } else {
+        if (onAddRecipe) {
+          await onAddRecipe(formData);
+        }
+      }
+      onClose();
+    } catch (err: any) {
+      console.error('Failed to submit recipe:', err);
+      setSubmitError(err.response?.data?.message || 'אירעה שגיאה בשמירת המתכון.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleModalClose = () => {
-    resetFormFields();
-    onClose();
-  };
-
-  const isFormValid = () => {
-    return (
-      recipeName.trim() !== '' &&
-      instructions.trim() !== '' &&
-      ingredients.every(
-        (ing) =>
-          ing.name.trim() !== '' && ing.quantity > 0 && ing.unit.trim() !== ''
-      )
-    );
-  };
 
   return (
-    <Dialog open={open} onClose={handleModalClose} fullWidth maxWidth="md">
-      <DialogTitle sx={{ textAlign: 'center', pb: 1 }}>
-        {isEditMode ? 'ערוך מתכון קיים' : 'הוסף מתכון חדש'}
-        <Typography variant="body2" color="text.secondary">
-          הזן את פרטי המתכון ידנית או השתמש באחת מהאפשרויות המתקדמות
-        </Typography>
-      </DialogTitle>
-      <DialogContent dividers>
-        <Box
+    <Modal open={open} onClose={onClose}>
+      <Box
+        sx={{
+          position: 'absolute' as 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: { xs: '90%', md: '70%', lg: '60%' },
+          maxHeight: '90vh',
+          overflowY: 'auto',
+          bgcolor: 'background.paper',
+          boxShadow: 24,
+          p: 4,
+          borderRadius: 2,
+        }}
+      >
+        <IconButton
+          aria-label="close"
+          onClick={onClose}
           sx={{
-            display: 'flex',
-            flexDirection: { xs: 'column', sm: 'row' },
-            gap: 2,
-            mb: 3,
-            p: 2,
-            backgroundColor: 'action.hover',
-            borderRadius: 2,
-            justifyContent: 'center'
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
           }}
         >
-          <Tooltip title="בקש רעיונות למתכון מבוססי AI על פי קלט שתספק">
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<PsychologyIcon />}
-              disabled
-              fullWidth
-              sx={{ py: 1.5 }}
-              onClick={() => alert('פיצ\'ר AI להצעת מתכונים עדיין לא זמין')}
-            >
-              בקש מתכון מה-AI שלנו
-            </Button>
-          </Tooltip>
-          <Tooltip title="העלה תמונה של מתכון מודפס או כתוב ידנית לסריקה אוטומטית">
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<CameraAltIcon />}
-              disabled
-              fullWidth
-              sx={{ py: 1.5 }}
-              onClick={() => alert('פיצ\'ר סריקת צילום מתכון עדיין לא זמין')}
-            >
-              העלה צילום מתכון לסריקה
-            </Button>
-          </Tooltip>
-        </Box>
+          <CloseIcon />
+        </IconButton>
+        <Typography variant="h5" component="h2" gutterBottom sx={{ mb: 3 }}>
+          {initialRecipeData ? 'ערוך מתכון' : 'הוסף מתכון חדש'}
+        </Typography>
 
-        <Divider sx={{ my: 3 }}>
-          <Typography variant="body2" color="text.secondary">
-            או הזן ידנית
-          </Typography>
-        </Divider>
+        {!initialRecipeData && (
+          <AiRecipeRequestSection
+            aiCriteria={aiCriteria}
+            setAiCriteria={setAiCriteria}
+            handleRequestRecipeFromAI={handleRequestRecipeFromAI}
+            isGeneratingAiRecipe={isGeneratingAiRecipe}
+            aiError={aiError}
+          />
+        )}
 
-        <Paper elevation={0} sx={{ p: 2 }}>
-          <TextField
-            margin="normal"
-            label="שם המתכון *"
-            type="text"
-            fullWidth
-            variant="outlined"
-            value={recipeName}
-            onChange={(e) => setRecipeName(e.target.value)}
-            required
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            margin="normal"
-            label="תיאור קצר"
-            type="text"
-            fullWidth
-            variant="outlined"
-            multiline
-            rows={2}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            margin="normal"
-            label="הוראות הכנה *"
-            type="text"
-            fullWidth
-            variant="outlined"
-            multiline
-            rows={4}
-            value={instructions}
-            onChange={(e) => setInstructions(e.target.value)}
-            required
-            sx={{ mb: 3 }}
+        <form onSubmit={handleSubmit}>
+          <RecipeFormFields
+            formData={formData}
+            handleChange={handleChange}
+            submitError={submitError}
           />
 
-          <Typography variant="h6" gutterBottom sx={{ mt: 3, mb: 1 }}>
-            רכיבים *
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            סמן "ניתן לחלוקה?" אם אפשרי לחלק את הכמות (למשל סוכר, קמח). אם זה רכיב שלם כמו ביצה — עדיף לא לסמן.
-          </Typography>
+          <IngredientsSection
+            ingredients={formData.ingredients}
+            handleIngredientChange={handleIngredientChange}
+            addIngredientField={addIngredientField}
+            removeIngredientField={removeIngredientField}
+            submitError={submitError}
+          />
 
-          {ingredients.map((ingredient, index) => (
-            <Box
-              key={index}
-              sx={{
-                display: 'flex',
-                gap: 2,
-                alignItems: 'center',
-                mb: 2,
-                flexWrap: 'wrap'
-              }}
-            >
-              <TextField
-                label="שם רכיב"
-                variant="outlined"
-                size="small"
-                value={ingredient.name}
-                onChange={(e) =>
-                  handleIngredientChange(index, 'name', e.target.value)
-                }
-                sx={{ flex: 3 }}
-                required
-              />
-              <TextField
-                label="כמות"
-                variant="outlined"
-                size="small"
-                type="number"
-                value={ingredient.quantity === 0 ? '' : ingredient.quantity}
-                onChange={(e) =>
-                  handleIngredientChange(index, 'quantity', e.target.value)
-                }
-                sx={{ flex: 1 }}
-                required
-                inputProps={{ min: 0 }}
-              />
-              <TextField
-                label="יחידת מידה"
-                variant="outlined"
-                size="small"
-                value={ingredient.unit}
-                onChange={(e) =>
-                  handleIngredientChange(index, 'unit', e.target.value)
-                }
-                sx={{ flex: 1.5 }}
-                required
-              />
-
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={ingredient.isDivisible !== false}
-                    onChange={(e) =>
-                      handleIngredientChange(index, 'isDivisible', e.target.checked)
-                    }
-                  />
-                }
-                label="ניתן לחלוקה?"
-                sx={{ flex: 2 }}
-              />
-
-              {ingredients.length > 1 && (
-                <IconButton
-                  onClick={() => handleRemoveIngredient(index)}
-                  color="error"
-                  size="small"
-                >
-                  <DeleteIcon />
-                </IconButton>
-              )}
-            </Box>
-          ))}
-
-          <Button
-            startIcon={<AddCircleOutlineIcon />}
-            onClick={handleAddIngredient}
-            variant="outlined"
-            sx={{ mt: 1, mb: 3 }}
-          >
-            הוסף רכיב נוסף
-          </Button>
+          <InstructionsSection
+            instructions={formData.instructions}
+            handleInstructionChange={handleInstructionChange}
+            addInstructionField={addInstructionField}
+            removeInstructionField={removeInstructionField}
+          />
 
           <TextField
-            margin="normal"
+            fullWidth
             label="כתובת URL לתמונה"
-            type="url"
-            fullWidth
-            variant="outlined"
-            value={imageUrl}
-            onChange={(e) => setImageUrl(e.target.value)}
+            name="imageUrl"
+            value={formData.imageUrl}
+            onChange={handleChange}
+            margin="normal"
             sx={{ mb: 2 }}
           />
-        </Paper>
-      </DialogContent>
-      <DialogActions sx={{ p: 3 }}>
-        <Button onClick={handleModalClose} color="primary">
-          ביטול
-        </Button>
-        <Button
-          onClick={handleSubmit}
-          color="primary"
-          variant="contained"
-          disabled={!isFormValid()}
-        >
-          {isEditMode ? 'שמור שינויים' : 'צור מתכון'}
-        </Button>
-      </DialogActions>
-    </Dialog>
+
+          {submitError && (
+            <Typography color="error" sx={{ mt: 2, textAlign: 'center' }}>
+              {submitError}
+            </Typography>
+          )}
+
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3, gap: 2 }}>
+            <Button
+              variant="contained"
+              color="primary"
+              type="submit"
+              disabled={isSubmitting || isGeneratingAiRecipe}
+            >
+              {isSubmitting ? <CircularProgress size={24} color="inherit" /> : initialRecipeData ? 'שמור שינויים' : 'הוסף מתכון'}
+            </Button>
+            <Button variant="outlined" onClick={onClose} disabled={isSubmitting || isGeneratingAiRecipe}>
+              בטל
+            </Button>
+          </Box>
+        </form>
+      </Box>
+    </Modal>
   );
 };
 

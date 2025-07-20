@@ -107,7 +107,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) 
   const handleEditRecipe = useCallback(async (id: string) => {
     try {
       const response = await apiClient.get(`/recipes/${id}`);
-      setSelectedRecipe(response.data); // השתמש ב-selectedRecipe כדי להעביר את נתוני המתכון למודאל העריכה
+      setSelectedRecipe(response.data); 
       setOpenEditRecipeModal(true);
     } catch (err: any) {
       console.error('Error fetching recipe for edit:', err);

@@ -6,17 +6,18 @@ import { login } from "./controllers/LogInController";
 import { signup } from "./controllers/SignUpController";
 import { connectDB } from "./DB/mongoConnector";
 import { createRecipe, getRecipes, getRecipeById, updateRecipe, deleteRecipe } from "./controllers/RecipeController";
+import { generateRecipeSuggestion } from  "./controllers/AIController";
 import { verifyToken } from './middleware/auth';
 
 
 dotenv.config();
+console.log('DEBUG: GEMINI_API_KEY from process.env:', process.env.GEMINI_API_KEY); 
 
 const app = express();
 
 const PORT = process.env.PORT || 3000;
 app.use(cors({
   origin: '*'
-
 }));
 
 app.use(express.json());
@@ -34,6 +35,9 @@ app.get("/api/recipes", verifyToken, getRecipes); // שליפת כל המתכו�
 app.get("/api/recipes/:id", verifyToken, getRecipeById); // שליפת מתכון בודד
 app.put("/api/recipes/:id", verifyToken, updateRecipe); // עדכון מתכון
 app.delete("/api/recipes/:id", verifyToken, deleteRecipe); // מחיקת מתכון
+
+// נתיב API חדש להצעות מתכונים מה-AI - מוגן באמצעות מידלוור verifyToken
+app.post("/api/ai/suggest-recipe", verifyToken, generateRecipeSuggestion); // חדש!
 
 
 connectDB().then(() => {
