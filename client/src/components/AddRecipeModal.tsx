@@ -11,11 +11,10 @@ import {
   Select,
   FormControl,
   InputLabel,
-  CircularProgress,
+  CircularProgress
 } from '@mui/material';
-import type { SelectChangeEvent } from '@mui/material'; // <--- שינוי כאן! הוספת 'type'
 import CloseIcon from '@mui/icons-material/Close';
-
+import type { SelectChangeEvent } from '@mui/material';
 import apiClient from '../apiClient';
 
 import type { IFullRecipeData, IIngredient, IRecipe } from '../types/Recipe';
@@ -26,8 +25,6 @@ import IngredientsSection from './IngredientsSection';
 import InstructionsSection from './InstructionsSection';
 
 
-// ... שאר הקוד של AddRecipeModal.tsx נשאר זהה ...
-
 interface AddRecipeModalProps {
   open: boolean;
   onClose: () => void;
@@ -36,6 +33,21 @@ interface AddRecipeModalProps {
   initialRecipeData?: IRecipe | null;
 }
 
+// פונקציית עזר לאתחול נתוני טופס ריקים
+const getInitialEmptyFormData = (): IFullRecipeData => ({
+  title: '',
+  description: '',
+  ingredients: [{ name: '', quantity: '', unit: '' }],
+  instructions: [''],
+  prepTime: '',
+  cookTime: '',
+  servings: '',
+  category: '',
+  cuisine: '',
+  dietaryRestrictions: [],
+});
+
+
 const AddRecipeModal: React.FC<AddRecipeModalProps> = ({
   open,
   onClose,
@@ -43,44 +55,10 @@ const AddRecipeModal: React.FC<AddRecipeModalProps> = ({
   onEditRecipe,
   initialRecipeData,
 }) => {
-  const [formData, setFormData] = useState<IFullRecipeData>(
-    initialRecipeData ? {
-      title: initialRecipeData.title,
-      description: initialRecipeData.description || '',
-      ingredients: initialRecipeData.ingredients,
-      instructions: initialRecipeData.instructions,
-      imageUrl: initialRecipeData.imageUrl || '',
-      prepTime: initialRecipeData.prepTime || '',
-      cookTime: initialRecipeData.cookTime || '',
-      servings: initialRecipeData.servings || '',
-      category: initialRecipeData.category || '',
-      cuisine: initialRecipeData.cuisine || '',
-      dietaryRestrictions: initialRecipeData.dietaryRestrictions || [],
-    } : {
-      title: '',
-      description: '',
-      ingredients: [{ name: '', quantity: '', unit: '' }],
-      instructions: [''],
-      prepTime: '',
-      cookTime: '',
-      servings: '',
-      category: '',
-      cuisine: '',
-      dietaryRestrictions: [],
-    }
-  );
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
-
-  const [aiCriteria, setAiCriteria] = useState<string>('');
-  const [isGeneratingAiRecipe, setIsGeneratingAiRecipe] = useState(false);
-  const [aiError, setAiError] = useState<string | null>(null);
-
-
-  useEffect(() => {
+  // אתחול formData בהתבסס על initialRecipeData
+  const [formData, setFormData] = useState<IFullRecipeData>(() => {
     if (initialRecipeData) {
-      setFormData({
+      return {
         title: initialRecipeData.title,
         description: initialRecipeData.description || '',
         ingredients: initialRecipeData.ingredients,
@@ -92,24 +70,53 @@ const AddRecipeModal: React.FC<AddRecipeModalProps> = ({
         category: initialRecipeData.category || '',
         cuisine: initialRecipeData.cuisine || '',
         dietaryRestrictions: initialRecipeData.dietaryRestrictions || [],
-      });
-    } else {
-      setFormData({
-        title: '',
-        description: '',
-        ingredients: [{ name: '', quantity: '', unit: '' }],
-        instructions: [''],
-        prepTime: '',
-        cookTime: '',
-        servings: '',
-        category: '',
-        cuisine: '',
-        dietaryRestrictions: [],
-      });
+      };
     }
-    setAiCriteria('');
-    setAiError(null);
+    return getInitialEmptyFormData();
+  });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const [aiCriteria, setAiCriteria] = useState<string>('');
+  const [isGeneratingAiRecipe, setIsGeneratingAiRecipe] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
+
+  // useEffect זה יטפל בטעינה של initialRecipeData במצב עריכה
+  // ובאיפוס הטופס כאשר המודאל נפתח במצב הוספה חדש (initialRecipeData הוא null)
+  useEffect(() => {
+    if (open) { // רק כאשר המודאל פתוח
+      if (initialRecipeData) {
+        setFormData({
+          title: initialRecipeData.title,
+          description: initialRecipeData.description || '',
+          ingredients: initialRecipeData.ingredients,
+          instructions: initialRecipeData.instructions,
+          imageUrl: initialRecipeData.imageUrl || '',
+          prepTime: initialRecipeData.prepTime || '',
+          cookTime: initialRecipeData.cookTime || '',
+          servings: initialRecipeData.servings || '',
+          category: initialRecipeData.category || '',
+          cuisine: initialRecipeData.cuisine || '',
+          dietaryRestrictions: initialRecipeData.dietaryRestrictions || [],
+        });
+      } else {
+        // אם המודאל נפתח במצב חדש (initialRecipeData הוא null), נאפס אותו
+        setFormData(getInitialEmptyFormData());
+      }
+      setAiCriteria(''); // נאפס גם את שדות ה-AI בכל פתיחה
+      setAiError(null);
+    }
+    // פונקציה שתרוץ כשקומפוננטה תעשה unmount או כש-open יהפוך ל-false (מודאל נסגר)
+    return () => {
+      if (!open) { // כאשר המודאל נסגר
+        setFormData(getInitialEmptyFormData()); // נאפס לריק עבור הפתיחה הבאה
+        setAiCriteria('');
+        setAiError(null);
+      }
+    };
   }, [open, initialRecipeData]);
+
 
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string | string[]>
@@ -185,7 +192,7 @@ const AddRecipeModal: React.FC<AddRecipeModalProps> = ({
       console.log('AI Suggested Recipe:', aiSuggestedRecipe);
 
       setFormData({
-        title: aiSuggestedRecipe.title || '',
+        title: aiSuggestedRecipe.title || 'מתכון מה-AI ללא כותרת',
         description: aiSuggestedRecipe.description || '',
         ingredients: aiSuggestedRecipe.ingredients.map((ing: any) => ({
           name: ing.name || '',
@@ -202,8 +209,7 @@ const AddRecipeModal: React.FC<AddRecipeModalProps> = ({
         dietaryRestrictions: aiSuggestedRecipe.dietaryRestrictions || [],
       });
       setAiCriteria('');
-      alert('מתכון הוצע על ידי ה-AI בהצלחה! תוכל לערוך אותו ולשמור.');
-
+      alert('מתכון הוצע על ידי ה-AI בהצלחה! אנא בדוק וערוך לפני השמירה.');
     } catch (err: any) {
       console.error('Error requesting recipe from AI:', err);
       setAiError(err.response?.data?.message || 'אירעה שגיאה בבקשת מתכון מה-AI.');
@@ -228,6 +234,8 @@ const AddRecipeModal: React.FC<AddRecipeModalProps> = ({
       setIsSubmitting(false);
       return;
     }
+
+    console.log('Submitting formData:', formData);
 
     try {
       if (initialRecipeData) {

@@ -2,59 +2,47 @@
 import { Request, Response } from 'express';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-// וודא ש-GEMINI_API_KEY מוגדר כמשתנה סביבה
 // const API_KEY = process.env.GEMINI_API_KEY;
-const API_KEY = "AIzaSyCuwesoJP4RxoqsdOXtWOO52JersOjjq1M"
+const API_KEY ="AIzaSyC1xW0G3ryDJKdtUihZ5vo9HUPguonnv2k"
 
-// כאן ניתן לוודא שהמפתח קיים לפני שממשיכים, או לזרוק שגיאה
-// במקרה של פיתוח מקומי, עדיף שזה יתרסק אם המפתח חסר כדי שנדע לתקן.
-// עבור פריסה בייצור, מנגנון טיפול בשגיאות חזק יותר יהיה נחוץ.
 if (!API_KEY) {
   console.error('Error: GEMINI_API_KEY is not set in environment variables. Please set it in your .env file.');
-  // במקרה של שגיאה קריטית, ניתן לא לטעון את השרת או לספק הודעה ברורה
-  // for now, we will proceed but expect errors from Google API
 }
 
-// הגדרת מודל ג'מיני - המשתנה genAI מוגדר פעם אחת בלבד כאן
 const genAI = new GoogleGenerativeAI(API_KEY as string);
-
 export const generateRecipeSuggestion = async (req: Request, res: Response) => {
   try {
     const { ingredients, diet, cuisine, mealType, mood } = req.body;
 
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     const prompt = `
-      צור מתכון חדש בפורמט JSON, בהתבסס על הקריטריונים הבאים:
-      מרכיבים זמינים: ${ingredients || 'כל המרכיבים המתאימים'}.
-      הגבלות תזונתיות (אם יש): ${diet || 'אין'}.
-      מטבח מועדף (אם יש): ${cuisine || 'כל מטבח מתאים'}.
-      סוג ארוחה (אם יש, לדוגמה: ארוחת ערב, ארוחת בוקר): ${mealType || 'כל סוג ארוחה'}.
-      מצב רוח/סגנון (אם יש, לדוגמה: קל, מנחם, מהיר): ${mood || 'כל סגנון'}.
+      Generate a realistic and complete recipe in strict JSON format based on these criteria:
+      Ingredients: ${ingredients || 'any suitable'}.
+      Diet: ${diet || 'none'}.
+      Cuisine: ${cuisine || 'any'}.
+      Meal Type: ${mealType || 'any'}.
+      Style: ${mood || 'any'}.
 
-      המבנה של אובייקט ה-JSON צריך להיות כדלקמן (אל תכלול שום טקסט נוסף מחוץ לאובייקט ה-JSON):
-      {
-        "title": "שם המתכון",
-        "description": "תיאור קצר של המתכון",
-        "ingredients": [
-          { "name": "שם מרכיב", "quantity": "כמות", "unit": "יחידה (לדוגמה: גרם, כוסות)" }
-        ],
-        "instructions": [
-          "שלב 1",
-          "שלב 2",
-          "..."
-        ],
-        "prepTime": "זמן הכנה (לדוגמה: 20 דקות)",
-        "cookTime": "זמן בישול (לדוגמה: 30 דקות)",
-        "servings": "מספר מנות (לדוגמה: 4)",
-        "category": "קטגוריה (לדוגמה: עיקרית, קינוח)",
-        "cuisine": "מטבח (לדוגמה: ישראלי, איטלקי)",
-        "dietaryRestrictions": ["הגבלה 1", "הגבלה 2"]
+      JSON schema: {
+        "title": "string",
+        "description": "string",
+        "ingredients": [{"name":"string","quantity":"string","unit":"string"}],
+        "instructions": ["string"],
+        "prepTime": "string",
+        "cookTime": "string",
+        "servings": "string",
+        "category": "string", // Ensure singular form matching options like "עיקרית", "קינוח"
+        "cuisine": "string",   // Ensure singular form matching options like "ישראלי", "איטלקי"
+        "dietaryRestrictions": ["string"]
       }
-
-      וודא שכל השדות קיימים ומתאימים לטיפוסים, גם אם הם ריקים (לדוגמה, מערך ריק עבור dietaryRestrictions אם אין הגבלות).
-      הכן מתכון עם רכיבים והוראות אמיתיים בהתאם לקריטריונים.
-      החזר רק את אובייקט ה-JSON.
+      CRITICAL: All fields marked as (REQUIRED) and their sub-fields MUST be populated with valid and meaningful content.
+      Specifically, 'title' MUST be filled, 'instructions' MUST contain at least one step, and 'ingredients' MUST contain at least one ingredient with a 'name'.
+      Generate all recipe content (values for fields) in Hebrew.
+      IMPORTANT: For 'category' and 'cuisine' fields, use the exact singular Hebrew terms from the following lists:
+      Categories: "עיקרית", "קינוח", "ארוחת בוקר", "מרק", "סלט", "מאפה".
+      Cuisines: "ישראלי", "איטלקי", "אסייתי", "מזרח תיכוני", "אמריקאי".
+      Return JSON ONLY. Do not add any introductory or concluding text.
     `;
 
     const result = await model.generateContent(prompt);
