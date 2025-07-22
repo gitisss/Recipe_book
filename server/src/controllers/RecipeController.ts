@@ -4,9 +4,7 @@ import { Recipe } from '../models/RecipeModel';
 export const createRecipe = async (req: Request, res: Response) => {
   try {
     const { title, description, ingredients, instructions, imageUrl, prepTime, cookTime, servings, category, cuisine, dietaryRestrictions } = req.body;
-    const owner = req.userId; // Assuming auth middleware adds userId to req
-
-    console.log('Received data for createRecipe:', req.body);
+    const owner = req.userId;
 
     if (!owner) {
       return res.status(401).json({ message: 'משתמש לא מאומת.' });
@@ -22,7 +20,7 @@ export const createRecipe = async (req: Request, res: Response) => {
       prepTime,
       cookTime,
       servings,
-      category,
+      category: category === 'ללא קטגוריה' ? '' : category, // שמור ריק אם נבחר "ללא קטגוריה"
       cuisine,
       dietaryRestrictions,
     });
@@ -42,7 +40,18 @@ export const getRecipes = async (req: Request, res: Response) => {
       return res.status(401).json({ message: 'משתמש לא מאומת.' });
     }
 
-    const recipes = await Recipe.find({ owner });
+    const { category } = req.query;
+
+    const filter: any = { owner };
+    if (category) {
+      if (category === 'ללא קטגוריה') {
+        filter.category = { $in: [null, '', undefined] }; // חפש מתכונים ללא קטגוריה
+      } else {
+        filter.category = category;
+      }
+    }
+
+    const recipes = await Recipe.find(filter);
     res.status(200).json(recipes);
   } catch (error: any) {
     console.error('שגיאה בשליפת מתכונים:', error);
@@ -81,8 +90,20 @@ export const updateRecipe = async (req: Request, res: Response) => {
 
     const updatedRecipe = await Recipe.findOneAndUpdate(
       { _id: id, owner },
-      { title, description, ingredients, instructions, imageUrl, prepTime, cookTime, servings, category, cuisine, dietaryRestrictions },
-      { new: true, runValidators: true } // Return the updated document and run schema validators
+      { 
+        title, 
+        description, 
+        ingredients, 
+        instructions, 
+        imageUrl, 
+        prepTime, 
+        cookTime, 
+        servings, 
+        category: category === 'ללא קטגוריה' ? '' : category, // שמור ריק אם נבחר "ללא קטגוריה"
+        cuisine, 
+        dietaryRestrictions 
+      },
+      { new: true, runValidators: true }
     );
 
     if (!updatedRecipe) {

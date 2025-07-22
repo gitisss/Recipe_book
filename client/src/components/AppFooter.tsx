@@ -1,21 +1,17 @@
 // client/src/components/AppFooter.tsx
 import React from 'react';
-import {
-  Box,
-  Container,
-  Typography
-} from '@mui/material';
+import { Box, Typography, Container, Link } from '@mui/material';
 
 const AppFooter: React.FC = () => {
   return (
-    <Box component="footer" sx={{ py: 3, px: 2, mt: 'auto', backgroundColor: (theme) =>
-        theme.palette.mode === 'light' ? theme.palette.grey[200] : theme.palette.grey[800],
-      }}
-    >
-      <Container maxWidth="sm">
-        <Typography variant="body2" color="text.secondary" align="center">
-          {'© '}
-          ספר המתכונים שלי {new Date().getFullYear()}
+    <Box sx={{ bgcolor: 'primary.main', color: 'white', p: 3, mt: 'auto' }}>
+      <Container maxWidth="lg">
+        <Typography variant="body2" align="center">
+          {'זכויות יוצרים © '}
+          <Link color="inherit" href="https://yourwebsite.com/">
+            ספר המתכונים שלי
+          </Link>{' '}
+          {new Date().getFullYear()}
           {'.'}
         </Typography>
       </Container>

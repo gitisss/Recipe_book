@@ -1,3 +1,4 @@
+/* client/src/index.css */
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -11,23 +12,39 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  height: 100%; /* ודא גובה מלא */
+  width: 100%;  /* ודא רוחב מלא */
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+/* הגדרה גלובלית ל-box-sizing */
+*, *::before, *::after {
+  box-sizing: border-box;
 }
-a:hover {
-  color: #535bf2;
+
+html {
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden; /* מונע גלילה אופקית */
 }
 
 body {
-  margin: 0;
-  display: flex;
-  place-items: center;
+  margin: 0; /* הסר שוליים ברירת מחדל */
+  padding: 0; /* הסר ריפוד ברירת מחדל */
+  display: flex; /* השאר flex כדי ש-min-height: 100vh יעבוד */
+  /* place-items: center; <-- הוסר, לא מתאים לפריסה של עמוד מלא */
   min-width: 320px;
+  min-height: 100vh; /* ודא גובה מינימלי של אזור התצוגה */
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden; /* מונע גלילה אופקית */
+}
+
+#root { /* ודא שאלמנט ה-root תופס 100% רוחב וגובה */
+  height: 100%;
+  width: 100%;
   min-height: 100vh;
+  /* אין צורך ב-margin/padding נוספים כאן אם הגדרנו על body */
 }
 
 h1 {

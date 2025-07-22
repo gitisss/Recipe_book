@@ -7,32 +7,49 @@ import {
   CardContent,
   CardActions,
   Typography,
-  IconButton
+  IconButton,
+  Avatar
 } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-// הגדרת הממשק ל-props של קומפוננטת RecipeCard
 interface RecipeCardProps {
   id: string;
-  title: string; // <-- שונה מ-name ל-title
+  title: string;
   description: string;
   imageUrl?: string;
   onView: (id: string) => void;
   onEdit: (id: string) => void;
-  onDelete: (id: string) => void;
+  onDelete: (id: (string) | string) => void;
 }
 
 const RecipeCard: React.FC<RecipeCardProps> = ({
   id,
-  title, // <-- שונה מ-name ל-title
+  title,
   description,
   imageUrl,
   onView,
   onEdit,
   onDelete
 }) => {
+  const getFallbackImage = () => {
+    const firstLetter = title ? title.charAt(0).toUpperCase() : '';
+    return (
+      <Avatar
+        sx={{
+          bgcolor: (theme) => theme.palette.secondary.main,
+          width: 80,
+          height: 80,
+          fontSize: '3rem',
+          color: 'white',
+        }}
+      >
+        {firstLetter}
+      </Avatar>
+    );
+  };
+
   return (
     <Card sx={{ width: { xs: '100%', sm: 'calc(50% - 8px)', md: 'calc(33.333% - 11px)'}, display: 'flex', flexDirection: 'column' }} elevation={3}>
       {imageUrl ? (
@@ -43,7 +60,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
             width: '100%',
             objectFit: 'cover',
           }}
-          alt={`תמונה של ${title}`} // <-- שונה מ-name ל-title
+          alt={`תמונה של ${title}`}
           src={imageUrl}
         />
       ) : (
@@ -58,12 +75,12 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
             color: 'text.secondary'
           }}
         >
-          <Typography variant="caption">אין תמונה</Typography>
+          {getFallbackImage()}
         </Box>
       )}
       <CardContent sx={{ flexGrow: 1 }}>
         <Typography gutterBottom variant="h6" component="div">
-          {title} {/* <-- שונה מ-name ל-title */}
+          {title}
         </Typography>
         <Typography variant="body2" color="text.secondary">
           {description}
