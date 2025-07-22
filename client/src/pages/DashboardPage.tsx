@@ -149,9 +149,17 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) 
   }, []);
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%' }}>
       <AppHeader currentUser={currentUser} onLogout={onLogout} />
-      <Container maxWidth="lg" sx={{ mt: 4, mb: 4, flexGrow: 1 }}>
+      <Container 
+        maxWidth="lg" 
+        sx={{ 
+          mt: 4, 
+          mb: 4, 
+          flexGrow: 1,
+          // ה-Container עצמו כעת לא מקבל רקע וצל, אלא רק מגביל רוחב ומספק ריווח חיצוני
+        }}
+      >
         <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center', mb: 3 }}>
           לוח הבקרה שלי
         </Typography>
@@ -167,43 +175,63 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) 
           </Button>
         </Box>
         <Divider sx={{ my: 3 }} />
-
-        {selectedCategory ? (
-          <>
-            <Button
-              variant="outlined"
-              startIcon={<ArrowBackIcon />}
-              onClick={handleBackToCategories}
-              sx={{ mb: 2 }}
-            >
-              חזור לקטגוריות
-            </Button>
-            <Typography variant="h5" component="h2" gutterBottom sx={{ mb: 2 }}>
-              מתכונים בקטגוריה: {selectedCategory}
-            </Typography>
-            {isLoadingRecipes ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}>
-                <CircularProgress />
-                <Typography sx={{ ml: 2 }}>טוען מתכונים...</Typography>
-              </Box>
-            ) : error ? (
-              <Typography color="error" sx={{ textAlign: 'center', my: 3 }}>
-                שגיאה: {error}
+        
+        {/* Box חדש זה יכיל את התוכן הדינמי, עם רקע לבן וצל, והוא יתרחב לגובה מלא */}
+        <Box
+          sx={{
+            bgcolor: 'background.paper', // רקע לבן מהתמה
+            borderRadius: 2, // פינות מעוגלות
+            boxShadow: 3, // צל עדין
+            p: 3, // ריפוד פנימי
+            minHeight: '200px', // גובה מינימלי למקרה של תוכן קצר מאוד
+            display: 'flex',
+            flexDirection: 'column', // כדי שגם האלמנטים הפנימיים יסתדרו כעמודה
+            flexGrow: 1, // וודא שהוא מתרחב כדי לדחוף את הפוטר (אם הוא נכלל בפריסה הראשית)
+            overflow: 'hidden' // כדי למנוע גלילה פנימית לא רצויה
+          }}
+        >
+          <SearchAndFilterSection />
+          <Divider sx={{ my: 3 }} />
+          <Typography variant="h5" component="h2" gutterBottom sx={{ mb: 2 }}>
+            המתכונים שלך
+          </Typography>
+          {selectedCategory ? (
+            <>
+              <Button
+                variant="outlined"
+                startIcon={<ArrowBackIcon />}
+                onClick={handleBackToCategories}
+                sx={{ mb: 2 }}
+              >
+                חזור לקטגוריות
+              </Button>
+              <Typography variant="h5" component="h2" gutterBottom sx={{ mb: 2 }}>
+                מתכונים בקטגוריה: {selectedCategory}
               </Typography>
-            ) : (
-              <RecipeList
-                recipes={recipes}
-                isLoading={isLoadingRecipes}
-                onOpenAddRecipeModal={handleOpenAddRecipeModal}
-                onViewRecipe={handleViewRecipe}
-                onEditRecipe={handleEditRecipe}
-                onDeleteRecipe={handleDeleteRecipe}
-              />
-            )}
-          </>
-        ) : (
-          <CategoryGrid onSelectCategory={handleSelectCategory} />
-        )}
+              {isLoadingRecipes ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}>
+                  <CircularProgress />
+                  <Typography sx={{ ml: 2 }}>טוען מתכונים...</Typography>
+                </Box>
+              ) : error ? (
+                <Typography color="error" sx={{ textAlign: 'center', my: 3 }}>
+                  שגיאה: {error}
+                </Typography>
+              ) : (
+                <RecipeList
+                  recipes={recipes}
+                  isLoading={isLoadingRecipes}
+                  onOpenAddRecipeModal={handleOpenAddRecipeModal}
+                  onViewRecipe={handleViewRecipe}
+                  onEditRecipe={handleEditRecipe}
+                  onDeleteRecipe={handleDeleteRecipe}
+                />
+              )}
+            </>
+          ) : (
+            <CategoryGrid onSelectCategory={handleSelectCategory} />
+          )}
+        </Box> {/* סוף ה-Box החדש עם הרקע והצל */}
       </Container>
       <AppFooter />
 

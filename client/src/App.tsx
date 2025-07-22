@@ -3,9 +3,10 @@ import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-ro
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import SignUpPage from './pages/SignUpPage';
-import './App.css'; // קובץ ה-CSS הזה הוא עבור App.tsx אם הוא קיים, לא עבור האפליקציה כולה
 import { Box } from '@mui/material';
-// הקובץ index.css הוא הבסיס לכל האפליקציה.
+import { ThemeProvider } from '@mui/material/styles';
+import theme from './theme';
+import './App.css';
 
 interface UserData {
   id: string;
@@ -58,33 +59,39 @@ function App() {
   }
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%' }}> {/* <-- חדש: Box עוטף עם פריסת עמוד מלא */}
-      <Router>
-        <Routes>
-          <Route 
-            path="/login" 
-            element={!isAuthenticated ? <LoginPage onLoginSuccess={handleLoginSuccess} /> : <Navigate to="/dashboard" replace />} 
-          />
-          <Route 
-            path="/signup" 
-            element={!isAuthenticated ? <SignUpPage /> : <Navigate to="/dashboard" replace />} 
-          />
-          <Route 
-            path="/dashboard" 
-            element={isAuthenticated ? <DashboardPage currentUser={currentUser} onLogout={handleLogout} /> : <Navigate to="/login" replace />} 
-          />
-          <Route 
-            path="/" 
-            element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />} 
-          />
-          <Route path="*" element={
-            isAuthenticated 
-              ? <div style={{textAlign: 'center', marginTop: '2rem'}}><h1>404 - עמוד לא נמצא</h1><p>העמוד שחיפשת אינו קיים. <Link to="/dashboard">חזור לדאשבורד</Link></p></div> 
-              : <Navigate to="/login" replace />
-          } />
-        </Routes>
-      </Router>
-    </Box>
+    <ThemeProvider theme={theme}>
+      {/* ה-Box הראשי יהיה Flex Container בכיוון עמודה, שידחוף את הפוטר לתחתית */}
+      <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%', bgcolor: 'background.default' }}>
+        <Router>
+          {/* עוטף את ה-Routes ב-Box נפרד עם flexGrow: 1 כדי לדחוף את הפוטר */}
+          <Box sx={{ flexGrow: 1 }}> {/* <-- שינוי: Box חדש עם flexGrow: 1 */}
+            <Routes>
+              <Route
+                path="/login"
+                element={!isAuthenticated ? <LoginPage onLoginSuccess={handleLoginSuccess} /> : <Navigate to="/dashboard" replace />}
+              />
+              <Route
+                path="/signup"
+                element={!isAuthenticated ? <SignUpPage /> : <Navigate to="/dashboard" replace />}
+              />
+              <Route
+                path="/dashboard"
+                element={isAuthenticated ? <DashboardPage currentUser={currentUser} onLogout={handleLogout} /> : <Navigate to="/login" replace />}
+              />
+              <Route
+                path="/"
+                element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />}
+              />
+              <Route path="*" element={
+                isAuthenticated
+                  ? <div style={{textAlign: 'center', marginTop: '2rem'}}><h1>404 - עמוד לא נמצא</h1><p>העמוד שחיפשת אינו קיים. <Link to="/dashboard">חזור לדאשבורד</Link></p></div>
+                  : <Navigate to="/login" replace />
+              } />
+            </Routes>
+          </Box> 
+        </Router>
+      </Box>
+    </ThemeProvider>
   );
 }
 

@@ -31,7 +31,7 @@ const CategoryGrid: React.FC<CategoryGridProps> = ({ onSelectCategory }) => {
       </Typography>
       <Grid container spacing={2} justifyContent="center">
         {categories.map((cat) => (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={cat.name}>
+          <Grid item component="div" xs={12} sm={6} md={4} lg={3} key={cat.name}>
             <ButtonBase
               onClick={() => onSelectCategory(cat.name)}
               sx={{
