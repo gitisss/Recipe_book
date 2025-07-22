@@ -29,6 +29,7 @@ export const generateRecipeSuggestion = async (req: Request, res: Response) => {
         "description": "string",
         "ingredients": [{"name":"string","quantity":"string","unit":"string"}],
         "instructions": ["string"],
+        "imageUrl": "string", // <-- חדש: בקש URL לתמונה
         "prepTime": "string",
         "cookTime": "string",
         "servings": "string",
@@ -38,6 +39,7 @@ export const generateRecipeSuggestion = async (req: Request, res: Response) => {
       }
       CRITICAL: All fields marked as (REQUIRED) and their sub-fields MUST be populated with valid and meaningful content.
       Specifically, 'title' MUST be filled, 'instructions' MUST contain at least one step, and 'ingredients' MUST contain at least one ingredient with a 'name'.
+      For 'imageUrl', provide a placeholder image URL if no specific image is available. Example: "https://via.placeholder.com/150".
       Generate all recipe content (values for fields) in Hebrew.
       IMPORTANT: For 'category' and 'cuisine' fields, use the exact singular Hebrew terms from the following lists:
       Categories: "עיקרית", "קינוח", "ארוחת בוקר", "מרק", "סלט", "מאפה".

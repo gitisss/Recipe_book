@@ -10,23 +10,20 @@ import {
 } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
-// ייבוא הקומפוננטות
 import AppHeader from '../components/AppHeader';
 import AddRecipeModal from '../components/AddRecipeModal';
-import ViewRecipeModal from '../components/ViewRecipeModal'; // ייבוא קומפוננטת הצפייה
+import ViewRecipeModal from '../components/ViewRecipeModal';
 import SearchAndFilterSection from '../components/SearchAndFilterSection';
 import RecipeList from '../components/RecipeList';
 import AppFooter from '../components/AppFooter';
 import type { IFullRecipeData, IRecipe } from '../types/Recipe';
-import apiClient from '../apiClient'; // ייבוא apiClient
+import apiClient from '../apiClient';
 
-// הגדרת מבנה לנתוני משתמש
 interface UserData {
   id: string;
   username: string;
 }
 
-// הגדרת מבנה ל-props
 interface DashboardPageProps {
   currentUser: UserData | null;
   onLogout: () => void;
@@ -38,13 +35,11 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) 
   const [error, setError] = useState<string | null>(null);
   const [openAddRecipeModal, setOpenAddRecipeModal] = useState<boolean>(false);
 
-  // מצבים עבור צפייה ועריכה
   const [openViewRecipeModal, setOpenViewRecipeModal] = useState<boolean>(false);
-  const [selectedRecipe, setSelectedRecipe] = useState<IRecipe | null>(null); // המתכון לצפייה/עריכה
+  const [selectedRecipe, setSelectedRecipe] = useState<IRecipe | null>(null);
   const [openEditRecipeModal, setOpenEditRecipeModal] = useState<boolean>(false);
 
 
-  // פונקציה לשליפת מתכונים מהשרת
   const fetchRecipes = useCallback(async () => {
     setIsLoadingRecipes(true);
     setError(null);
@@ -59,13 +54,12 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) 
     }
   }, []);
 
-  // קריאה לפונקציה בעת טעינת הקומפוננטה
   useEffect(() => {
     fetchRecipes();
   }, [fetchRecipes]);
 
   const handleOpenAddRecipeModal = () => {
-    console.log('Opening Add Recipe Modal'); // לוודא שהפונקציה נקראת
+    console.log('Opening Add Recipe Modal');
     setOpenAddRecipeModal(true);
   };
 
@@ -73,20 +67,18 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) 
     setOpenAddRecipeModal(false);
   };
 
-  // פונקציה לטיפול בהוספת מתכון חדש - תשלח לשרת
   const handleAddNewRecipe = useCallback(async (recipeData: IFullRecipeData) => {
     try {
       await apiClient.post('/recipes', recipeData);
       alert('מתכון נוצר בהצלחה!');
       handleCloseAddRecipeModal();
-      fetchRecipes(); // רענן את רשימת המתכונים לאחר הוספה מוצלחת
+      fetchRecipes();
     } catch (err: any) {
       console.error('Error creating recipe:', err);
       alert(err.response?.data?.message || 'אירעה שגיאה ביצירת המתכון.');
     }
   }, [fetchRecipes]);
 
-  // פונקציה לטיפול בצפייה במתכון
   const handleViewRecipe = useCallback(async (id: string) => {
     try {
       const response = await apiClient.get(`/recipes/${id}`);
@@ -103,7 +95,6 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) 
     setSelectedRecipe(null);
   };
 
-  // פונקציה לטיפול בעריכת מתכון (פתיחת מודאל עם נתונים)
   const handleEditRecipe = useCallback(async (id: string) => {
     try {
       const response = await apiClient.get(`/recipes/${id}`);
@@ -115,14 +106,13 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) 
     }
   }, []);
 
-  // פונקציה לטיפול בעדכון מתכון (שליחת PUT לשרת)
   const handleUpdateRecipe = useCallback(async (id: string, recipeData: IFullRecipeData) => {
     try {
       await apiClient.put(`/recipes/${id}`, recipeData);
       alert('מתכון עודכן בהצלחה!');
-      setOpenEditRecipeModal(false); // סגור את מודאל העריכה
-      setSelectedRecipe(null); // נקה את המתכון שנבחר
-      fetchRecipes(); // רענן את רשימת המתכונים
+      setOpenEditRecipeModal(false);
+      setSelectedRecipe(null);
+      fetchRecipes();
     } catch (err: any) {
       console.error('Error updating recipe:', err);
       alert(err.response?.data?.message || 'אירעה שגיאה בעדכון המתכון.');
@@ -131,7 +121,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) 
 
   const handleCloseEditRecipeModal = () => {
     setOpenEditRecipeModal(false);
-    setSelectedRecipe(null); // נקה את המתכון שנבחר
+    setSelectedRecipe(null);
   };
 
 
@@ -140,7 +130,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) 
       try {
         await apiClient.delete(`/recipes/${id}`);
         alert('מתכון נמחק בהצלחה!');
-        fetchRecipes(); // רענן את רשימת המתכונים לאחר מחיקה מוצלחת
+        fetchRecipes();
       } catch (err: any) {
         console.error('Error deleting recipe:', err);
         alert(err.response?.data?.message || 'אירעה שגיאה במחיקת המתכון.');
@@ -191,36 +181,29 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) 
             onDeleteRecipe={handleDeleteRecipe}
           />
         )}
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4, mb: 2 }}>
-          <Typography color="text.secondary">
-            [Pagination במידת הצורך]
-          </Typography>
-        </Box>
+        {/* הפלייסהולדר לפגינציה הוסר אוטומטית */}
       </Container>
       <AppFooter />
 
-      {/* מודאל הוספת מתכון חדש */}
       <AddRecipeModal
         open={openAddRecipeModal}
         onClose={handleCloseAddRecipeModal}
         onAddRecipe={handleAddNewRecipe}
-        initialRecipeData={null} // ודא שאין נתונים התחלתיים למצב הוספה
-        onEditRecipe={undefined} // ודא ש-onEditRecipe אינו מוגדר למצב הוספה
+        initialRecipeData={null}
+        onEditRecipe={undefined}
       />
 
-      {/* מודאל עריכת מתכון קיים */}
-      {selectedRecipe && ( // ודא שיש מתכון שנבחר לעריכה
+      {selectedRecipe && (
         <AddRecipeModal
           open={openEditRecipeModal}
           onClose={handleCloseEditRecipeModal}
-          onAddRecipe={undefined} // ודא ש-onAddRecipe אינו מוגדר למצב עריכה
+          onAddRecipe={undefined}
           onEditRecipe={handleUpdateRecipe}
-          initialRecipeData={selectedRecipe} // העבר את נתוני המתכון לעריכה
+          initialRecipeData={selectedRecipe}
         />
       )}
 
-      {/* מודאל צפייה במתכון */}
-      {selectedRecipe && ( // ודא שיש מתכון שנבחר לצפייה
+      {selectedRecipe && (
         <ViewRecipeModal
           open={openViewRecipeModal}
           onClose={handleCloseViewRecipeModal}
