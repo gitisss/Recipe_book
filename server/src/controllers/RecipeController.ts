@@ -1,130 +1,117 @@
-// server/src/controllers/RecipeController.ts
 import { Request, Response } from 'express';
-import { Recipe } from '../models/RecipeModel'; // ייבוא בעל שם { Recipe }
-import { User } from '../models/UserModel';     // ייבוא בעל שם { User }
+import { Recipe } from '../models/RecipeModel';
 
-// הרחבת הטיפוס Request של Express כדי לכלול userId
-// חשוב: לוודא שאין רווחים או תווים נסתרים בשורה 'express-serve-static-core'
-declare module 'express-serve-static-core' {
-  interface Request {
-    userId?: string; // ה-userId נוסף על ידי מידלוור האימות
-  }
-}
-
-// יצירת מתכון חדש
 export const createRecipe = async (req: Request, res: Response) => {
   try {
-    if (!req.userId) {
-      return res.status(401).json({ message: 'משתמש לא מאומת. יש להתחבר מחדש.' });
-    }
+    const { title, description, ingredients, instructions, imageUrl, prepTime, cookTime, servings, category, cuisine, dietaryRestrictions } = req.body;
+    const owner = req.userId; // Assuming auth middleware adds userId to req
 
-    const { name, description, instructions, ingredients, imageUrl } = req.body;
+    console.log('Received data for createRecipe:', req.body);
+
+    if (!owner) {
+      return res.status(401).json({ message: 'משתמש לא מאומת.' });
+    }
 
     const newRecipe = new Recipe({
-      name,
+      title,
       description,
-      instructions,
       ingredients,
+      instructions,
+      owner,
       imageUrl,
-      owner: req.userId, // קישור המתכון למשתמש המחובר
+      prepTime,
+      cookTime,
+      servings,
+      category,
+      cuisine,
+      dietaryRestrictions,
     });
 
-    await newRecipe.save();
-    res.status(201).json({ message: 'מתכון נוצר בהצלחה!', recipe: newRecipe });
+    const savedRecipe = await newRecipe.save();
+    res.status(201).json(savedRecipe);
   } catch (error: any) {
     console.error('שגיאה ביצירת מתכון:', error);
-    if (error.name === 'ValidationError') {
-      return res.status(400).json({ message: error.message, errors: error.errors });
-    }
-    res.status(500).json({ message: 'שגיאה פנימית בשרת בעת יצירת מתכון.' });
+    res.status(400).json({ message: 'שגיאה ביצירת מתכון', error: error.message });
   }
 };
 
-// שליפת כל המתכונים של המשתמש המחובר
 export const getRecipes = async (req: Request, res: Response) => {
   try {
-    if (!req.userId) {
+    const owner = req.userId;
+    if (!owner) {
       return res.status(401).json({ message: 'משתמש לא מאומת.' });
     }
-    const recipes = await Recipe.find({ owner: req.userId });
+
+    const recipes = await Recipe.find({ owner });
     res.status(200).json(recipes);
   } catch (error: any) {
     console.error('שגיאה בשליפת מתכונים:', error);
-    res.status(500).json({ message: 'שגיאה פנימית בשרת בעת שליפת מתכונים.' });
+    res.status(500).json({ message: 'שגיאה בשליפת מתכונים', error: error.message });
   }
 };
 
-// שליפת מתכון בודד לפי ID
 export const getRecipeById = async (req: Request, res: Response) => {
   try {
-    if (!req.userId) {
+    const { id } = req.params;
+    const owner = req.userId;
+    if (!owner) {
       return res.status(401).json({ message: 'משתמש לא מאומת.' });
     }
-    const recipe = await Recipe.findOne({ _id: req.params.id, owner: req.userId });
 
+    const recipe = await Recipe.findOne({ _id: id, owner });
     if (!recipe) {
-      return res.status(404).json({ message: 'מתכון לא נמצא או שאין לך הרשאה לגשת אליו.' });
+      return res.status(404).json({ message: 'מתכון לא נמצא.' });
     }
     res.status(200).json(recipe);
   } catch (error: any) {
     console.error('שגיאה בשליפת מתכון לפי ID:', error);
-    if (error.name === 'CastError') { // אם ה-ID לא בפורמט הנכון של ObjectId
-      return res.status(400).json({ message: 'מזהה מתכון לא תקין.' });
-    }
-    res.status(500).json({ message: 'שגיאה פנימית בשרת בעת שליפת מתכון.' });
+    res.status(500).json({ message: 'שגיאה בשליפת מתכון', error: error.message });
   }
 };
 
-// עדכון מתכון קיים
 export const updateRecipe = async (req: Request, res: Response) => {
   try {
-    if (!req.userId) {
+    const { id } = req.params;
+    const { title, description, ingredients, instructions, imageUrl, prepTime, cookTime, servings, category, cuisine, dietaryRestrictions } = req.body;
+    const owner = req.userId;
+
+    if (!owner) {
       return res.status(401).json({ message: 'משתמש לא מאומת.' });
     }
-    const { id } = req.params;
-    const { name, description, instructions, ingredients, imageUrl } = req.body;
 
     const updatedRecipe = await Recipe.findOneAndUpdate(
-      { _id: id, owner: req.userId }, // וודא שרק הבעלים יכול לעדכן
-      { name, description, instructions, ingredients, imageUrl },
-      { new: true, runValidators: true } // new: true מחזיר את המסמך המעודכן, runValidators: true מפעיל ולידציה
+      { _id: id, owner },
+      { title, description, ingredients, instructions, imageUrl, prepTime, cookTime, servings, category, cuisine, dietaryRestrictions },
+      { new: true, runValidators: true } // Return the updated document and run schema validators
     );
 
     if (!updatedRecipe) {
-      return res.status(404).json({ message: 'מתכון לא נמצא או שאין לך הרשאה לעדכן אותו.' });
+      return res.status(404).json({ message: 'מתכון לא נמצא או שאין לך הרשאה לערוך אותו.' });
     }
-    res.status(200).json({ message: 'מתכון עודכן בהצלחה!', recipe: updatedRecipe });
+    res.status(200).json(updatedRecipe);
   } catch (error: any) {
     console.error('שגיאה בעדכון מתכון:', error);
-    if (error.name === 'ValidationError') {
-      return res.status(400).json({ message: error.message, errors: error.errors });
-    }
-    if (error.name === 'CastError') {
-      return res.status(400).json({ message: 'מזהה מתכון לא תקין.' });
-    }
-    res.status(500).json({ message: 'שגיאה פנימית בשרת בעת עדכון מתכון.' });
+    res.status(400).json({ message: 'שגיאה בעדכון מתכון', error: error.message });
   }
 };
 
-// מחיקת מתכון
 export const deleteRecipe = async (req: Request, res: Response) => {
   try {
-    if (!req.userId) {
+    const { id } = req.params;
+    const owner = req.userId;
+
+    if (!owner) {
       return res.status(401).json({ message: 'משתמש לא מאומת.' });
     }
-    const { id } = req.params;
 
-    const deletedRecipe = await Recipe.findOneAndDelete({ _id: id, owner: req.userId }); // וודא שרק הבעלים יכול למחוק
+    const deletedRecipe = await Recipe.findOneAndDelete({ _id: id, owner });
 
     if (!deletedRecipe) {
       return res.status(404).json({ message: 'מתכון לא נמצא או שאין לך הרשאה למחוק אותו.' });
     }
-    res.status(200).json({ message: 'מתכון נמחק בהצלחה!' });
+    res.status(200).json({ message: 'מתכון נמחק בהצלחה.' });
   } catch (error: any) {
     console.error('שגיאה במחיקת מתכון:', error);
-    if (error.name === 'CastError') {
-      return res.status(400).json({ message: 'מזהה מתכון לא תקין.' });
-    }
-    res.status(500).json({ message: 'שגיאה פנימית בשרת בעת מחיקת מתכון.' });
+    res.status(500).json({ message: 'שגיאה במחיקת מתכון', error: error.message });
   }
 };

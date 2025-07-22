@@ -31,7 +31,6 @@ const RecipeList: React.FC<RecipeListProps> = ({
   onEditRecipe,
   onDeleteRecipe
 }) => {
-  // ... שאר הקוד של הקומפוננטה נשאר זהה (הוא כבר השתמש ב-recipe.id, שישתנה ל-recipe._id)
   if (isLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}>
@@ -58,10 +57,10 @@ const RecipeList: React.FC<RecipeListProps> = ({
     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, justifyContent: 'center' }}>
       {recipes.map(recipe => (
         <RecipeCard
-          key={recipe._id} // השתמש ב-_id
-          id={recipe._id} // השתמש ב-_id
-          name={recipe.name}
-          description={recipe.description || ''} // וודא תיאור ריק אם אין
+          key={recipe._id}
+          id={recipe._id}
+          title={recipe.title} // <-- שונה מ-recipe.name ל-recipe.title
+          description={recipe.description || ''}
           imageUrl={recipe.imageUrl}
           onView={onViewRecipe}
           onEdit={onEditRecipe}

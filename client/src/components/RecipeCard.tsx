@@ -16,7 +16,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 // הגדרת הממשק ל-props של קומפוננטת RecipeCard
 interface RecipeCardProps {
   id: string;
-  name: string;
+  title: string; // <-- שונה מ-name ל-title
   description: string;
   imageUrl?: string;
   onView: (id: string) => void;
@@ -26,7 +26,7 @@ interface RecipeCardProps {
 
 const RecipeCard: React.FC<RecipeCardProps> = ({
   id,
-  name,
+  title, // <-- שונה מ-name ל-title
   description,
   imageUrl,
   onView,
@@ -43,7 +43,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
             width: '100%',
             objectFit: 'cover',
           }}
-          alt={`תמונה של ${name}`}
+          alt={`תמונה של ${title}`} // <-- שונה מ-name ל-title
           src={imageUrl}
         />
       ) : (
@@ -63,7 +63,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
       )}
       <CardContent sx={{ flexGrow: 1 }}>
         <Typography gutterBottom variant="h6" component="div">
-          {name}
+          {title} {/* <-- שונה מ-name ל-title */}
         </Typography>
         <Typography variant="body2" color="text.secondary">
           {description}

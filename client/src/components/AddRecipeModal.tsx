@@ -7,10 +7,6 @@ import {
   TextField,
   Button,
   IconButton,
-  MenuItem,
-  Select,
-  FormControl,
-  InputLabel,
   CircularProgress
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
@@ -235,7 +231,7 @@ const AddRecipeModal: React.FC<AddRecipeModalProps> = ({
       return;
     }
 
-    console.log('Submitting formData:', formData);
+    console.log('Submitting formData from AddRecipeModal:', formData);
 
     try {
       if (initialRecipeData) {
@@ -244,6 +240,7 @@ const AddRecipeModal: React.FC<AddRecipeModalProps> = ({
         }
       } else {
         if (onAddRecipe) {
+          console.log('Calling onAddRecipe with:', formData);
           await onAddRecipe(formData);
         }
       }
