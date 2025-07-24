@@ -7,10 +7,11 @@ import {
   Divider,
   Button,
   CircularProgress,
-  TextField
+  TextField,
+  Tabs, // ייבוא Tabs
+  Tab // ייבוא Tab
 } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SearchIcon from '@mui/icons-material/Search';
 
 import AppHeader from '../components/AppHeader';
@@ -42,6 +43,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) 
   const [openEditRecipeModal, setOpenEditRecipeModal] = useState<boolean>(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [activeTab, setActiveTab] = useState<'recipes' | 'categories'>('recipes'); // מצב חדש ללשוניות
 
   const fetchRecipes = useCallback(async (category?: string, query?: string) => {
     setIsLoadingRecipes(true);
@@ -154,22 +156,19 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) 
   const handleSelectCategory = useCallback((category: string) => {
     setSelectedCategory(category);
     setSearchQuery(''); // איפוס חיפוש בבחירת קטגוריה חדשה
-  }, []);
-
-  const handleBackToCategories = useCallback(() => {
-    setSelectedCategory(null);
-    // אין צורך לאפס recipes כאן, כי fetchRecipes יופעל מחדש עם selectedCategory=null ו-searchQuery=''
-    setSearchQuery(''); // איפוס חיפוש בחזרה לקטגוריות
+    setActiveTab('recipes'); // מעבר אוטומטי ללשונית המתכונים לאחר בחירת קטגוריה
   }, []);
 
   const handleSearchChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
     setSelectedCategory(null); // איפוס קטגוריה בחיפוש
+    setActiveTab('recipes'); // מעבר אוטומטי ללשונית המתכונים בזמן חיפוש
   }, []);
 
-  // קובע אם צריך להציג את רשת הקטגוריות או את רשימת המתכונים
-  const showCategoryGrid = !selectedCategory && !searchQuery && recipes.length === 0 && !isLoadingRecipes && !error;
-  const showRecipeList = (selectedCategory || searchQuery || (recipes.length > 0 && !isLoadingRecipes)) && !error;
+  // הלוגיקה של showCategoryGrid ו-showRecipeList כבר לא משמשת את הרינדור הראשי,
+  // אך נשאירה לצורך בהירות אם תרצה להשתמש בה עבור תנאים פנימיים בתוך הלשוניות.
+  const showCategoryGridLogic = !selectedCategory && !searchQuery && recipes.length === 0 && !isLoadingRecipes && !error;
+  const showRecipeListLogic = (selectedCategory || searchQuery || recipes.length > 0) && !isLoadingRecipes && !error;
 
 
   return (
@@ -192,69 +191,71 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) 
         </Box>
         <Divider sx={{ my: 3 }} />
 
-        {/* שדה החיפוש */}
-        <Box sx={{ mb: 3 }}>
-          <TextField
-            label="חפש מתכונים..."
-            variant="outlined"
-            fullWidth
-            size="small"
-            value={searchQuery}
-            onChange={handleSearchChange}
-            InputProps={{
-              startAdornment: <SearchIcon sx={{ color: 'action.active', mr: 1 }} />,
-            }}
-          />
-        </Box>
+        {/* לשוניות ניווט */}
+        <Tabs value={activeTab} onChange={(event, newValue) => setActiveTab(newValue)} centered sx={{ mb: 3 }}>
+          <Tab label="מתכונים" value="recipes" />
+          <Tab label="קטגוריות" value="categories" />
+        </Tabs>
 
-        {selectedCategory && (
-          <Button
-            variant="outlined"
-            startIcon={<ArrowBackIcon />}
-            onClick={handleBackToCategories}
-            sx={{ mb: 2 }}
-          >
-            חזור לקטגוריות
-          </Button>
-        )}
-        
-        {/* לוגיקה חדשה להצגת קומפוננטות */}
-        {isLoadingRecipes ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}>
-            <CircularProgress />
-            <Typography sx={{ ml: 2 }}>טוען מתכונים...</Typography>
-          </Box>
-        ) : error ? (
-          <Typography color="error" sx={{ textAlign: 'center', my: 3 }}>
-            שגיאה: {error}
-          </Typography>
-        ) : showCategoryGrid ? (
-          <CategoryGrid onSelectCategory={handleSelectCategory} />
-        ) : showRecipeList ? (
-          <>
+        {/* תוכן הלשונית הפעילה */}
+        {activeTab === 'recipes' && (
+          <Box>
+            {/* שדה החיפוש */}
+            <Box sx={{ mb: 3 }}>
+              <TextField
+                label="חפש מתכונים..."
+                variant="outlined"
+                fullWidth
+                size="small"
+                value={searchQuery}
+                onChange={handleSearchChange}
+                InputProps={{
+                  startAdornment: <SearchIcon sx={{ color: 'action.active', mr: 1 }} />,
+                }}
+              />
+            </Box>
+
+            {/* כותרת קטגוריה אם נבחרה */}
             {selectedCategory && (
                 <Typography variant="h5" component="h2" gutterBottom sx={{ mb: 2 }}>
                     מתכונים בקטגוריה: {selectedCategory}
                 </Typography>
             )}
-            {searchQuery && recipes.length === 0 && (
-                <Typography variant="body1" color="text.secondary" sx={{ textAlign: 'center', mt: 3 }}>
-                    לא נמצאו מתכונים עבור "{searchQuery}".
-                </Typography>
+
+            {isLoadingRecipes ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}>
+                <CircularProgress />
+                <Typography sx={{ ml: 2 }}>טוען מתכונים...</Typography>
+              </Box>
+            ) : error ? (
+              <Typography color="error" sx={{ textAlign: 'center', my: 3 }}>
+                שגיאה: {error}
+              </Typography>
+            ) : recipes.length > 0 ? (
+              <RecipeList
+                recipes={recipes}
+                isLoading={isLoadingRecipes}
+                onOpenAddRecipeModal={handleOpenAddRecipeModal}
+                onViewRecipe={handleViewRecipe}
+                onEditRecipe={handleEditRecipe}
+                onDeleteRecipe={handleDeleteRecipe}
+              />
+            ) : (searchQuery || selectedCategory) ? (
+              <Typography variant="body1" color="text.secondary" sx={{ textAlign: 'center', mt: 3 }}>
+                  לא נמצאו מתכונים עבור החיפוש/קטגוריה הנוכחיים.
+              </Typography>
+            ) : (
+              <Typography variant="body1" color="text.secondary" sx={{ textAlign: 'center', mt: 3 }}>
+                 עדיין לא הוספת מתכונים. התחל על ידי הוספת מתכון חדש!
+              </Typography>
             )}
-            <RecipeList
-              recipes={recipes}
-              isLoading={isLoadingRecipes}
-              onOpenAddRecipeModal={handleOpenAddRecipeModal}
-              onViewRecipe={handleViewRecipe}
-              onEditRecipe={handleEditRecipe}
-              onDeleteRecipe={handleDeleteRecipe}
-            />
-          </>
-        ) : (
-          <Typography variant="body1" color="text.secondary" sx={{ textAlign: 'center', mt: 3 }}>
-             עדיין לא הוספת מתכונים. התחל על ידי הוספת מתכון חדש!
-          </Typography>
+          </Box>
+        )}
+
+        {activeTab === 'categories' && (
+          <Box>
+            <CategoryGrid onSelectCategory={handleSelectCategory} />
+          </Box>
         )}
       </Container>
       <AppFooter />
