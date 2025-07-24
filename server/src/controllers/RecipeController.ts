@@ -1,3 +1,4 @@
+// server/src/controllers/RecipeController.ts
 import { Request, Response } from 'express';
 import { Recipe } from '../models/RecipeModel';
 
@@ -40,18 +41,30 @@ export const getRecipes = async (req: Request, res: Response) => {
       return res.status(401).json({ message: 'משתמש לא מאומת.' });
     }
 
-    const { category } = req.query;
+    const { category, search } = req.query;
 
     const filter: any = { owner };
+
     if (category) {
       if (category === 'ללא קטגוריה') {
-        filter.category = { $in: [null, '', undefined] }; // חפש מתכונים ללא קטגוריה
+        filter.category = { $in: [null, '', undefined] };
       } else {
         filter.category = category;
       }
     }
 
+    if (search) {
+      const searchTerm = search as string; 
+      filter.$or = [
+        { title: { $regex: searchTerm, $options: 'i' } }, 
+        { description: { $regex: searchTerm, $options: 'i' } },
+        { 'ingredients.name': { $regex: searchTerm, $options: 'i' } },
+      ];
+    }
+
+    console.log('Fetching recipes with filter:', JSON.stringify(filter, null, 2));
     const recipes = await Recipe.find(filter);
+    console.log('Found recipes:', recipes.length);
     res.status(200).json(recipes);
   } catch (error: any) {
     console.error('שגיאה בשליפת מתכונים:', error);
@@ -99,7 +112,7 @@ export const updateRecipe = async (req: Request, res: Response) => {
         prepTime, 
         cookTime, 
         servings, 
-        category: category === 'ללא קטגוריה' ? '' : category, // שמור ריק אם נבחר "ללא קטגוריה"
+        category: category === 'ללא קטגוריה' ? '' : category, 
         cuisine, 
         dietaryRestrictions 
       },
