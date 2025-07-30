@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const API_KEY ="AIzaSyC1xW0G3ryDJKdtUihZ5vo9HUPguonnv2k"
+// process.env.GEMINI_API_KEY; להתייעץ עם המורה למה לא עובד הENV
 
 if (!API_KEY) {
   console.error('Error: GEMINI_API_KEY is not set in environment variables. Please set it in your .env file.');

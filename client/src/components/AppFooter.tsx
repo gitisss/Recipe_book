@@ -8,7 +8,7 @@ const AppFooter: React.FC = () => {
       <Container maxWidth="lg">
         <Typography variant="body2" align="center">
           {'זכויות יוצרים © '}
-          <Link color="inherit" href="https://yourwebsite.com/">
+          <Link color="inherit" href="https://github.com/gitisss/Recipe_book">
             ספר המתכונים שלי
           </Link>{' '}
           {new Date().getFullYear()}

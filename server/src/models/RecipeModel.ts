@@ -1,35 +1,33 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-// הגדרת הממשק עבור רכיב
 export interface IIngredient {
   name: string;
-  quantity: string; // שונה ל-string
+  quantity: string; 
   unit: string;
-  isDivisible?: boolean; // נשאר אותו דבר
+  isDivisible?: boolean; 
 }
 
-// הגדרת הממשק עבור המתכון
 export interface IRecipe extends Document {
-  title: string; // שם השדה שונה מ-name ל-title
+  title: string; 
   description?: string;
-  instructions: string[]; // שונה ל-string[]
+  instructions: string[]; 
   ingredients: IIngredient[];
   owner: mongoose.Schema.Types.ObjectId;
   imageUrl?: string;
-  prepTime?: string; // חדש
-  cookTime?: string; // חדש
-  servings?: string; // חדש
-  category?: string; // חדש
-  cuisine?: string; // חדש
-  dietaryRestrictions?: string[]; // חדש
+  prepTime?: string;
+  cookTime?: string;
+  servings?: string;
+  category?: string;
+  cuisine?: string;
+  dietaryRestrictions?: string[];
   createdAt: Date;
   updatedAt: Date;
 }
 
 const IngredientSchema: Schema = new Schema(
   {
-    name: { type: String, required: true }, // הוספתי required: true
-    quantity: { type: String }, // שונה ל-String
+    name: { type: String, required: true }, 
+    quantity: { type: String }, 
     unit: { type: String },
     isDivisible: { type: Boolean, default: true },
   },
@@ -38,9 +36,9 @@ const IngredientSchema: Schema = new Schema(
 
 const RecipeSchema: Schema = new Schema(
   {
-    title: { type: String, required: true }, // שם השדה שונה מ-name ל-title
+    title: { type: String, required: true }, 
     description: { type: String },
-    instructions: { type: [String], required: true }, // שונה ל-[String]
+    instructions: { type: [String], required: true }, 
     ingredients: [IngredientSchema],
     owner: {
       type: Schema.Types.ObjectId,
@@ -48,12 +46,12 @@ const RecipeSchema: Schema = new Schema(
       required: true,
     },
     imageUrl: { type: String },
-    prepTime: { type: String }, // חדש
-    cookTime: { type: String },  // חדש
-    servings: { type: String },  // חדש
-    category: { type: String },  // חדש
-    cuisine: { type: String },   // חדש
-    dietaryRestrictions: { type: [String] }, // חדש
+    prepTime: { type: String }, 
+    cookTime: { type: String },  
+    servings: { type: String },  
+    category: { type: String },  
+    cuisine: { type: String },   
+    dietaryRestrictions: { type: [String] }
   },
   { timestamps: true }
 );

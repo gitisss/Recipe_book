@@ -1,4 +1,3 @@
-// client/src/components/ViewRecipeModal.tsx
 import React, { useState } from "react";
 import {
   Dialog,
@@ -27,42 +26,49 @@ const ViewRecipeModal: React.FC<ViewRecipeModalProps> = ({
 }) => {
   const [multiplier, setMultiplier] = useState<number>(1);
   const [inputValue, setInputValue] = useState<string>("1");
+  const [showWarning, setShowWarning] = useState<boolean>(false);
 
   if (!recipe) {
-    return null; // או רנדר מצב טעינה/שגיאה
+    return null;
   }
+
   const handleMultiplierChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const value = event.target.value;
     setInputValue(value);
 
+    // טיפול במקרה של קלט ריק
+    if (value === "") {
+      setMultiplier(1);
+      setShowWarning(false);
+      return;
+    }
+
     const parsed = parseFloat(value);
+
     if (!isNaN(parsed) && parsed > 0) {
       setMultiplier(parsed);
+      // בדיקה מדויקת יותר אם המספר הוא לא שלם
+      setShowWarning(!Number.isInteger(parsed));
+    } else {
+      setMultiplier(1);
+      setShowWarning(false);
     }
   };
 
-  // const handleMultiplierChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   const value = parseFloat(event.target.value);
-  //   if (!isNaN(value) && value > 0) {
-  //     setMultiplier(value);
-  //   } else {
-  //     setMultiplier(1); // ברירת מחדל אם לא תקין
-  //   }
-  // };
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
       <DialogTitle sx={{ textAlign: "center", pb: 1 }}>
-        פרטי מתכון: {recipe.name}
+        פרטי מתכון: {recipe.title}
       </DialogTitle>
       <DialogContent dividers>
         {recipe.imageUrl && (
           <Box sx={{ mb: 2, textAlign: "center" }}>
             <img
               src={recipe.imageUrl}
-              alt={recipe.name}
+              alt={recipe.title}
               style={{
                 maxWidth: "100%",
                 maxHeight: "300px",
@@ -98,42 +104,32 @@ const ViewRecipeModal: React.FC<ViewRecipeModalProps> = ({
             inputProps={{ min: 0.1, step: 0.1 }}
             sx={{ mb: 2 }}
           />
-
+          {showWarning && (
+            <Typography color="error" variant="body2" sx={{ mt: 1 }}>
+              שימו לב: בהכפלה במספר שאינו שלם ייתכנו מרכיבים שאינם ניתנים לחלוקה בקלות (כגון חצי ביצה).
+            </Typography>
+          )}
           <Typography variant="h6" gutterBottom>
             רכיבים
           </Typography>
           {recipe.ingredients && recipe.ingredients.length > 0 ? (
             <ul>
-              {/* {recipe.ingredients.map(
+              {recipe.ingredients.map(
                 (ingredient: IIngredient, index: number) => (
                   <li key={index}>
                     <Typography variant="body1">
                       {ingredient.name} -{" "}
-                      {(ingredient.quantity * multiplier).toFixed(2)}{" "}
+                      {
+                        // הפונקציה toFixed(2) משמשת כדי לוודא שמוצגים שני מקומות אחרי הנקודה העשרונית
+                        (ingredient.isDivisible !== false && !isNaN(parseFloat(ingredient.quantity))
+                          ? (parseFloat(ingredient.quantity) * multiplier)
+                          : ingredient.quantity
+                        )
+                      }{" "}
                       {ingredient.unit}
                     </Typography>
                   </li>
                 )
-              )} */}
-              {recipe.ingredients && recipe.ingredients.length > 0 ? (
-                <ul>
-                  {recipe.ingredients.map(
-                    (ingredient: IIngredient, index: number) => (
-                      <li key={index}>
-                        <Typography variant="body1">
-                          {ingredient.name} -{" "}
-                          {(ingredient.isDivisible !== false
-                            ? ingredient.quantity * multiplier
-                            : ingredient.quantity
-                          ).toFixed(2)}{" "}
-                          {ingredient.unit}
-                        </Typography>
-                      </li>
-                    )
-                  )}
-                </ul>
-              ) : (
-                <Typography variant="body1">אין רכיבים זמינים.</Typography>
               )}
             </ul>
           ) : (
