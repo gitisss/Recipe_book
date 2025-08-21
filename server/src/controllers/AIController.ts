@@ -2,16 +2,21 @@
 import { Request, Response } from 'express';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const API_KEY ="AIzaSyC1xW0G3ryDJKdtUihZ5vo9HUPguonnv2k"
-// process.env.GEMINI_API_KEY; להתייעץ עם המורה למה לא עובד הENV
+let genAI: GoogleGenerativeAI;
 
-if (!API_KEY) {
-  console.error('Error: GEMINI_API_KEY is not set in environment variables. Please set it in your .env file.');
-}
-
-const genAI = new GoogleGenerativeAI(API_KEY as string);
 export const generateRecipeSuggestion = async (req: Request, res: Response) => {
   try {
+    const API_KEY = process.env.GEMINI_API_KEY; 
+
+    if (!API_KEY) {
+      console.error('Error: GEMINI_API_KEY is not set in environment variables. Please set it in your .env file.');
+      return res.status(500).json({ message: 'שגיאה במפתח ה-API של גיני. וודא שהוא מוגדר נכון.' });
+    }
+    
+    if (!genAI) {
+      genAI = new GoogleGenerativeAI(API_KEY as string);
+    }
+    
     const { ingredients, diet, cuisine, mealType, mood } = req.body;
 
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });

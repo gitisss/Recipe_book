@@ -8,8 +8,8 @@ import {
   Button,
   CircularProgress,
   TextField,
-  Tabs, // ייבוא Tabs
-  Tab // ייבוא Tab
+  Tabs,
+  Tab
 } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import SearchIcon from '@mui/icons-material/Search';
@@ -43,7 +43,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) 
   const [openEditRecipeModal, setOpenEditRecipeModal] = useState<boolean>(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [activeTab, setActiveTab] = useState<'recipes' | 'categories'>('recipes'); // מצב חדש ללשוניות
+  const [activeTab, setActiveTab] = useState<'recipes' | 'categories'>('recipes');
 
   const fetchRecipes = useCallback(async (category?: string, query?: string) => {
     setIsLoadingRecipes(true);
@@ -165,10 +165,6 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) 
     setActiveTab('recipes'); // מעבר אוטומטי ללשונית המתכונים בזמן חיפוש
   }, []);
 
-  // הלוגיקה של showCategoryGrid ו-showRecipeList כבר לא משמשת את הרינדור הראשי,
-  // אך נשאירה לצורך בהירות אם תרצה להשתמש בה עבור תנאים פנימיים בתוך הלשוניות.
-  const showCategoryGridLogic = !selectedCategory && !searchQuery && recipes.length === 0 && !isLoadingRecipes && !error;
-  const showRecipeListLogic = (selectedCategory || searchQuery || recipes.length > 0) && !isLoadingRecipes && !error;
 
 
   return (
