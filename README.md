@@ -35,22 +35,3 @@
 ### ✨ תכונות מתקדמות
 -   סריקת מסמכים (OCR + AI Structuring) להוספת מתכונים מתמונה (Backend + Frontend).
 
-## 💡 פרטים חשובים לזכור:
-
-* **הפעלה מקומית:**
-    * **Backend:** נווטו לתיקיית `server/` והריצו `npm install` ואז `npm run dev`.
-    * **Frontend:** נווטו לתיקיית `client/` והריצו `npm install` ואז `npm run dev`.
-* **פריסת Backend (Render.com):**
-    * השרת פרוס ב-Render.com.
-    * **URL נוכחי של השרת:** `https://recipe-book-oxv7.onrender.com` (זהו ה-URL שאליו ה-Frontend צריך לשלוח בקשות).
-    * **פקודות בניה/הפעלה ב-Render:** `Build Command: npm run build`, `Start Command: npm start`.
-    * **Root Directory ב-Render:** `./server`.
-* **פריסת Frontend (מומלץ Netlify):**
-    * יש להריץ `npm run build` בתיקיית `client/` כדי ליצור את תיקיית ה-`dist` (הקבצים הסטטיים לפריסה).
-    * ניתן לחבר את הריפו ל-Netlify (או לגרור את תיקיית ה-`dist` באופן ידני).
-* **משתני סביבה (Environment Variables) ב-Render (עבור ה-Backend):**
-    * חובה להגדיר את המשתנים הבאים ב"Environment Variables" של שירות ה-Web Service ב-Render:
-        * `MONGO_URI`: כתובת החיבור המלאה ל-MongoDB Atlas.
-        * `JWT_SECRET`: מחרוזת סודית חזקה המשמשת לחתימת טוקני JWT.
-        * `CLIENT_ORIGIN`: **חשוב!** כרגע הוא `http://localhost:5173`. **לאחר שה-Frontend יעלה לנטליפיי ויקבל URL ציבורי, יש לעדכן את הערך של `CLIENT_ORIGIN` ב-Render ל-URL המלא של ה-Frontend המאורח.** זה קריטי לאבטחת CORS בייצור.
-* **אינטגרציית Git ב-Render:** Render עוקב אוטומטית אחרי פושים לענף הראשי של הריפוזיטורי הציבורי שלכם (על ידי polling) ומפעיל פריסות מחדש.
