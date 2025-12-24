@@ -6,7 +6,8 @@ import {
   TextField,
   Chip,
   Button,
-  Typography
+  Typography,
+  InputAdornment
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import FilterListIcon from '@mui/icons-material/FilterList';
@@ -20,8 +21,14 @@ const SearchAndFilterSection: React.FC = () => {
           label="חפש מתכונים..."
           variant="outlined"
           size="small"
-          InputProps={{
-            startAdornment: <SearchIcon sx={{ color: 'action.active', mr: 1 }} />,
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon sx={{ color: 'action.active' }} />
+                </InputAdornment>
+              ),
+            },
           }}
           sx={{ flexGrow: 1, minWidth: '200px' }}
         />

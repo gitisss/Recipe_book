@@ -1,7 +1,10 @@
 // client/src/components/AppHeader.tsx
 import React from 'react';
-import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, Box, IconButton } from '@mui/material';
 import { Link } from 'react-router-dom';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import { useThemeMode } from '../contexts/ThemeContext';
 
 interface AppHeaderProps {
   currentUser: { id: string; username: string } | null;
@@ -9,6 +12,8 @@ interface AppHeaderProps {
 }
 
 const AppHeader: React.FC<AppHeaderProps> = ({ currentUser, onLogout }) => {
+  const { mode, toggleTheme } = useThemeMode();
+
   return (
     <AppBar position="static">
       <Toolbar>
@@ -17,25 +22,30 @@ const AppHeader: React.FC<AppHeaderProps> = ({ currentUser, onLogout }) => {
             ספר המתכונים שלי
           </Link>
         </Typography>
-        {currentUser ? (
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Typography variant="subtitle1" sx={{ mr: 2 }}>
-              שלום, {currentUser.username}
-            </Typography>
-            <Button color="inherit" onClick={onLogout}>
-              התנתק
-            </Button>
-          </Box>
-        ) : (
-          <Box>
-            <Button color="inherit" component={Link} to="/login">
-              התחבר
-            </Button>
-            <Button color="inherit" component={Link} to="/signup">
-              הירשם
-            </Button>
-          </Box>
-        )}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <IconButton color="inherit" onClick={toggleTheme} aria-label="החלף מצב תצוגה">
+            {mode === 'light' ? <DarkModeIcon /> : <LightModeIcon />}
+          </IconButton>
+          {currentUser ? (
+            <>
+              <Typography variant="subtitle1" sx={{ mr: 2 }}>
+                שלום, {currentUser.username}
+              </Typography>
+              <Button color="inherit" onClick={onLogout}>
+                התנתק
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button color="inherit" component={Link} to="/login">
+                התחבר
+              </Button>
+              <Button color="inherit" component={Link} to="/signup">
+                הירשם
+              </Button>
+            </>
+          )}
+        </Box>
       </Toolbar>
     </AppBar>
   );

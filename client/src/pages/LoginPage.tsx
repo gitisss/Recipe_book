@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import './FormStyles.css'; // ודא שקובץ ה-CSS קיים בנתיב זה
-import apiClient from '../apiClient'; // ייבוא apiClient
+import { Box, Paper, TextField, Button, Typography, Alert } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import apiClient from '../apiClient';
 
 // הגדרת מבנה לנתוני משתמש, כדי שהטיפוס יהיה ברור יותר
 interface UserData {
@@ -12,8 +13,56 @@ interface UserData {
 
 // הגדרת מבנה ל-props שהקומפוננטה מקבלת
 interface LoginPageProps {
-  onLoginSuccess: (token: string, userData: UserData) => void; // ודא ש-userData היא מהטיפוס הנכון
+  onLoginSuccess: (token: string, userData: UserData) => void;
 }
+
+const StyledFormContainer = styled(Paper)(({ theme }) => ({
+  maxWidth: 400,
+  margin: '2rem auto',
+  padding: '2rem',
+  borderRadius: theme.shape.borderRadius,
+  backgroundColor: theme.palette.background.paper,
+  textAlign: 'center',
+}));
+
+const StyledForm = styled('form')(({ theme }) => ({
+  '& .form-group': {
+    marginBottom: '1rem',
+    textAlign: 'right',
+  },
+  '& label': {
+    display: 'block',
+    marginBottom: '0.5rem',
+    fontWeight: 'bold',
+    color: theme.palette.text.primary,
+  },
+}));
+
+const StyledFormControl = styled(TextField)(() => ({
+  width: '100%',
+  textAlign: 'right',
+  '& .MuiInputBase-input': {
+    textAlign: 'right',
+  },
+}));
+
+const StyledSubmitButton = styled(Button)(() => ({
+  width: '100%',
+  padding: '0.75rem',
+  marginTop: '1rem',
+}));
+
+const StyledFormLink = styled(Typography)(({ theme }) => ({
+  marginTop: '1.5rem',
+  fontSize: '0.9rem',
+  '& a': {
+    color: theme.palette.primary.main,
+    textDecoration: 'none',
+    '&:hover': {
+      textDecoration: 'underline',
+    },
+  },
+}));
 
 const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
   const [username, setUsername] = useState('');
@@ -67,42 +116,58 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
     }
   };
 
+  const isError = message.includes('שגיא') || message.includes('נכשלה');
+
   return (
-    <div className="form-container">
-      <h2>התחברות</h2>
-      <form onSubmit={handleSubmit} className="auth-form">
-        <div className="form-group">
-          <label htmlFor="username">שם משתמש:</label>
-          <input
-            type="text"
-            id="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-            className="form-control"
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="password">סיסמה:</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="form-control"
-          />
-        </div>
-        <button type="submit" disabled={isLoading} className="submit-button">
-          {isLoading ? 'מתחבר...' : 'התחבר'}
-        </button>
-      </form>
-      {/* הצגת הודעות למשתמש */}
-      {message && <p className={`message ${message.includes('שגיא') || message.includes('נכשלה') ? 'error-message' : 'success-message'}`}>{message}</p>}
-      <p className="form-link">
-        אין לך חשבון? <Link to="/signup">הירשם כאן</Link>
-      </p>
-    </div>
+    <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', bgcolor: 'background.default' }}>
+      <StyledFormContainer elevation={3}>
+        <Typography variant="h4" component="h2" gutterBottom>
+          התחברות
+        </Typography>
+        <StyledForm onSubmit={handleSubmit}>
+          <Box className="form-group">
+            <StyledFormControl
+              label="שם משתמש"
+              id="username"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              fullWidth
+              margin="normal"
+            />
+          </Box>
+          <Box className="form-group">
+            <StyledFormControl
+              label="סיסמה"
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              fullWidth
+              margin="normal"
+            />
+          </Box>
+          <StyledSubmitButton
+            type="submit"
+            variant="contained"
+            color="primary"
+            disabled={isLoading}
+          >
+            {isLoading ? 'מתחבר...' : 'התחבר'}
+          </StyledSubmitButton>
+        </StyledForm>
+        {message && (
+          <Alert severity={isError ? 'error' : 'success'} sx={{ mt: 2 }}>
+            {message}
+          </Alert>
+        )}
+        <StyledFormLink>
+          אין לך חשבון? <Link to="/signup">הירשם כאן</Link>
+        </StyledFormLink>
+      </StyledFormContainer>
+    </Box>
   );
 };
 
