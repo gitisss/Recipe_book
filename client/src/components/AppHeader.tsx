@@ -114,7 +114,6 @@ const AppHeader: React.FC<AppHeaderProps> = ({ currentUser, onLogout }) => {
                   onClick={onLogout}
                   size="small"
                   startIcon={<LogoutIcon fontSize="small" />}
-                  // endIcon={<LoginIcon fontSize="small" />}
                   sx={{ textTransform: 'none', fontSize: '0.875rem', py: 0.5 }}
                 >
                   התנתק
