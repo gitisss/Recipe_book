@@ -18,7 +18,7 @@ interface AiRecipeRequestSectionProps {
   aiError: string | null;
 }
 
-// רשימה מורחבת ומשעשעת של הודעות המתנה
+
 const loadingMessages = [
   "מתחמם במטבח...",
   "מחפש מצרכים במזווה הווירטואלי...",
@@ -53,7 +53,6 @@ const AiRecipeRequestSection: React.FC<AiRecipeRequestSectionProps> = ({
     let interval: NodeJS.Timeout;
     
     if (isGeneratingAiRecipe) {
-      // הגדלנו את הזמן ל-4.5 שניות בין משפט למשפט
       interval = setInterval(() => {
         setMessageIndex((prevIndex) => (prevIndex + 1) % loadingMessages.length);
       }, 4500); 

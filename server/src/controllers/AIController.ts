@@ -1,84 +1,81 @@
-// server/src/controllers/AiController.ts
-import { Request, Response } from 'express';
-// import { GoogleGenerativeAI } from '@google/generative-ai';
-
-// let genAI: GoogleGenerativeAI;
+import { Request, Response } from "express";
 
 export const generateRecipeSuggestion = async (req: Request, res: Response) => {
-  // try {
-  //   const API_KEY = process.env.GEMINI_API_KEY; 
+  try {
+    const { ingredients, diet, cuisine, mealType, mood } = req.body;
 
-  //   if (!API_KEY) {
-  //     console.error('Error: GEMINI_API_KEY is not set in environment variables. Please set it in your .env file.');
-  //     return res.status(500).json({ message: 'שגיאה במפתח ה-API של גיני. וודא שהוא מוגדר נכון.' });
-  //   }
-    
-  //   if (!genAI) {
-  //     genAI = new GoogleGenerativeAI(API_KEY as string);
-  //   }
-    
-  //   const { ingredients, diet, cuisine, mealType, mood } = req.body;
+    const prompt = `
+      You are a professional Michelin-star chef generator.
+      Return a complete, realistic and culinary-sound recipe in STRICT JSON format only.
 
-  //   const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+      All field VALUES must be written in Hebrew.
 
-  //   const prompt = `
-  //     Generate a realistic and complete recipe in strict JSON format based on these criteria:
-  //     Ingredients: ${ingredients || 'any suitable'}.
-  //     Diet: ${diet || 'none'}.
-  //     Cuisine: ${cuisine || 'any'}.
-  //     Meal Type: ${mealType || 'any'}.
-  //     Style: ${mood || 'any'}.
+      Input preferences:
+      Ingredients: ${ingredients || "any"}
+      Diet: ${diet || "none"}
+      Cuisine: ${cuisine || "any"}
+      Meal type: ${mealType || "any"}
+      Style: ${mood || "any"}
 
-  //     JSON schema: {
-  //       "title": "string",
-  //       "description": "string",
-  //       "ingredients": [{"name":"string","quantity":"string","unit":"string"}],
-  //       "instructions": ["string"],
-  //       "prepTime": "string",
-  //       "cookTime": "string",
-  //       "servings": "string",
-  //       "category": "string",
-  //       "cuisine": "string",
-  //       "dietaryRestrictions": ["string"]
-  //     }
-  //     CRITICAL: All fields marked as (REQUIRED) and their sub-fields MUST be populated with valid and meaningful content.
-  //     Specifically, 'title' MUST be filled, 'instructions' MUST contain at least one step, and 'ingredients' MUST contain at least one ingredient with a 'name'.
-  //     Generate all recipe content (values for fields) in Hebrew.
-  //     IMPORTANT: For 'category' and 'cuisine' fields, use the exact singular Hebrew terms from the following lists:
-  //     Categories: "עיקרית", "קינוח", "ארוחת בוקר", "מרק", "סלט", "מאפה".
-  //     Cuisines: "ישראלי", "איטלקי", "אסייתי", "מזרח תיכוני", "אמריקאי".
-  //     Return JSON ONLY. Do not add any introductory or concluding text.
-  //   `;
+      JSON schema:
+      {
+        "title": "string",
+        "description": "string",
+        "ingredients": [
+          { "name": "string", "quantity": "string", "unit": "string" }
+        ],
+        "instructions": ["string"],
+        "prepTime": "string",
+        "cookTime": "string",
+        "servings": "string",
+        "category": "עיקרית | קינוח | ארוחת בוקר | מרק | סלט | מאפה",
+        "cuisine": "ישראלי | איטלקי | אסייתי | מזרח תיכוני | אמריקאי",
+        "dietaryRestrictions": ["string"]
+      }
 
-  //   const result = await model.generateContent(prompt);
-  //   const response = await result.response;
-  //   const text = response.text();
+      Rules:
+      - JSON only, no markdown, no prose.
+      - Ensure culinary logic: proportions must be realistic.
+      - Category and cuisine must match EXACTLY one of the allowed values.
+      `.trim();
 
-  //   let suggestedRecipe;
-  //   try {
-  //     const jsonMatch = text.match(/```json\n([\s\S]*?)\n```/);
-  //     if (jsonMatch && jsonMatch[1]) {
-  //       suggestedRecipe = JSON.parse(jsonMatch[1]);
-  //     } else {
-  //       suggestedRecipe = JSON.parse(text);
-  //     }
-  //   } catch (parseError) {
-  //     console.error('Failed to parse AI response as JSON:', parseError, 'Original text:', text);
-  //     throw new Error('AI generated an invalid recipe format. Original text was: ' + text);
-  //   }
+    const response = await fetch("http://localhost:11434/api/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "gemma3:4b",
+        prompt,
+        stream: false,
+        format: "json",
+        options: {
+          temperature: 0.7, // איזון בין יצירתיות להיגיון
+        },
+      }),
+    });
 
-  //   res.status(200).json(suggestedRecipe);
+    if (!response.ok) {
+      throw new Error(`Ollama HTTP error ${response.status}`);
+    }
 
-  // } catch (error: any) {
-  //   console.error('Error generating recipe suggestion:', error);
-  //   if (error.response && error.response.status) {
-  //     res.status(error.response.status).json({ message: 'שגיאה מה-AI API: ' + error.message, error: error.response.data });
-  //   } else if (error.message && error.message.includes('API_KEY')) {
-  //     res.status(500).json({ message: 'שגיאה במפתח ה-API של גיני. וודא שהוא מוגדר נכון.', error: error.message });
-  //   } else {
-  //     res.status(500).json({ message: 'אירעה שגיאה ביצירת הצעת מתכון מה-AI.', error: error.message });
-  //   }
-  // }
-  console.log("generateRecipeSuggestion called. wait for fix. ");
-  return res.status(500).json({ message: 'אירעה שגיאה ביצירת הצעת מתכון מה-AI.', error: 'Error generating recipe suggestion' });
+    const data: any = await response.json();
+
+    let recipe;
+    try {
+      recipe = JSON.parse(data.response);
+    } catch (err) {
+      console.error("AI returned invalid JSON:", data.response);
+      return res.status(500).json({
+        message: "ה-AI החזיר פורמט לא תקין",
+        rawResponse: data.response,
+      });
+    }
+
+    return res.status(200).json(recipe);
+  } catch (error: any) {
+    console.error("Recipe generation failed:", error);
+    return res.status(500).json({
+      message: "אירעה שגיאה ביצירת הצעת מתכון",
+      error: error.message,
+    });
+  }
 };
