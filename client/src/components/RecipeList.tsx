@@ -54,7 +54,7 @@ const RecipeList: React.FC<RecipeListProps> = ({
   }
 
   return (
-    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, justifyContent: 'center' }}>
+    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5, justifyContent: 'center', pb: 2 }}>
       {recipes.map(recipe => (
         <RecipeCard
           key={recipe._id}

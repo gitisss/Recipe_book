@@ -28,10 +28,7 @@ const categories = [
 
 const CategoryGrid: React.FC<CategoryGridProps> = ({ onSelectCategory }) => {
   return (
-    <Box sx={{ my: 4 }}>
-      <Typography variant="h5" component="h2" gutterBottom sx={{ textAlign: 'center', mb: 3 }}>
-        בחר קטגוריה
-      </Typography>
+    <Box sx={{ my: 2 }}>
       <Grid container spacing={2} justifyContent="center">
         {categories.map((cat) => {
           const IconComponent = cat.icon;

@@ -1,152 +1,283 @@
 // client/src/theme.ts
 import { createTheme } from '@mui/material/styles';
-import { blue, teal, grey, lightBlue, green } from '@mui/material/colors';
+import { blue, teal, cyan, orange, pink, purple } from '@mui/material/colors';
 
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: blue['700'],
-      light: blue['400'],
-      dark: blue['800'],
-    },
-    secondary: {
-      main: teal['A400'],
-      light: teal['A200'],
-      dark: teal['A700'],
-    },
-    error: {
-      main: '#f44336',
-    },
-    background: {
-      default: grey['100'],
-      paper: '#ffffff',
-    },
-    text: {
-      primary: grey['900'],
-      secondary: grey['700'],
+// Theme mode type
+export type ThemeMode = 'light' | 'dark' | 'ocean' | 'sunset' | 'theoretical';
+
+// Base theme configuration (shared between light and dark)
+const baseTheme = {
+  typography: {
+    fontFamily: '"Heebo", "Arial", "Helvetica", sans-serif',
+    button: {
+      textTransform: 'none' as const,
+      fontWeight: 500,
     },
   },
-  typography: {
-    fontFamily: 'Heebo, Arial, sans-serif',
-    h4: {
-      fontWeight: 600,
-      color: blue['800'],
-    },
-    h5: {
-      fontWeight: 500,
-      color: grey['800'],
-    },
-    h6: {
-      fontWeight: 500,
-      color: grey['800'],
-    },
-    button: {
-      textTransform: 'none',
-    },
+  shape: {
+    borderRadius: 8,
   },
   components: {
-    MuiAppBar: {
-      styleOverrides: {
-        root: {
-          backgroundColor: blue['800'],
-          color: 'white',
-        },
-      },
-    },
     MuiButton: {
       styleOverrides: {
         root: {
           borderRadius: 8,
-        },
-        containedPrimary: {
-          backgroundColor: blue['600'],
-          color: 'white',
-          '&:hover': {
-            backgroundColor: blue['700'],
-            boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
-          },
-        },
-        outlinedPrimary: {
-          borderColor: blue['500'],
-          color: blue['700'],
-          '&:hover': {
-            borderColor: blue['600'],
-            backgroundColor: 'rgba(25, 118, 210, 0.08)',
-          },
-        },
-        containedSecondary: {
-          backgroundColor: teal['A400'],
-          color: 'white',
-          '&:hover': {
-            backgroundColor: teal['A700'],
-          },
-        },
-        outlinedSecondary: {
-          borderColor: teal['A400'],
-          color: teal['A700'],
-          '&:hover': {
-            backgroundColor: 'rgba(0, 150, 136, 0.08)',
-          },
-        },
-      },
-    },
-    MuiIconButton: {
-      styleOverrides: {
-        root: {
-          color: grey['600'],
-          '&:hover': {
-            backgroundColor: 'rgba(0, 0, 0, 0.04)',
-          },
-        },
-      },
-    },
-    MuiAvatar: {
-      styleOverrides: {
-        root: {
-          backgroundColor: teal['A400'],
-          color: 'white',
+          padding: '8px 16px',
         },
       },
     },
     MuiCard: {
       styleOverrides: {
         root: {
-          backgroundColor: '#ffffff',
           borderRadius: 12,
-          boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
           transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
           '&:hover': {
-            transform: 'translateY(-3px)',
-            boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
+            transform: 'translateY(-2px)',
           },
         },
       },
     },
-    MuiDivider: {
+    MuiTextField: {
       styleOverrides: {
         root: {
-          borderColor: grey['300'],
-          margin: '24px 0',
-        },
-      },
-    },
-    MuiLink: {
-      styleOverrides: {
-        root: {
-          color: blue['700'],
-          '&:hover': {
-            color: blue['500'],
+          '& .MuiOutlinedInput-root': {
+            borderRadius: 8,
           },
         },
       },
     },
-    MuiContainer: { 
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          borderRadius: 12,
+        },
+      },
+    },
+  },
+};
+
+// Light theme
+export const lightTheme = createTheme({
+  ...baseTheme,
+  palette: {
+    mode: 'light',
+    primary: {
+      main: blue[700],
+      light: blue[400],
+      dark: blue[900],
+    },
+    secondary: {
+      main: teal[600],
+      light: teal[400],
+      dark: teal[800],
+    },
+    background: {
+      default: '#f5f5f5',
+      paper: '#ffffff',
+    },
+  },
+  components: {
+    ...baseTheme.components,
+    MuiAppBar: {
       styleOverrides: {
         root: {
+          backgroundColor: blue[800],
+        },
+      },
+    },
+    MuiAvatar: {
+      styleOverrides: {
+        root: {
+          backgroundColor: teal[600],
         },
       },
     },
   },
 });
 
+// Dark theme
+export const darkTheme = createTheme({
+  ...baseTheme,
+  palette: {
+    mode: 'dark',
+    primary: {
+      main: blue[400],
+      light: blue[300],
+      dark: blue[600],
+    },
+    secondary: {
+      main: teal[400],
+      light: teal[300],
+      dark: teal[600],
+    },
+    background: {
+      default: '#121212',
+      paper: '#1e1e1e',
+    },
+  },
+  components: {
+    ...baseTheme.components,
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#1e1e1e',
+        },
+      },
+    },
+    MuiAvatar: {
+      styleOverrides: {
+        root: {
+          backgroundColor: teal[400],
+        },
+      },
+    },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          '& .MuiOutlinedInput-root': {
+            borderRadius: 8,
+            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+          },
+        },
+      },
+    },
+  },
+});
+
+// Default export (light theme for backward compatibility)
+const theme = lightTheme;
 export default theme;
+
+// Ocean theme (כחול-ירוק)
+export const oceanTheme = createTheme({
+  ...baseTheme,
+  palette: {
+    mode: 'light',
+    primary: {
+      main: cyan[700],
+      light: cyan[400],
+      dark: cyan[900],
+    },
+    secondary: {
+      main: teal[500],
+      light: teal[300],
+      dark: teal[700],
+    },
+    background: {
+      default: '#e0f7fa',
+      paper: '#ffffff',
+    },
+  },
+  components: {
+    ...baseTheme.components,
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          backgroundColor: cyan[800],
+        },
+      },
+    },
+    MuiAvatar: {
+      styleOverrides: {
+        root: {
+          backgroundColor: teal[500],
+        },
+      },
+    },
+  },
+});
+
+// Sunset theme (כתום-ורוד)
+export const sunsetTheme = createTheme({
+  ...baseTheme,
+  palette: {
+    mode: 'light',
+    primary: {
+      main: orange[700],
+      light: orange[400],
+      dark: orange[900],
+    },
+    secondary: {
+      main: pink[500],
+      light: pink[300],
+      dark: pink[700],
+    },
+    background: {
+      default: '#fff3e0',
+      paper: '#ffffff',
+    },
+  },
+  components: {
+    ...baseTheme.components,
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          backgroundColor: orange[800],
+        },
+      },
+    },
+    MuiAvatar: {
+      styleOverrides: {
+        root: {
+          backgroundColor: pink[500],
+        },
+      },
+    },
+  },
+});
+
+// סגול theme
+export const parpleTheme = createTheme({
+  ...baseTheme,
+  palette: {
+    mode: 'light',
+    primary: {
+      main: purple[700],
+      light: purple[400],
+      dark: purple[900],
+    },
+    secondary: {
+      main: pink[500],
+      light: pink[300],
+      dark: pink[700],
+    },
+    background: {
+      default: '#f0f0f0',
+      paper: '#ffffff',
+    },
+  },
+  components: {
+    ...baseTheme.components,
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          backgroundColor: purple[800],
+        },
+      },
+    },
+    MuiAvatar: {
+      styleOverrides: {
+        root: {
+          backgroundColor: pink[500],
+        },
+      },
+    },
+  },
+});
+
+// Helper function to get theme based on mode
+export const getTheme = (mode: ThemeMode) => {
+  switch (mode) {
+    case 'dark':
+      return darkTheme;
+    case 'ocean':
+      return oceanTheme;
+    case 'sunset':
+      return sunsetTheme;
+    case 'theoretical':
+      return parpleTheme;
+    default:
+      return lightTheme;
+  }
+};
+

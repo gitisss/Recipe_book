@@ -11,7 +11,6 @@ import { verifyToken } from './middleware/auth';
 
 
 dotenv.config();
-console.log('DEBUG: GEMINI_API_KEY from process.env:', process.env.GEMINI_API_KEY); 
 
 const app = express();
 
@@ -29,15 +28,13 @@ app.get("/", (req, res) => {
 app.post("/api/logIn", login);
 app.post("/api/signup", signup);
 
-// נתיבי API למתכונים - מוגנים באמצעות מידלוור verifyToken
+
 app.post("/api/recipes", verifyToken, createRecipe); // יצירת מתכון
 app.get("/api/recipes", verifyToken, getRecipes); // שליפת כל המתכונים של המשתמש
 app.get("/api/recipes/:id", verifyToken, getRecipeById); // שליפת מתכון בודד
 app.put("/api/recipes/:id", verifyToken, updateRecipe); // עדכון מתכון
 app.delete("/api/recipes/:id", verifyToken, deleteRecipe); // מחיקת מתכון
-
-// נתיב API חדש להצעות מתכונים מה-AI - מוגן באמצעות מידלוור verifyToken
-app.post("/api/ai/suggest-recipe", verifyToken, generateRecipeSuggestion); // חדש!
+app.post("/api/ai/suggest-recipe", verifyToken, generateRecipeSuggestion); 
 
 
 connectDB().then(() => {

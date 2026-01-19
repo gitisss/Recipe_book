@@ -3,10 +3,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-ro
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import SignUpPage from './pages/SignUpPage';
-import { Box } from '@mui/material';
-import { ThemeProvider } from '@mui/material/styles';
-import theme from './theme';
-import './App.css';
+import { Box, styled } from '@mui/material';
+import { ThemeContextProvider } from './contexts/ThemeContext';
 
 interface UserData {
   id: string;
@@ -54,17 +52,56 @@ function App() {
     console.log("User logged out.");
   }, []);
 
+  const StyledRootBox = styled(Box)(({ theme }) => ({
+    display: 'flex',
+    flexDirection: 'column',
+    minHeight: '100vh',
+    width: '100%',
+    backgroundColor: theme.palette.background.default,
+    fontFamily: theme.typography.fontFamily,
+    WebkitFontSmoothing: 'antialiased',
+    MozOsxFontSmoothing: 'grayscale',
+  }));
+
+  const StyledLoadingBox = styled(Box)(({ theme }) => ({
+    textAlign: 'center',
+    marginTop: '50px',
+    fontSize: '1.2rem',
+    color: theme.palette.text.primary,
+  }));
+
+  const StyledNotFoundBox = styled(Box)(({ theme }) => ({
+    textAlign: 'center',
+    marginTop: '2rem',
+    color: theme.palette.text.primary,
+    '& h1': {
+      color: theme.palette.text.primary,
+    },
+    '& p': {
+      color: theme.palette.text.secondary,
+    },
+    '& a': {
+      color: theme.palette.primary.main,
+      textDecoration: 'none',
+      '&:hover': {
+        textDecoration: 'underline',
+      },
+    },
+  }));
+
   if (isLoadingAuth) {
-    return <div style={{ textAlign: 'center', marginTop: '50px', fontSize: '1.2rem' }}>טוען אפליקציה...</div>;
+    return (
+      <ThemeContextProvider>
+        <StyledLoadingBox>טוען אפליקציה...</StyledLoadingBox>
+      </ThemeContextProvider>
+    );
   }
 
   return (
-    <ThemeProvider theme={theme}>
-      {/* ה-Box הראשי יהיה Flex Container בכיוון עמודה, שידחוף את הפוטר לתחתית */}
-      <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%', bgcolor: 'background.default' }}>
+    <ThemeContextProvider>
+      <StyledRootBox>
         <Router>
-          {/* עוטף את ה-Routes ב-Box נפרד עם flexGrow: 1 כדי לדחוף את הפוטר */}
-          <Box sx={{ flexGrow: 1 }}> {/* <-- שינוי: Box חדש עם flexGrow: 1 */}
+          <Box sx={{ flexGrow: 1 }}>
             <Routes>
               <Route
                 path="/login"
@@ -84,14 +121,19 @@ function App() {
               />
               <Route path="*" element={
                 isAuthenticated
-                  ? <div style={{textAlign: 'center', marginTop: '2rem'}}><h1>404 - עמוד לא נמצא</h1><p>העמוד שחיפשת אינו קיים. <Link to="/dashboard">חזור לדאשבורד</Link></p></div>
+                  ? (
+                    <StyledNotFoundBox>
+                      <h1>404 - עמוד לא נמצא</h1>
+                      <p>העמוד שחיפשת אינו קיים. <Link to="/dashboard">חזור לדאשבורד</Link></p>
+                    </StyledNotFoundBox>
+                  )
                   : <Navigate to="/login" replace />
               } />
             </Routes>
           </Box> 
         </Router>
-      </Box>
-    </ThemeProvider>
+      </StyledRootBox>
+    </ThemeContextProvider>
   );
 }
 

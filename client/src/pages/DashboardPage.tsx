@@ -1,27 +1,30 @@
 // client/src/pages/DashboardPage.tsx
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import {
   Container,
   Box,
   Typography,
   Divider,
-  Button,
   CircularProgress,
-  TextField,
-  Tabs,
-  Tab
+  IconButton,
+  Fab
 } from '@mui/material';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
+import CategoryIcon from '@mui/icons-material/Category';
 
 import AppHeader from '../components/AppHeader';
 import AddRecipeModal from '../components/AddRecipeModal';
 import ViewRecipeModal from '../components/ViewRecipeModal';
 import RecipeList from '../components/RecipeList';
 import AppFooter from '../components/AppFooter';
-import CategoryGrid from '../components/CategoryGrid';
-import type { IFullRecipeData, IRecipe } from '../types/Recipe';
+import SearchDialog from '../components/SearchDialog';
+import CategoryDialog from '../components/CategoryDialog';
+import type { IFullRecipeData } from '../types/Recipe';
 import apiClient from '../apiClient';
+import { useRecipes } from '../hooks/useRecipes';
+import { useRecipeModals } from '../hooks/useRecipeModals';
+import { useRecipeFilters } from '../hooks/useRecipeFilters';
 
 interface UserData {
   id: string;
@@ -34,54 +37,41 @@ interface DashboardPageProps {
 }
 
 const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) => {
-  const [recipes, setRecipes] = useState<IRecipe[]>([]);
-  const [isLoadingRecipes, setIsLoadingRecipes] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [openAddRecipeModal, setOpenAddRecipeModal] = useState<boolean>(false);
-  const [openViewRecipeModal, setOpenViewRecipeModal] = useState<boolean>(false);
-  const [selectedRecipe, setSelectedRecipe] = useState<IRecipe | null>(null);
-  const [openEditRecipeModal, setOpenEditRecipeModal] = useState<boolean>(false);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [activeTab, setActiveTab] = useState<'recipes' | 'categories'>('recipes');
+  const {
+    recipes,
+    isLoadingRecipes,
+    error,
+    fetchRecipes,
+    deleteRecipe,
+    getRecipeById,
+  } = useRecipes();
 
-  const fetchRecipes = useCallback(async (category?: string, query?: string) => {
-    setIsLoadingRecipes(true);
-    setError(null);
-    try {
-      let url = '/recipes';
-      const params = new URLSearchParams();
-      if (category) {
-        params.append('category', category);
-      }
-      if (query) {
-        params.append('search', query);
-      }
-      if (params.toString()) {
-        url += `?${params.toString()}`;
-      }
-      const response = await apiClient.get(url);
-      setRecipes(response.data);
-    } catch (err: any) {
-      console.error('Error fetching recipes:', err);
-      setError(err.response?.data?.message || 'אירעה שגיאה בטעינת המתכונים.');
-    } finally {
-      setIsLoadingRecipes(false);
-    }
-  }, []);
+  const {
+    openAddRecipeModal,
+    openViewRecipeModal,
+    openEditRecipeModal,
+    selectedRecipe,
+    handleOpenAddRecipeModal,
+    handleCloseAddRecipeModal,
+    handleViewRecipe: handleViewRecipeModal,
+    handleCloseViewRecipeModal,
+    handleEditRecipe: handleEditRecipeModal,
+    handleCloseEditRecipeModal,
+  } = useRecipeModals();
+
+  const {
+    selectedCategory,
+    searchQuery,
+    handleSelectCategory,
+    setSearchQueryDirect,
+  } = useRecipeFilters();
+
+  const [searchDialogOpen, setSearchDialogOpen] = useState(false);
+  const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
 
   useEffect(() => {
     fetchRecipes(selectedCategory || undefined, searchQuery);
   }, [fetchRecipes, selectedCategory, searchQuery]);
-
-  const handleOpenAddRecipeModal = () => {
-    console.log('Opening Add Recipe Modal');
-    setOpenAddRecipeModal(true);
-  };
-
-  const handleCloseAddRecipeModal = () => {
-    setOpenAddRecipeModal(false);
-  };
 
   const handleAddNewRecipe = useCallback(async (recipeData: IFullRecipeData) => {
     try {
@@ -93,131 +83,173 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) 
       console.error('Error creating recipe:', err);
       alert(err.response?.data?.message || 'אירעה שגיאה ביצירת המתכון.');
     }
-  }, [fetchRecipes, selectedCategory, searchQuery]);
+  }, [fetchRecipes, selectedCategory, searchQuery, handleCloseAddRecipeModal]);
 
   const handleViewRecipe = useCallback(async (id: string) => {
     try {
-      const response = await apiClient.get(`/recipes/${id}`);
-      setSelectedRecipe(response.data);
-      setOpenViewRecipeModal(true);
+      const recipe = await getRecipeById(id);
+      handleViewRecipeModal(recipe);
     } catch (err: any) {
-      console.error('Error fetching recipe for view:', err);
-      alert(err.response?.data?.message || 'אירעה שגיאה בטעינת פרטי המתכון.');
+      alert(err.message || 'אירעה שגיאה בטעינת פרטי המתכון.');
     }
-  }, []);
-
-  const handleCloseViewRecipeModal = () => {
-    setOpenViewRecipeModal(false);
-    setSelectedRecipe(null);
-  };
+  }, [getRecipeById, handleViewRecipeModal]);
 
   const handleEditRecipe = useCallback(async (id: string) => {
     try {
-      const response = await apiClient.get(`/recipes/${id}`);
-      setSelectedRecipe(response.data); 
-      setOpenEditRecipeModal(true);
+      const recipe = await getRecipeById(id);
+      handleEditRecipeModal(recipe);
     } catch (err: any) {
-      console.error('Error fetching recipe for edit:', err);
-      alert(err.response?.data?.message || 'אירעה שגיאה בטעינת המתכון לעריכה.');
+      alert(err.message || 'אירעה שגיאה בטעינת המתכון לעריכה.');
     }
-  }, []);
+  }, [getRecipeById, handleEditRecipeModal]);
 
   const handleUpdateRecipe = useCallback(async (id: string, recipeData: IFullRecipeData) => {
     try {
       await apiClient.put(`/recipes/${id}`, recipeData);
       alert('מתכון עודכן בהצלחה!');
-      setOpenEditRecipeModal(false);
-      setSelectedRecipe(null);
+      handleCloseEditRecipeModal();
       fetchRecipes(selectedCategory || undefined, searchQuery);
     } catch (err: any) {
       console.error('Error updating recipe:', err);
       alert(err.response?.data?.message || 'אירעה שגיאה בעדכון המתכון.');
     }
-  }, [fetchRecipes, selectedCategory, searchQuery]);
-
-  const handleCloseEditRecipeModal = () => {
-    setOpenEditRecipeModal(false);
-    setSelectedRecipe(null);
-  };
+  }, [fetchRecipes, selectedCategory, searchQuery, handleCloseEditRecipeModal]);
 
   const handleDeleteRecipe = useCallback(async (id: string) => {
     if (window.confirm('האם אתה בטוח שברצונך למחוק מתכון זה?')) {
       try {
-        await apiClient.delete(`/recipes/${id}`);
+        await deleteRecipe(id);
         alert('מתכון נמחק בהצלחה!');
         fetchRecipes(selectedCategory || undefined, searchQuery);
       } catch (err: any) {
-        console.error('Error deleting recipe:', err);
-        alert(err.response?.data?.message || 'אירעה שגיאה במחיקת המתכון.');
+        alert(err.message || 'אירעה שגיאה במחיקת המתכון.');
       }
     }
-  }, [fetchRecipes, selectedCategory, searchQuery]);
-
-  const handleSelectCategory = useCallback((category: string) => {
-    setSelectedCategory(category);
-    setSearchQuery(''); // איפוס חיפוש בבחירת קטגוריה חדשה
-    setActiveTab('recipes'); // מעבר אוטומטי ללשונית המתכונים לאחר בחירת קטגוריה
-  }, []);
-
-  const handleSearchChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(event.target.value);
-    setSelectedCategory(null); // איפוס קטגוריה בחיפוש
-    setActiveTab('recipes'); // מעבר אוטומטי ללשונית המתכונים בזמן חיפוש
-  }, []);
+  }, [deleteRecipe, fetchRecipes, selectedCategory, searchQuery]);
 
 
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
       <AppHeader currentUser={currentUser} onLogout={onLogout} />
-      <Container maxWidth="lg" sx={{ mt: 4, mb: 4, flexGrow: 1 }}>
-        <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center', mb: 3 }}>
-          המתכונים שלי
-        </Typography>
-        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 4, flexWrap: 'wrap' }}>
-          <Button
-            variant="contained"
-            color="primary"
-            size="large"
-            startIcon={<AddCircleOutlineIcon />}
-            onClick={handleOpenAddRecipeModal}
-          >
-            הוסף מתכון חדש
-          </Button>
-        </Box>
-        <Divider sx={{ my: 3 }} />
+      <Box sx={{ 
+        flexGrow: 1, 
+        display: 'flex', 
+        flexDirection: 'column', 
+        overflow: 'hidden',
+        pt: '48px', // גובה ההדר
+        pb: '60px' // גובה הפוטר
+      }}>
+        <Container maxWidth="lg" sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, overflow: 'hidden', pt: 2, pb: 2, position: 'relative' }}>
+          <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center', mb: 2 }}>
+            המתכונים שלי
+          </Typography>
+          <Divider sx={{ mb: 2 }} />
 
-        {/* לשוניות ניווט */}
-        <Tabs value={activeTab} onChange={(event, newValue) => setActiveTab(newValue)} centered sx={{ mb: 3 }}>
-          <Tab label="מתכונים" value="recipes" />
-          <Tab label="קטגוריות" value="categories" />
-        </Tabs>
+          {/* כפתורים עגולים למעלה */}
+          <Box sx={{ display: 'flex', justifyContent: 'flex-start', gap: 2, mb: 2, alignItems: 'center' }}>
+            {/* כפתור חיפוש */}
+            <IconButton
+              color="primary"
+              onClick={() => setSearchDialogOpen(true)}
+              sx={{
+                width: 56,
+                height: 56,
+                bgcolor: 'background.paper',
+                border: '2px solid',
+                borderColor: 'primary.main',
+                boxShadow: 2,
+                '&:hover': {
+                  bgcolor: 'primary.light',
+                  borderColor: 'primary.dark',
+                  boxShadow: 4,
+                }
+              }}
+            >
+              <SearchIcon fontSize="medium" />
+            </IconButton>
 
-        {/* תוכן הלשונית הפעילה */}
-        {activeTab === 'recipes' && (
-          <Box>
-            {/* שדה החיפוש */}
-            <Box sx={{ mb: 3 }}>
-              <TextField
-                label="חפש מתכונים..."
-                variant="outlined"
-                fullWidth
-                size="small"
-                value={searchQuery}
-                onChange={handleSearchChange}
-                InputProps={{
-                  startAdornment: <SearchIcon sx={{ color: 'action.active', mr: 1 }} />,
-                }}
-              />
-            </Box>
+            {/* כפתור קטגוריות */}
+            <IconButton
+              color="primary"
+              onClick={() => setCategoryDialogOpen(true)}
+              sx={{
+                width: 56,
+                height: 56,
+                bgcolor: 'background.paper',
+                border: '2px solid',
+                borderColor: 'primary.main',
+                boxShadow: 2,
+                '&:hover': {
+                  bgcolor: 'primary.light',
+                  borderColor: 'primary.dark',
+                  boxShadow: 4,
+                }
+              }}
+            >
+              <CategoryIcon fontSize="medium" />
+            </IconButton>
 
-            {/* כותרת קטגוריה אם נבחרה */}
-            {selectedCategory && (
-                <Typography variant="h5" component="h2" gutterBottom sx={{ mb: 2 }}>
-                    מתכונים בקטגוריה: {selectedCategory}
-                </Typography>
+            {/* כפתור הוספת מתכון - בולט יותר */}
+            <Fab
+              color="primary"
+              aria-label="הוסף מתכון"
+              onClick={() => {
+                console.log('Opening Add Recipe Modal');
+                handleOpenAddRecipeModal();
+              }}
+              sx={{
+                width: 56,
+                height: 56,
+                boxShadow: 4,
+                '&:hover': {
+                  boxShadow: 8,
+                  transform: 'scale(1.05)',
+                },
+                transition: 'all 0.2s',
+              }}
+            >
+              <AddIcon />
+            </Fab>
+
+            {/* הצגת פילטרים פעילים */}
+            {(selectedCategory || searchQuery) && (
+              <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', ml: 'auto' }}>
+                {selectedCategory && (
+                  <Typography variant="body2" sx={{ 
+                    px: 1.5, 
+                    py: 0.5, 
+                    bgcolor: 'primary.light', 
+                    borderRadius: 1,
+                    color: 'primary.contrastText'
+                  }}>
+                    קטגוריה: {selectedCategory}
+                  </Typography>
+                )}
+                {searchQuery && (
+                  <Typography variant="body2" sx={{ 
+                    px: 1.5, 
+                    py: 0.5, 
+                    bgcolor: 'primary.light', 
+                    borderRadius: 1,
+                    color: 'primary.contrastText'
+                  }}>
+                    חיפוש: {searchQuery}
+                  </Typography>
+                )}
+              </Box>
             )}
+          </Box>
 
+          {/* כותרת קטגוריה אם נבחרה */}
+          {selectedCategory && (
+            <Typography variant="h6" component="h2" gutterBottom sx={{ mb: 1 }}>
+              מתכונים בקטגוריה: {selectedCategory}
+            </Typography>
+          )}
+
+          {/* אזור גלילה לכרטיסים */}
+          <Box sx={{ flexGrow: 1, overflowY: 'auto', pr: 1 }}>
             {isLoadingRecipes ? (
               <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}>
                 <CircularProgress />
@@ -238,23 +270,32 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) 
               />
             ) : (searchQuery || selectedCategory) ? (
               <Typography variant="body1" color="text.secondary" sx={{ textAlign: 'center', mt: 3 }}>
-                  לא נמצאו מתכונים עבור החיפוש/קטגוריה הנוכחיים.
+                לא נמצאו מתכונים עבור החיפוש/קטגוריה הנוכחיים.
               </Typography>
             ) : (
               <Typography variant="body1" color="text.secondary" sx={{ textAlign: 'center', mt: 3 }}>
-                 עדיין לא הוספת מתכונים. התחל על ידי הוספת מתכון חדש!
+                עדיין לא הוספת מתכונים. התחל על ידי הוספת מתכון חדש!
               </Typography>
             )}
           </Box>
-        )}
-
-        {activeTab === 'categories' && (
-          <Box>
-            <CategoryGrid onSelectCategory={handleSelectCategory} />
-          </Box>
-        )}
-      </Container>
+        </Container>
+      </Box>
       <AppFooter />
+
+      {/* מודל חיפוש */}
+      <SearchDialog
+        open={searchDialogOpen}
+        onClose={() => setSearchDialogOpen(false)}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQueryDirect}
+      />
+
+      {/* מודל קטגוריות */}
+      <CategoryDialog
+        open={categoryDialogOpen}
+        onClose={() => setCategoryDialogOpen(false)}
+        onSelectCategory={handleSelectCategory}
+      />
 
       <AddRecipeModal
         open={openAddRecipeModal}
