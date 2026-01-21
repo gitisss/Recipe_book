@@ -34,7 +34,7 @@ const CategoryGrid: React.FC<CategoryGridProps> = ({ onSelectCategory }) => {
           const IconComponent = cat.icon;
 
           return (
-            <Grid xs={12} sm={6} md={4} lg={3} key={cat.name}>
+            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={cat.name}>
               <ButtonBase
                 onClick={() => onSelectCategory(cat.name)}
                 sx={{

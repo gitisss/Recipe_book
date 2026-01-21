@@ -51,7 +51,6 @@ const AddRecipeModal: React.FC<AddRecipeModalProps> = ({
     isGeneratingAiRecipe,
     aiError,
     handleRequestRecipeFromAI,
-    resetAIState,
     activeFieldId // Get active field ID
   } = useAIRecipeGeneration(setFormData);
 

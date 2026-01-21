@@ -1,6 +1,5 @@
 // client/src/hooks/useAIRecipeGeneration.ts
 import { useState, useCallback } from 'react';
-import apiClient from '../apiClient';
 import type { IFullRecipeData } from '../types/Recipe';
 
 export const useAIRecipeGeneration = (setFormData: (data: IFullRecipeData) => void) => {
