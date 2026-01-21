@@ -18,6 +18,7 @@ const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
     <>
       <TextField
         fullWidth
+        id="recipe-title"
         label="כותרת המתכון"
         name="title"
         value={formData.title}
@@ -29,6 +30,7 @@ const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
       />
       <TextField
         fullWidth
+        id="recipe-description"
         label="תיאור"
         name="description"
         value={formData.description}

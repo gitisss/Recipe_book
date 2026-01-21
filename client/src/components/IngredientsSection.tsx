@@ -34,6 +34,7 @@ const IngredientsSection: React.FC<IngredientsSectionProps> = ({
       {ingredients.map((ingredient, index) => (
         <Box key={index} sx={{ display: 'flex', gap: 1, mb: 1, alignItems: 'center' }}>
           <TextField
+            id={`ingredient-name-${index}`}
             label="שם המרכיב"
             value={ingredient.name}
             onChange={(e) =>
@@ -45,6 +46,7 @@ const IngredientsSection: React.FC<IngredientsSectionProps> = ({
             helperText={!!submitError && ingredients.every(ing => !ing.name.trim()) && index === 0 ? 'יש להזין לפחות מרכיב אחד.' : ''}
           />
           <TextField
+            id={`ingredient-quantity-${index}`}
             label="כמות"
             value={ingredient.quantity}
             onChange={(e) =>
@@ -53,6 +55,7 @@ const IngredientsSection: React.FC<IngredientsSectionProps> = ({
             sx={{ flex: 1.5 }}
           />
           <TextField
+            id={`ingredient-unit-${index}`}
             label="יחידה (גרם, כוסות, וכו')"
             value={ingredient.unit}
             onChange={(e) =>

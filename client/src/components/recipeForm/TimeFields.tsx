@@ -13,6 +13,7 @@ const TimeFields: React.FC<TimeFieldsProps> = ({ formData, handleChange }) => {
     <>
       <TextField
         fullWidth
+        id="recipe-prepTime"
         label="זמן הכנה (לדוגמה: 30 דקות)"
         name="prepTime"
         value={formData.prepTime}
@@ -21,6 +22,7 @@ const TimeFields: React.FC<TimeFieldsProps> = ({ formData, handleChange }) => {
       />
       <TextField
         fullWidth
+        id="recipe-cookTime"
         label="זמן בישול (לדוגמה: שעה)"
         name="cookTime"
         value={formData.cookTime}
@@ -29,6 +31,7 @@ const TimeFields: React.FC<TimeFieldsProps> = ({ formData, handleChange }) => {
       />
       <TextField
         fullWidth
+        id="recipe-servings"
         label="מספר מנות"
         name="servings"
         value={formData.servings}

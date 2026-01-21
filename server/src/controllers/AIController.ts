@@ -39,43 +39,85 @@ export const generateRecipeSuggestion = async (req: Request, res: Response) => {
       - Category and cuisine must match EXACTLY one of the allowed values.
       `.trim();
 
+    // Set headers for streaming
+    res.setHeader("Content-Type", "text/plain; charset=utf-8");
+    res.setHeader("Transfer-Encoding", "chunked");
+
     const response = await fetch("http://localhost:11434/api/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "gemma3:4b",
+        model: "gemma3:4b", // Or your preferred model
         prompt,
-        stream: false,
-        format: "json",
+        stream: true, // Enable streaming from Ollama
+        format: "json", // Enforce JSON from Ollama
         options: {
-          temperature: 0.7, // איזון בין יצירתיות להיגיון
+          temperature: 0.7,
         },
       }),
     });
 
-    if (!response.ok) {
+    if (!response.ok || !response.body) {
       throw new Error(`Ollama HTTP error ${response.status}`);
     }
 
-    const data: any = await response.json();
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
 
-    let recipe;
-    try {
-      recipe = JSON.parse(data.response);
-    } catch (err) {
-      console.error("AI returned invalid JSON:", data.response);
-      return res.status(500).json({
-        message: "ה-AI החזיר פורמט לא תקין",
-        rawResponse: data.response,
-      });
+    while (true) {
+      const { done, value } = await reader.read();
+
+      if (done) {
+        break;
+      }
+
+      const chunk = decoder.decode(value, { stream: true });
+
+      // Ollama streaming returns JSON lines like: { "model": "...", "created_at": "...", "response": "fragment", "done": false }
+      // We need to parse these lines and extract the "response" field
+      const lines = (buffer + chunk).split("\n");
+      buffer = lines.pop() || ""; // Keep the incomplete line in buffer
+
+      for (const line of lines) {
+        if (!line.trim()) continue;
+        try {
+          const parsed = JSON.parse(line);
+          if (parsed.response) {
+            res.write(parsed.response); // Write just the content fragment to the client
+          }
+          if (parsed.done) {
+            // Stream finished
+          }
+        } catch (e) {
+          console.error("Error parsing Ollama chunk:", e);
+        }
+      }
     }
 
-    return res.status(200).json(recipe);
+    // Process any remaining characters
+    if (buffer) {
+      try {
+        const parsed = JSON.parse(buffer);
+        if (parsed.response) {
+          res.write(parsed.response);
+        }
+      } catch (e) {
+        // Ignore if incomplete json at very end (unlikely for "done")
+      }
+    }
+
+    res.end();
+
   } catch (error: any) {
     console.error("Recipe generation failed:", error);
-    return res.status(500).json({
-      message: "אירעה שגיאה ביצירת הצעת מתכון",
-      error: error.message,
-    });
+    if (!res.headersSent) {
+      return res.status(500).json({
+        message: "אירעה שגיאה ביצירת הצעת מתכון",
+        error: error.message,
+      });
+    } else {
+      res.end(); // Close stream if headers already sent
+    }
   }
 };

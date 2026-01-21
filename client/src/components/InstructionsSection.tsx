@@ -32,6 +32,7 @@ const InstructionsSection: React.FC<InstructionsSectionProps> = ({
         <Box key={index} sx={{ display: 'flex', gap: 1, mb: 1, alignItems: 'center' }}>
           <TextField
             fullWidth
+            id={`instruction-${index}`}
             label={`שלב ${index + 1}`}
             value={instruction}
             onChange={(e) =>
