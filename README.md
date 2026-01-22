@@ -1,6 +1,6 @@
 # 📖 פרויקט ספר מתכונים (Recipe Book App)
 
-פרויקט זה מטרתו לבנות אפליקציית אינטרנט לניהול מתכונים, עם יכולות אימות משתמשים, ניהול מתכונים מלא (CRUD) ותכונות מתקדמות המבוססות על AI וסריקת מסמכים.
+פרויקט זה מטרתו לבנות אפליקציית אינטרנט לניהול מתכונים, עם יכולות אימות משתמשים, ניהול מתכונים מלא (CRUD) ותכונות מתקדמות המבוססות על AI.
 
 ## 📁 מבנה הפרויקט
 
@@ -8,30 +8,88 @@
 - `client/`: מכיל את קוד ה-Frontend (React, TypeScript, Vite).
 - `server/`: מכיל את קוד ה-Backend (Node.js, Express, TypeScript, Mongoose).
 
-## 🌟 סטטוס הפרויקט - מה בוצע עד כה:
+---
 
-### 🚀 Backend (שרת - Node.js, Express, TypeScript, Mongoose)
--   **מודלים וחיבור ל-DB:** מודלים מוגדרים עבור משתמשים ומתכונים (כולל שדות חדשים כמו `prepTime`, `cookTime`, `servings`, `category`, `cuisine`, `dietaryRestrictions`), וקיים חיבור ל-MongoDB Atlas. שדה שם המתכון שונה מ-`name` ל-`title`.
--   **אימות משתמשים (Auth):** מנגנוני הרשמה והתחברות באמצעות bcrypt ו-JWT.
--   **ניהול מתכונים (CRUD):** בקר (`RecipeController.ts`) עם פונקציות מלאות ליצירה, קריאה, עדכון ומחיקת מתכונים.
--   **נתיבי API מוגנים:** נתיבי API עבור פעולות המתכונים מוגנים באמצעות מידלוור אימות JWT.
--   **אינטגרציית AI (ג'מיני):** נתיב API חדש להצעות מתכונים מה-AI (`AIController.ts`) המשתמש במודל `gemini-2.5-flash` ומחזיר מתכונים בפורמט JSON קפדני עם תוכן בעברית וקטגוריות/מטבחים ספציפיים.
--   **הכנה ופריסה ל-Render.com:** הוגדרו פקודות (`npm run build`, `npm start`) ונתיבים לפריסה ב-Render.com.
+## 🛠️ דרישות מוקדמות (Prerequisites)
 
-### 💻 Frontend (לקוח - React, TypeScript, Vite, Material-UI)
--   **מבנה בסיסי:** פרויקט React עם Vite ו-Material-UI.
--   **מנגנון אימות וניתוב:** כולל דפי התחברות (`LoginPage.tsx`) והרשמה (`SignUpPage.tsx`) וניתוב מוגן ללוח הבקרה (`DashboardPage.tsx`).
--   **חיבור Frontend ל-Backend (CRUD מלא):** `DashboardPage.tsx` מחובר ל-API של השרת לשליפה, יצירה, עדכון ומחיקת מתכונים.
--   **מודאלי עריכה וצפייה:**
-    -   `AddRecipeModal.tsx`: מודאל ייעודי ליצירת/עריכת מתכון עם טופס מורחב ודינמי לרכיבים והוראות.
-    -   `ViewRecipeModal.tsx`: מודאל לצפייה בפרטי מתכון, כולל התאמת כמויות דינמית של רכיבים על בסיס מכפיל שהוזן.
--   **קומפוננטות מודולריות:** `DashboardPage.tsx` פורק לקומפוננטות מודולריות וקלות לניהול, כולל `RecipeCard.tsx`, `RecipeList.tsx`, `AppHeader.tsx`, `AppFooter.tsx`, `SearchAndFilterSection.tsx`, `RecipeFormFields.tsx`, `IngredientsSection.tsx`, `InstructionsSection.tsx`.
--   **טיפוסיות משותפת:** קובץ `client/src/types/Recipe.ts` לטיפוסי TypeScript עקביים בין הקומפוננטות.
--   **אינטגרציית AI (ג'מיני) ב-Frontend:** ממשק משתמש ב-`AddRecipeModal.tsx` המאפשר לבקש מתכון מה-AI על בסיס קריטריונים, והמתכון המוצע מאכלס אוטומטית את שדות הטופס.
+לפני תחילת העבודה, ודא שהכלים הבאים מותקנים במחשבך:
 
+1.  **Node.js**: גרסה עדכנית (LTS מומלץ).
+2.  **MongoDB**: מותקן ורץ מקומית או שימוש ב-MongoDB Atlas (ענן).
+3.  **Ollama**: נדרש להרצת מודל ה-AI באופן מקומי.
+    -   יש להוריד ולהתקין מאתר [Ollama.com](https://ollama.com).
+    -   לאחר ההתקנה, יש למשוך את המודל הנדרש באמצעות הפקודה:
+        ```bash
+        ollama pull gemma3:4b
+        ```
 
-## 🗓️ מה בתכנון:
+---
 
-### ✨ תכונות מתקדמות
--   סריקת מסמכים (OCR + AI Structuring) להוספת מתכונים מתמונה (Backend + Frontend).
+## 🚀 התקנה והרצה (Getting Started)
 
+### 1️⃣ התקנת תלויות (Server & Client)
+
+פתח טרמינל בתיקייה הראשית של הפרויקט והרץ את הפקודות הבאות:
+
+**עבור השרת (Server):**
+```bash
+cd server
+npm install
+```
+
+**עבור הלקוח (Client):**
+```bash
+cd ../client
+npm install
+```
+
+### 2️⃣ הגדרת משתני סביבה (.env)
+
+**בתיקיית `server`:**
+צור קובץ בשם `.env` והוסף את המשתנים הבאים:
+
+```env
+PORT=3000
+MONGO_URI=mongodb+srv://<your-connection-string> # או חיבור מקומי
+JWT_SECRET=mySuperSecretKey123 # מפתח סודי לחתימת הטוקנים
+```
+
+**בתיקיית `client`:**
+הכתובת לשרת ה-API מוגדרת כרגע בקובץ `client/src/apiClient.ts` באופן קבוע (`https://recipe-book-oxv7.onrender.com/api` או `http://localhost:3000/api`).
+אם אתה מריץ את השרת מקומית, ודא שהכתובת ב-`API_BASE_URL` מכוונת ל-`http://localhost:3000/api`.
+
+### 3️⃣ הרצת הפרויקט
+
+**הפעלת השרת (Server):**
+בטרמינל של ה-`server`:
+```bash
+npm run dev
+```
+השרת ירוץ כברירת מחדל על `http://localhost:3000`.
+
+**הפעלת הלקוח (Client):**
+בטרמינל של ה-`client`:
+```bash
+npm run dev
+```
+האפליקציה תהיה זמינה בדר"כ בכתובת `http://localhost:5173`.
+
+---
+
+## 🌟 תכונות הפרויקט
+
+### 🚀 Backend (שרת)
+-   **מודלים ו-DB:** שימוש ב-Mongoose להגדרת סכמות (Users, Recipes). תמיכה בשדות כמו `prepTime`, `cookTime`, `dietaryRestrictions`, ועוד.
+-   **אימות (Auth):** רישום והתחברות (JWT + bcrypt).
+-   **CRUD מתכונים:** יצירה, שליפה, עדכון ומחיקה של מתכונים (מוגן ע"י אימות).
+-   **אינטגרציית AI ליקלית:** שימוש במודל **Gemma 3** (דרך **Ollama**) ליצירת הצעות למתכונים על בסיס מצרכים ומצב רוח. השרת מתזרים (Streams) את התשובה ללקוח בזמן אמת.
+
+### 💻 Frontend (לקוח)
+-   **React + Vite + MUI:** ממשק משתמש מודרני ומהיר.
+-   **ניהול מצב ורכיבים:** שימוש ב-Hooks וקומפוננטות מודולריות (`RecipeCard`, `AddRecipeModal` וכו').
+-   **מחולל מתכונים (AI):** ממשק בתוך המודאל "הוספת מתכון" המאפשר לבקש מתכון מה-AI. המערכת מזרימה את הטקסט וממלאת את הטופס אוטומטית בסיום.
+-   **התאמת כמויות:** צפייה במתכון מאפשרת שינוי מס' סועדים וחישוב אוטומטי של הכמויות.
+
+## 🗓️ מה בתכנון (Roadmap)
+-   [ ] סריקת מסמכים (OCR) להוספת מתכונים מתמונה.
+-   [ ] אפשרות לשיתוף מתכונים.
