@@ -23,12 +23,11 @@ apiClient.interceptors.response.use(
   error => {
     if (error.response && error.response.status === 401) {
       // אם מקבלים 401, אולי הטוקן לא תקף או פג תוקף
-      // אפשר לנקות את הטוקן ולנתק את המשתמש
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('currentUser');
-      // שימו לב: כאן אין ניווט אוטומטי, רק הודעה לקונסול
-      console.error("Unauthorized request or token expired. Logging out.");
-      // כאן ניתן להפעיל ניתוק וניווט ידני אם רוצים, אך זה מחוץ לסקופ הקומפוננטה הנוכחית
+      // ננקה את הטוקן ולנתק את המשתמש
+      // נשלח אירוע כדי שה-App ידע לנווט החוצה
+      window.dispatchEvent(new Event('auth:logout'));
+
+      console.error("Unauthorized request or token expired. Dispatching logout event.");
     }
     return Promise.reject(error);
   }

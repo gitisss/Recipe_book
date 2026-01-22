@@ -23,15 +23,15 @@ const AppFooter: React.FC = () => {
     <Box sx={{ bgcolor: 'primary.main', color: 'white', p: 1.5, position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 1100 }}>
       <Container maxWidth="lg">
         <Typography variant="body2" align="center" sx={{ fontSize: '0.875rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5 }}>
-          {'זכויות יוצרים © '}
-          <Link 
-            color="inherit" 
-            href="https://github.com/gitisss/Recipe_book" 
+          {' © '}
+          <Link
+            color="inherit"
+            href="https://github.com/gitisss/Recipe_book"
             target="_blank"
             rel="noopener noreferrer"
-            sx={{ 
-              display: 'inline-flex', 
-              alignItems: 'center', 
+            sx={{
+              display: 'inline-flex',
+              alignItems: 'center',
               textDecoration: 'none',
               '&:hover': {
                 textDecoration: 'underline'

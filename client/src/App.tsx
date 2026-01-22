@@ -52,6 +52,18 @@ function App() {
     console.log("User logged out.");
   }, []);
 
+  useEffect(() => {
+    const handleAuthLogout = () => {
+      handleLogout();
+    };
+
+    window.addEventListener('auth:logout', handleAuthLogout);
+
+    return () => {
+      window.removeEventListener('auth:logout', handleAuthLogout);
+    };
+  }, [handleLogout]);
+
   const StyledRootBox = styled(Box)(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
@@ -130,7 +142,7 @@ function App() {
                   : <Navigate to="/login" replace />
               } />
             </Routes>
-          </Box> 
+          </Box>
         </Router>
       </StyledRootBox>
     </ThemeContextProvider>

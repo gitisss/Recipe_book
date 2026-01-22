@@ -132,18 +132,18 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
       <AppHeader currentUser={currentUser} onLogout={onLogout} />
-      <Box sx={{ 
-        flexGrow: 1, 
-        display: 'flex', 
-        flexDirection: 'column', 
+      <Box sx={{
+        flexGrow: 1,
+        display: 'flex',
+        flexDirection: 'column',
         overflow: 'hidden',
         pt: '48px', // גובה ההדר
         pb: '60px' // גובה הפוטר
       }}>
-        <Container maxWidth="lg" sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, overflow: 'hidden', pt: 2, pb: 2, position: 'relative' }}>
-          <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center', mb: 2 }}>
+        {<Container maxWidth="lg" sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, overflow: 'hidden', pt: 2, pb: 2, position: 'relative' }}>
+          {/* <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center', mb: 2 }}>
             המתכונים שלי
-          </Typography>
+          </Typography> */}
           <Divider sx={{ mb: 2 }} />
 
           {/* כפתורים עגולים למעלה */}
@@ -216,10 +216,10 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) 
             {(selectedCategory || searchQuery) && (
               <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', ml: 'auto' }}>
                 {selectedCategory && (
-                  <Typography variant="body2" sx={{ 
-                    px: 1.5, 
-                    py: 0.5, 
-                    bgcolor: 'primary.light', 
+                  <Typography variant="body2" sx={{
+                    px: 1.5,
+                    py: 0.5,
+                    bgcolor: 'primary.light',
                     borderRadius: 1,
                     color: 'primary.contrastText'
                   }}>
@@ -227,10 +227,10 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) 
                   </Typography>
                 )}
                 {searchQuery && (
-                  <Typography variant="body2" sx={{ 
-                    px: 1.5, 
-                    py: 0.5, 
-                    bgcolor: 'primary.light', 
+                  <Typography variant="body2" sx={{
+                    px: 1.5,
+                    py: 0.5,
+                    bgcolor: 'primary.light',
                     borderRadius: 1,
                     color: 'primary.contrastText'
                   }}>
@@ -278,7 +278,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) 
               </Typography>
             )}
           </Box>
-        </Container>
+        </Container>}
       </Box>
       <AppFooter />
 

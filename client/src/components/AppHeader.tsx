@@ -1,8 +1,7 @@
 // client/src/components/AppHeader.tsx
 import React, { useState } from 'react';
-import { AppBar, Toolbar, Typography, Button, Box, Menu, MenuItem, Tooltip, Avatar, Divider} from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, Box, Menu, MenuItem, Tooltip, Avatar, Divider } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
-import LoginIcon from '@mui/icons-material/Login';
 import { Link } from 'react-router-dom';
 import PaletteIcon from '@mui/icons-material/Palette';
 import { useThemeMode } from '../contexts/ThemeContext';
@@ -52,12 +51,12 @@ const AppHeader: React.FC<AppHeaderProps> = ({ currentUser, onLogout }) => {
             ספר המתכונים שלי
           </Link>
         </Typography>
-        
+
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           {/* אזור ערכת נושא */}
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Tooltip title="בחר ערכת נושא">
-                <Button
+              <Button
                 color="inherit"
                 onClick={handleClick}
                 startIcon={<PaletteIcon fontSize="small" />}
@@ -109,8 +108,8 @@ const AppHeader: React.FC<AppHeaderProps> = ({ currentUser, onLogout }) => {
                 <Typography variant="subtitle1" sx={{ display: { xs: 'none', sm: 'block' }, fontSize: '0.875rem' }}>
                   {currentUser.username}
                 </Typography>
-                <Button 
-                  color="inherit" 
+                <Button
+                  color="inherit"
                   onClick={onLogout}
                   size="small"
                   startIcon={<LogoutIcon fontSize="small" />}

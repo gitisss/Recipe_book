@@ -51,8 +51,19 @@ const AddRecipeModal: React.FC<AddRecipeModalProps> = ({
     isGeneratingAiRecipe,
     aiError,
     handleRequestRecipeFromAI,
-    resetAIState,
+    activeFieldId // Get active field ID
   } = useAIRecipeGeneration(setFormData);
+
+  // Auto-scroll effect
+  React.useEffect(() => {
+    if (activeFieldId) {
+      const element = document.getElementById(activeFieldId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        element.focus();
+      }
+    }
+  }, [activeFieldId]);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);

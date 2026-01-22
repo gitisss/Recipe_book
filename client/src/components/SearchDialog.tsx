@@ -28,6 +28,13 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onClose, searchQuery,
     setLocalSearchQuery(searchQuery);
   }, [searchQuery, open]);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onSearchChange(localSearchQuery);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [localSearchQuery, onSearchChange]);
+
   const handleApply = () => {
     onSearchChange(localSearchQuery);
     onClose();
@@ -79,8 +86,8 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onClose, searchQuery,
         <Button onClick={handleClear} color="secondary">
           נקה
         </Button>
-        <Button onClick={handleApply} variant="contained" color="primary">
-          חפש
+        <Button onClick={onClose} variant="contained" color="primary">
+          סיום
         </Button>
       </DialogActions>
     </Dialog>

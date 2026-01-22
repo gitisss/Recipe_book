@@ -4,8 +4,7 @@ import {
   FormControl,
   InputLabel,
   Select,
-  MenuItem,
-  FormHelperText
+  MenuItem
 } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material';
 import type { IFullRecipeData } from '../../types/Recipe';
