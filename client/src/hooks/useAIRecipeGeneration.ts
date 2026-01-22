@@ -1,6 +1,7 @@
 // client/src/hooks/useAIRecipeGeneration.ts
 import { useState, useCallback } from 'react';
 import type { IFullRecipeData } from '../types/Recipe';
+import { API_BASE_URL } from '../apiClient';
 
 export const useAIRecipeGeneration = (setFormData: (data: IFullRecipeData) => void) => {
   const [aiCriteria, setAiCriteria] = useState<string>('');
@@ -24,7 +25,7 @@ export const useAIRecipeGeneration = (setFormData: (data: IFullRecipeData) => vo
 
     try {
       const token = localStorage.getItem('authToken');
-      const response = await fetch('http://localhost:3000/api/ai/suggest-recipe', {
+      const response = await fetch(`${API_BASE_URL}/ai/suggest-recipe`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

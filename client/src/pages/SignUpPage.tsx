@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import apiClient from '../apiClient';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { Box, Paper, TextField, Button, Typography, Alert } from '@mui/material';
@@ -70,13 +71,13 @@ const SignUpPage: React.FC = () => {
     }
 
     if (password.length < 6) {
-        setMessage('הסיסמה חייבת להכיל לפחות 6 תווים.');
-        return;
+      setMessage('הסיסמה חייבת להכיל לפחות 6 תווים.');
+      return;
     }
 
     setIsLoading(true);
     try {
-      const response = await axios.post('http://localhost:3000/api/signup', {
+      const response = await apiClient.post('/signup', {
         username,
         password,
       });
