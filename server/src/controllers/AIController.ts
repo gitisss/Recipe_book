@@ -1,14 +1,32 @@
 import { Request, Response } from "express";
+import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
 export const generateRecipeSuggestion = async (req: Request, res: Response) => {
   try {
     const { ingredients, diet, cuisine, mealType, mood } = req.body;
 
+    // הדפסת פרטי המתכון המבוקש
+    console.log("\n🔍 === פרטי בקשה למתכון חדש ===");
+    console.log("📝 מצרכים:", ingredients || "any");
+    console.log("🥗 דיאטה:", diet || "none");
+    console.log("🌍 מטבח:", cuisine || "any");
+    console.log("🍽️  סוג ארוחה:", mealType || "any");
+    console.log("😊 סגנון:", mood || "any");
+    console.log("=====================================\n");
+
+
+    const model = genAI.getGenerativeModel({
+      model: "gemini-2.5-flash",
+      generationConfig: {
+        responseMimeType: "application/json",
+      },
+    });
+
     const prompt = `
       You are a professional Michelin-star chef generator.
-      Return a complete, realistic and culinary-sound recipe in STRICT JSON format only.
-
-      All field VALUES must be written in Hebrew.
+      Return a complete, realistic and culinary-sound recipe in Hebrew.
 
       Input preferences:
       Ingredients: ${ingredients || "any"}
@@ -17,107 +35,53 @@ export const generateRecipeSuggestion = async (req: Request, res: Response) => {
       Meal type: ${mealType || "any"}
       Style: ${mood || "any"}
 
-      JSON schema:
+      Return ONLY a JSON object following this structure:
       {
-        "title": "string",
-        "description": "string",
+        "title": "שם המתכון",
+        "description": "תיאור קצר",
         "ingredients": [
-          { "name": "string", "quantity": "string", "unit": "string" }
+          { "name": "שם המצרך", "quantity": "כמות", "unit": "יחידה" }
         ],
-        "instructions": ["string"],
-        "prepTime": "string",
-        "cookTime": "string",
-        "servings": "string",
+        "instructions": ["שלב 1", "שלב 2"],
+        "prepTime": "זמן הכנה",
+        "cookTime": "זמן בישול",
+        "servings": "מספר מנות",
         "category": "עיקרית | קינוח | ארוחת בוקר | מרק | סלט | מאפה",
         "cuisine": "ישראלי | איטלקי | אסייתי | מזרח תיכוני | אמריקאי",
-        "dietaryRestrictions": ["string"]
+        "dietaryRestrictions": ["מגבלה"]
       }
+    `.trim();
 
-      Rules:
-      - JSON only, no markdown, no prose.
-      - Ensure culinary logic: proportions must be realistic.
-      - Category and cuisine must match EXACTLY one of the allowed values.
-      `.trim();
-
-    // Set headers for streaming
+    // הגדרת כותרות ל-Streaming
     res.setHeader("Content-Type", "text/plain; charset=utf-8");
     res.setHeader("Transfer-Encoding", "chunked");
 
-    const response = await fetch("http://localhost:11434/api/generate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "gemma3:4b", // Or your preferred model
-        prompt,
-        stream: true, // Enable streaming from Ollama
-        format: "json", // Enforce JSON from Ollama
-        options: {
-          temperature: 0.7,
-        },
-      }),
-    });
+    console.log("🤖 מתחיל לקבל תשובה מ-AI...\n");
+    console.log("📡 === תשובת AI (streaming) ===");
 
-    if (!response.ok || !response.body) {
-      throw new Error(`Ollama HTTP error ${response.status}`);
+    // ביצוע קריאת סטרימינג
+    const result = await model.generateContentStream(prompt);
+
+    for await (const chunk of result.stream) {
+      const chunkText = chunk.text();
+      console.log(chunkText); // הדפסת כל חלק מהתשובה
+      res.write(chunkText); // שליחת החלק שהתקבל ישירות לקליינט
     }
 
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = "";
-
-    while (true) {
-      const { done, value } = await reader.read();
-
-      if (done) {
-        break;
-      }
-
-      const chunk = decoder.decode(value, { stream: true });
-
-      // Ollama streaming returns JSON lines like: { "model": "...", "created_at": "...", "response": "fragment", "done": false }
-      // We need to parse these lines and extract the "response" field
-      const lines = (buffer + chunk).split("\n");
-      buffer = lines.pop() || ""; // Keep the incomplete line in buffer
-
-      for (const line of lines) {
-        if (!line.trim()) continue;
-        try {
-          const parsed = JSON.parse(line);
-          if (parsed.response) {
-            res.write(parsed.response); // Write just the content fragment to the client
-          }
-          if (parsed.done) {
-            // Stream finished
-          }
-        } catch (e) {
-          console.error("Error parsing Ollama chunk:", e);
-        }
-      }
-    }
-
-    // Process any remaining characters
-    if (buffer) {
-      try {
-        const parsed = JSON.parse(buffer);
-        if (parsed.response) {
-          res.write(parsed.response);
-        }
-      } catch (e) {
-        // Ignore if incomplete json at very end (unlikely for "done")
-      }
-    }
+    console.log("\n=================================");
+    console.log("✅ הושלם בהצלחה!\n");
 
     res.end();
 
   } catch (error: any) {
-    console.error("Recipe generation failed:", error);
+    console.error("Gemini generation failed:", error);
     if (!res.headersSent) {
       return res.status(500).json({
         message: "אירעה שגיאה ביצירת הצעת מתכון",
         error: error.message,
       });
     } else {
-      res.end(); // Close stream if headers already sent
+      res.end();
     }
   }
 };
