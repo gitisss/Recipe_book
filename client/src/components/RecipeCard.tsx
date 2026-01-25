@@ -34,7 +34,22 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
   onDelete
 }) => {
   return (
-    <Card sx={{ width: { xs: '100%', sm: 'calc(50% - 8px)', md: 'calc(33.333% - 11px)'}, display: 'flex', flexDirection: 'column', maxWidth: 280 }} elevation={2}>
+    <Card
+      onClick={() => onView(id)}
+      sx={{
+        width: { xs: '100%', sm: 'calc(50% - 8px)', md: 'calc(33.333% - 11px)' },
+        display: 'flex',
+        flexDirection: 'column',
+        maxWidth: 280,
+        cursor: 'pointer',
+        '&:hover': {
+          boxShadow: 6,
+          transform: 'translateY(-2px)',
+          transition: 'all 0.2s ease-in-out'
+        }
+      }}
+      elevation={2}
+    >
       <RecipeImageDisplay imageUrl={imageUrl} title={title} />
       <CardContent sx={{ flexGrow: 1, p: 1.5, '&:last-child': { pb: 1.5 } }}>
         <Typography gutterBottom variant="subtitle1" component="div" sx={{ fontSize: '0.95rem', fontWeight: 600, mb: 0.5 }}>
@@ -45,10 +60,10 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
         </Typography>
       </CardContent>
       <CardActions sx={{ justifyContent: 'space-between', p: 0.5, px: 1 }}>
-        <Button size="small" startIcon={<VisibilityIcon />} onClick={() => onView(id)} sx={{ fontSize: '0.75rem' }}>צפה</Button>
+        <Button size="small" startIcon={<VisibilityIcon />} onClick={(e) => { e.stopPropagation(); onView(id); }} sx={{ fontSize: '0.75rem' }}>צפה</Button>
         <Box>
-          <IconButton size="small" onClick={() => onEdit(id)} sx={{ p: 0.5 }}><EditIcon fontSize="small"/></IconButton>
-          <IconButton size="small" onClick={() => onDelete(id)} sx={{ p: 0.5 }}><DeleteIcon fontSize="small"/></IconButton>
+          <IconButton size="small" onClick={(e) => { e.stopPropagation(); onEdit(id); }} sx={{ p: 0.5 }}><EditIcon fontSize="small" /></IconButton>
+          <IconButton size="small" onClick={(e) => { e.stopPropagation(); onDelete(id); }} sx={{ p: 0.5 }}><DeleteIcon fontSize="small" /></IconButton>
         </Box>
       </CardActions>
     </Card>

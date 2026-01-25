@@ -6,7 +6,7 @@ import { login } from "./controllers/LogInController";
 import { signup } from "./controllers/SignUpController";
 import { connectDB } from "./DB/mongoConnector";
 import { createRecipe, getRecipes, getRecipeById, updateRecipe, deleteRecipe } from "./controllers/RecipeController";
-import { generateRecipeSuggestion } from  "./controllers/AIController";
+import { generateRecipeSuggestion } from "./controllers/AIController";
 import { verifyToken } from './middleware/auth';
 
 
@@ -34,7 +34,7 @@ app.get("/api/recipes", verifyToken, getRecipes); // שליפת כל המתכו�
 app.get("/api/recipes/:id", verifyToken, getRecipeById); // שליפת מתכון בודד
 app.put("/api/recipes/:id", verifyToken, updateRecipe); // עדכון מתכון
 app.delete("/api/recipes/:id", verifyToken, deleteRecipe); // מחיקת מתכון
-app.post("/api/ai/suggest-recipe", verifyToken, generateRecipeSuggestion); 
+app.post("/api/ai/suggest-recipe", verifyToken, generateRecipeSuggestion); //יצירת מתכון AI
 
 
 connectDB().then(() => {
