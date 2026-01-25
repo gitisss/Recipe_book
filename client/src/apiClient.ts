@@ -1,7 +1,7 @@
 // client/src/apiClient.ts
 import axios from 'axios';
 
-export const API_BASE_URL = 'https://cookbook-oxv7.onrender.com/api';
+export const API_BASE_URL = 'https://recipe-book-oxv7.onrender.com/api';
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,

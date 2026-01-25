@@ -55,7 +55,7 @@ JWT_SECRET=mySuperSecretKey123 # מפתח סודי לחתימת הטוקנים
 ```
 
 **בתיקיית `client`:**
-הכתובת לשרת ה-API מוגדרת כרגע בקובץ `client/src/apiClient.ts` באופן קבוע (`https://cookbook-oxv7.onrender.com/api` או `http://localhost:3000/api`).
+הכתובת לשרת ה-API מוגדרת כרגע בקובץ `client/src/apiClient.ts` באופן קבוע (`https://recipe-book-oxv7.onrender.com/api` או `http://localhost:3000/api`).
 אם אתה מריץ את השרת מקומית, ודא שהכתובת ב-`API_BASE_URL` מכוונת ל-`http://localhost:3000/api`.
 
 ### 3️⃣ הרצת הפרויקט
