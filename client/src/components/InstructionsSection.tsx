@@ -7,6 +7,7 @@ import {
   Button,
   IconButton
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 
@@ -23,17 +24,18 @@ const InstructionsSection: React.FC<InstructionsSectionProps> = ({
   addInstructionField,
   removeInstructionField,
 }) => {
+  const { t } = useTranslation();
   return (
     <>
       <Typography variant="h6" sx={{ mt: 3, mb: 1 }}>
-        הוראות הכנה
+        {t('recipe.instructions')}
       </Typography>
       {instructions.map((instruction, index) => (
         <Box key={index} sx={{ display: 'flex', gap: 1, mb: 1, alignItems: 'center' }}>
           <TextField
             fullWidth
             id={`instruction-${index}`}
-            label={`שלב ${index + 1}`}
+            label={`${t('recipe.step')} ${index + 1}`}
             value={instruction}
             onChange={(e) =>
               handleInstructionChange(index, e.target.value)
@@ -51,7 +53,7 @@ const InstructionsSection: React.FC<InstructionsSectionProps> = ({
         </Box>
       ))}
       <Button startIcon={<AddIcon />} onClick={addInstructionField} sx={{ mt: 1 }}>
-        הוסף שלב
+        {t('recipe.addStep')}
       </Button>
     </>
   );

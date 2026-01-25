@@ -9,6 +9,7 @@ import {
   IconButton,
   Fab
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 import CategoryIcon from '@mui/icons-material/Category';
@@ -37,6 +38,7 @@ interface DashboardPageProps {
 }
 
 const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) => {
+  const { t } = useTranslation();
   const {
     recipes,
     isLoadingRecipes,
@@ -76,12 +78,12 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) 
   const handleAddNewRecipe = useCallback(async (recipeData: IFullRecipeData) => {
     try {
       await apiClient.post('/recipes', recipeData);
-      alert('מתכון נוצר בהצלחה!');
+      alert(t('dashboard.createSuccess'));
       handleCloseAddRecipeModal();
       fetchRecipes(selectedCategory || undefined, searchQuery);
     } catch (err: any) {
       console.error('Error creating recipe:', err);
-      alert(err.response?.data?.message || 'אירעה שגיאה ביצירת המתכון.');
+      alert(err.response?.data?.message || t('recipe.saveError'));
     }
   }, [fetchRecipes, selectedCategory, searchQuery, handleCloseAddRecipeModal]);
 
@@ -90,7 +92,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) 
       const recipe = await getRecipeById(id);
       handleViewRecipeModal(recipe);
     } catch (err: any) {
-      alert(err.message || 'אירעה שגיאה בטעינת פרטי המתכון.');
+      alert(err.message || t('dashboard.recipeLoadError'));
     }
   }, [getRecipeById, handleViewRecipeModal]);
 
@@ -99,30 +101,30 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) 
       const recipe = await getRecipeById(id);
       handleEditRecipeModal(recipe);
     } catch (err: any) {
-      alert(err.message || 'אירעה שגיאה בטעינת המתכון לעריכה.');
+      alert(err.message || t('dashboard.recipeEditLoadError'));
     }
   }, [getRecipeById, handleEditRecipeModal]);
 
   const handleUpdateRecipe = useCallback(async (id: string, recipeData: IFullRecipeData) => {
     try {
       await apiClient.put(`/recipes/${id}`, recipeData);
-      alert('מתכון עודכן בהצלחה!');
+      alert(t('dashboard.updateSuccess'));
       handleCloseEditRecipeModal();
       fetchRecipes(selectedCategory || undefined, searchQuery);
     } catch (err: any) {
       console.error('Error updating recipe:', err);
-      alert(err.response?.data?.message || 'אירעה שגיאה בעדכון המתכון.');
+      alert(err.response?.data?.message || t('recipe.saveError'));
     }
   }, [fetchRecipes, selectedCategory, searchQuery, handleCloseEditRecipeModal]);
 
   const handleDeleteRecipe = useCallback(async (id: string) => {
-    if (window.confirm('האם אתה בטוח שברצונך למחוק מתכון זה?')) {
+    if (window.confirm(t('dashboard.deleteConfirm'))) {
       try {
         await deleteRecipe(id);
-        alert('מתכון נמחק בהצלחה!');
+        alert(t('dashboard.deleteSuccess'));
         fetchRecipes(selectedCategory || undefined, searchQuery);
       } catch (err: any) {
-        alert(err.message || 'אירעה שגיאה במחיקת המתכון.');
+        alert(err.message || t('dashboard.deleteError'));
       }
     }
   }, [deleteRecipe, fetchRecipes, selectedCategory, searchQuery]);
@@ -193,7 +195,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) 
             {/* כפתור הוספת מתכון - בולט יותר */}
             <Fab
               color="primary"
-              aria-label="הוסף מתכון"
+              aria-label={t('dashboard.addRecipe')}
               onClick={() => {
                 console.log('Opening Add Recipe Modal');
                 handleOpenAddRecipeModal();
@@ -223,7 +225,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) 
                     borderRadius: 1,
                     color: 'primary.contrastText'
                   }}>
-                    קטגוריה: {selectedCategory}
+                    {t('dashboard.category')} {selectedCategory}
                   </Typography>
                 )}
                 {searchQuery && (
@@ -234,7 +236,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) 
                     borderRadius: 1,
                     color: 'primary.contrastText'
                   }}>
-                    חיפוש: {searchQuery}
+                    {t('dashboard.search')} {searchQuery}
                   </Typography>
                 )}
               </Box>
@@ -244,7 +246,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) 
           {/* כותרת קטגוריה אם נבחרה */}
           {selectedCategory && (
             <Typography variant="h6" component="h2" gutterBottom sx={{ mb: 1 }}>
-              מתכונים בקטגוריה: {selectedCategory}
+              {t('dashboard.recipesInCategory')} {selectedCategory}
             </Typography>
           )}
 
@@ -253,11 +255,11 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) 
             {isLoadingRecipes ? (
               <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}>
                 <CircularProgress />
-                <Typography sx={{ ml: 2 }}>טוען מתכונים...</Typography>
+                <Typography sx={{ ml: 2 }}>{t('dashboard.loadingRecipes')}</Typography>
               </Box>
             ) : error ? (
               <Typography color="error" sx={{ textAlign: 'center', my: 3 }}>
-                שגיאה: {error}
+                {t('common.error')}: {error}
               </Typography>
             ) : recipes.length > 0 ? (
               <RecipeList
@@ -270,11 +272,11 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) 
               />
             ) : (searchQuery || selectedCategory) ? (
               <Typography variant="body1" color="text.secondary" sx={{ textAlign: 'center', mt: 3 }}>
-                לא נמצאו מתכונים עבור החיפוש/קטגוריה הנוכחיים.
+                {t('dashboard.noRecipesFound')}
               </Typography>
             ) : (
               <Typography variant="body1" color="text.secondary" sx={{ textAlign: 'center', mt: 3 }}>
-                עדיין לא הוספת מתכונים. התחל על ידי הוספת מתכון חדש!
+                {t('dashboard.noRecipesYet')}
               </Typography>
             )}
           </Box>

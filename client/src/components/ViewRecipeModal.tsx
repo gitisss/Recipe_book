@@ -8,6 +8,7 @@ import {
   Button,
   Divider
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import type { IRecipe } from '../types/Recipe';
 import RecipeImage from './recipeView/RecipeImage';
 import RecipeDescription from './recipeView/RecipeDescription';
@@ -21,7 +22,7 @@ interface ViewRecipeModalProps {
 }
 
 const ViewRecipeModal: React.FC<ViewRecipeModalProps> = ({ open, onClose, recipe }) => {
-  
+  const { t } = useTranslation();
   if (!recipe) {
     return null;
   }
@@ -29,7 +30,7 @@ const ViewRecipeModal: React.FC<ViewRecipeModalProps> = ({ open, onClose, recipe
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
       <DialogTitle sx={{ textAlign: 'center', pb: 1 }}>
-        פרטי מתכון: {recipe.title}
+        {t('recipe.viewTitle')} {recipe.title}
       </DialogTitle>
       <DialogContent dividers>
         <RecipeImage imageUrl={recipe.imageUrl} title={recipe.title} />
@@ -41,7 +42,7 @@ const ViewRecipeModal: React.FC<ViewRecipeModalProps> = ({ open, onClose, recipe
       </DialogContent>
       <DialogActions sx={{ p: 3, justifyContent: 'center' }}>
         <Button onClick={onClose} color="primary" variant="contained">
-          סגור
+          {t('common.close')}
         </Button>
       </DialogActions>
     </Dialog>

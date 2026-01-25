@@ -1,6 +1,7 @@
 // client/src/components/recipeForm/BasicInfoFields.tsx
 import React from 'react';
 import { TextField } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import type { IFullRecipeData } from '../../types/Recipe';
 
 interface BasicInfoFieldsProps {
@@ -14,24 +15,25 @@ const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
   handleChange,
   submitError,
 }) => {
+  const { t } = useTranslation();
   return (
     <>
       <TextField
         fullWidth
         id="recipe-title"
-        label="כותרת המתכון"
+        label={t('recipe.recipeTitle')}
         name="title"
         value={formData.title}
         onChange={handleChange}
         margin="normal"
         required
         error={!!submitError && formData.title.trim() === ''}
-        helperText={!!submitError && formData.title.trim() === '' ? 'כותרת המתכון הינה שדה חובה.' : ''}
+        helperText={!!submitError && formData.title.trim() === '' ? t('recipe.titleRequired') : ''}
       />
       <TextField
         fullWidth
         id="recipe-description"
-        label="תיאור"
+        label={t('recipe.description')}
         name="description"
         value={formData.description}
         onChange={handleChange}

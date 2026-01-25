@@ -9,6 +9,7 @@ import {
   IconButton,
   CircularProgress
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import CloseIcon from '@mui/icons-material/Close';
 import type { IFullRecipeData, IRecipe } from '../types/Recipe';
 import AiRecipeRequestSection from './AiRecipeRequestSection';
@@ -33,6 +34,7 @@ const AddRecipeModal: React.FC<AddRecipeModalProps> = ({
   onEditRecipe,
   initialRecipeData,
 }) => {
+  const { t } = useTranslation();
   const {
     formData,
     setFormData,
@@ -75,12 +77,12 @@ const AddRecipeModal: React.FC<AddRecipeModalProps> = ({
     setIsSubmitting(true);
 
     if (!formData.title.trim()) {
-      setSubmitError('כותרת המתכון הינה שדה חובה.');
+      setSubmitError(t('recipe.titleRequired'));
       setIsSubmitting(false);
       return;
     }
     if (formData.ingredients.length === 0 || formData.ingredients.every(ing => !ing.name.trim())) {
-      setSubmitError('יש להזין לפחות מרכיב אחד למתכון.');
+      setSubmitError(t('recipe.atLeastOneIngredient'));
       setIsSubmitting(false);
       return;
     }
@@ -101,7 +103,7 @@ const AddRecipeModal: React.FC<AddRecipeModalProps> = ({
       onClose();
     } catch (err: any) {
       console.error('Failed to submit recipe:', err);
-      setSubmitError(err.response?.data?.message || 'אירעה שגיאה בשמירת המתכון.');
+      setSubmitError(err.response?.data?.message || t('recipe.saveError'));
     } finally {
       setIsSubmitting(false);
     }
@@ -138,7 +140,7 @@ const AddRecipeModal: React.FC<AddRecipeModalProps> = ({
           <CloseIcon />
         </IconButton>
         <Typography variant="h5" component="h2" gutterBottom sx={{ mb: 3 }}>
-          {initialRecipeData ? 'ערוך מתכון' : 'הוסף מתכון חדש'}
+          {initialRecipeData ? t('recipe.editTitle') : t('recipe.addTitle')}
         </Typography>
 
         {!initialRecipeData && (
@@ -175,7 +177,7 @@ const AddRecipeModal: React.FC<AddRecipeModalProps> = ({
 
           <TextField
             fullWidth
-            label="כתובת URL לתמונה"
+            label={t('recipe.imageUrl')}
             name="imageUrl"
             value={formData.imageUrl}
             onChange={handleChange}
@@ -196,10 +198,10 @@ const AddRecipeModal: React.FC<AddRecipeModalProps> = ({
               type="submit"
               disabled={isSubmitting || isGeneratingAiRecipe}
             >
-              {isSubmitting ? <CircularProgress size={24} color="inherit" /> : initialRecipeData ? 'שמור שינויים' : 'הוסף מתכון'}
+              {isSubmitting ? <CircularProgress size={24} color="inherit" /> : initialRecipeData ? t('recipe.saveChanges') : t('dashboard.addRecipe')}
             </Button>
             <Button variant="outlined" onClick={onClose} disabled={isSubmitting || isGeneratingAiRecipe}>
-              בטל
+              {t('common.cancel')}
             </Button>
           </Box>
         </form>

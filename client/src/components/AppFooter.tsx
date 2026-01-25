@@ -1,6 +1,7 @@
 // client/src/components/AppFooter.tsx
 import React from 'react';
 import { Box, Typography, Container, Link } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 // אייקון GitHub SVG
 const GitHubIcon: React.FC<{ size?: number }> = ({ size = 16 }) => (
@@ -19,6 +20,7 @@ const GitHubIcon: React.FC<{ size?: number }> = ({ size = 16 }) => (
 );
 
 const AppFooter: React.FC = () => {
+  const { t } = useTranslation();
   return (
     <Box sx={{ bgcolor: 'primary.main', color: 'white', p: 1.5, position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 1100 }}>
       <Container maxWidth="lg">
@@ -38,7 +40,7 @@ const AppFooter: React.FC = () => {
               }
             }}
           >
-            ספר המתכונים שלי
+            {t('header.appTitle')}
             <GitHubIcon size={18} />
           </Link>
           {' '}

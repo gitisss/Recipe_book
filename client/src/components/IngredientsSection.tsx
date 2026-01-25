@@ -7,6 +7,7 @@ import {
   Button,
   IconButton
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import type { IIngredient } from '../types/Recipe';
@@ -26,16 +27,17 @@ const IngredientsSection: React.FC<IngredientsSectionProps> = ({
   removeIngredientField,
   submitError,
 }) => {
+  const { t } = useTranslation();
   return (
     <>
       <Typography variant="h6" sx={{ mt: 3, mb: 1 }}>
-        מרכיבים
+        {t('recipe.ingredients')}
       </Typography>
       {ingredients.map((ingredient, index) => (
         <Box key={index} sx={{ display: 'flex', gap: 1, mb: 1, alignItems: 'center' }}>
           <TextField
             id={`ingredient-name-${index}`}
-            label="שם המרכיב"
+            label={t('recipe.ingredientName')}
             value={ingredient.name}
             onChange={(e) =>
               handleIngredientChange(index, 'name', e.target.value)
@@ -43,11 +45,11 @@ const IngredientsSection: React.FC<IngredientsSectionProps> = ({
             sx={{ flex: 3 }}
             required
             error={!!submitError && ingredients.every(ing => !ing.name.trim()) && index === 0}
-            helperText={!!submitError && ingredients.every(ing => !ing.name.trim()) && index === 0 ? 'יש להזין לפחות מרכיב אחד.' : ''}
+            helperText={!!submitError && ingredients.every(ing => !ing.name.trim()) && index === 0 ? t('recipe.atLeastOneIngredient') : ''}
           />
           <TextField
             id={`ingredient-quantity-${index}`}
-            label="כמות"
+            label={t('recipe.quantity')}
             value={ingredient.quantity}
             onChange={(e) =>
               handleIngredientChange(index, 'quantity', e.target.value)
@@ -56,7 +58,7 @@ const IngredientsSection: React.FC<IngredientsSectionProps> = ({
           />
           <TextField
             id={`ingredient-unit-${index}`}
-            label="יחידה (גרם, כוסות, וכו')"
+            label={t('recipe.unit')}
             value={ingredient.unit}
             onChange={(e) =>
               handleIngredientChange(index, 'unit', e.target.value)
@@ -73,7 +75,7 @@ const IngredientsSection: React.FC<IngredientsSectionProps> = ({
         </Box>
       ))}
       <Button startIcon={<AddIcon />} onClick={addIngredientField} sx={{ mt: 1 }}>
-        הוסף מרכיב
+        {t('recipe.addIngredient')}
       </Button>
     </>
   );

@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { Box, Paper, TextField, Button, Typography, Alert } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { useTranslation } from 'react-i18next';
 
 const StyledFormContainer = styled(Paper)(({ theme }) => ({
   maxWidth: 400,
@@ -54,6 +55,7 @@ const StyledFormLink = styled(Typography)(({ theme }) => ({
 }));
 
 const SignUpPage: React.FC = () => {
+  const { t } = useTranslation();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -66,12 +68,12 @@ const SignUpPage: React.FC = () => {
     setMessage(''); // איפוס הודעה קודמת
 
     if (password !== confirmPassword) {
-      setMessage('הסיסמאות אינן תואמות.');
+      setMessage(t('auth.passwordsDoNotMatch'));
       return;
     }
 
     if (password.length < 6) {
-      setMessage('הסיסמה חייבת להכיל לפחות 6 תווים.');
+      setMessage(t('auth.passwordTooShort'));
       return;
     }
 
@@ -81,15 +83,15 @@ const SignUpPage: React.FC = () => {
         username,
         password,
       });
-      setMessage(response.data.message || 'ההרשמה בוצעה בהצלחה!');
+      setMessage(response.data.message || t('auth.signupSuccess'));
       setTimeout(() => {
         navigate('/login');
       }, 2000); // השהייה של 2 שניות
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        setMessage(error.response.data.message || 'אירעה שגיאה בתהליך ההרשמה.');
+        setMessage(error.response.data.message || t('auth.signupFailed'));
       } else {
-        setMessage('אירעה שגיאה לא צפויה בתהליך ההרשמה.');
+        setMessage(t('auth.unexpectedError'));
       }
       console.error('Signup error:', error);
     } finally {
@@ -97,18 +99,18 @@ const SignUpPage: React.FC = () => {
     }
   };
 
-  const isError = message.startsWith('אירעה שגיאה') || message.startsWith('הסיסמאות');
+  const isError = message !== t('auth.signupSuccess');
 
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', bgcolor: 'background.default' }}>
       <StyledFormContainer elevation={3}>
         <Typography variant="h4" component="h2" gutterBottom>
-          הרשמה
+          {t('auth.signup')}
         </Typography>
         <StyledForm onSubmit={handleSubmit}>
           <Box className="form-group">
             <StyledFormControl
-              label="שם משתמש"
+              label={t('auth.username')}
               id="username"
               type="text"
               value={username}
@@ -120,7 +122,7 @@ const SignUpPage: React.FC = () => {
           </Box>
           <Box className="form-group">
             <StyledFormControl
-              label="סיסמה"
+              label={t('auth.password')}
               id="password"
               type="password"
               value={password}
@@ -132,7 +134,7 @@ const SignUpPage: React.FC = () => {
           </Box>
           <Box className="form-group">
             <StyledFormControl
-              label="אימות סיסמה"
+              label={t('auth.confirmPassword')}
               id="confirmPassword"
               type="password"
               value={confirmPassword}
@@ -148,7 +150,7 @@ const SignUpPage: React.FC = () => {
             color="primary"
             disabled={isLoading}
           >
-            {isLoading ? 'שולח...' : 'הירשם'}
+            {isLoading ? t('auth.signingUp') : t('auth.signupButton')}
           </StyledSubmitButton>
         </StyledForm>
         {message && (
@@ -157,7 +159,7 @@ const SignUpPage: React.FC = () => {
           </Alert>
         )}
         <StyledFormLink>
-          כבר יש לך חשבון? <Link to="/login">התחבר כאן</Link>
+          {t('auth.hasAccount')} <Link to="/login">{t('auth.loginHere')}</Link>
         </StyledFormLink>
       </StyledFormContainer>
     </Box>

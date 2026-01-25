@@ -5,6 +5,7 @@ import DashboardPage from './pages/DashboardPage';
 import SignUpPage from './pages/SignUpPage';
 import { Box, styled } from '@mui/material';
 import { ThemeContextProvider } from './contexts/ThemeContext';
+import { useTranslation } from 'react-i18next';
 
 interface UserData {
   id: string;
@@ -12,6 +13,7 @@ interface UserData {
 }
 
 function App() {
+  const { t } = useTranslation();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [currentUser, setCurrentUser] = useState<UserData | null>(null);
   const [isLoadingAuth, setIsLoadingAuth] = useState<boolean>(true);
@@ -104,7 +106,7 @@ function App() {
   if (isLoadingAuth) {
     return (
       <ThemeContextProvider>
-        <StyledLoadingBox>טוען אפליקציה...</StyledLoadingBox>
+        <StyledLoadingBox>{t('common.loading')}</StyledLoadingBox>
       </ThemeContextProvider>
     );
   }
@@ -135,8 +137,8 @@ function App() {
                 isAuthenticated
                   ? (
                     <StyledNotFoundBox>
-                      <h1>404 - עמוד לא נמצא</h1>
-                      <p>העמוד שחיפשת אינו קיים. <Link to="/dashboard">חזור לדאשבורד</Link></p>
+                      <h1>{t('common.notFound')}</h1>
+                      <p>{t('common.notFoundMessage')} <Link to="/dashboard">{t('common.backToDashboard')}</Link></p>
                     </StyledNotFoundBox>
                   )
                   : <Navigate to="/login" replace />

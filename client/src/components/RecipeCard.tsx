@@ -9,6 +9,7 @@ import {
   Typography,
   IconButton
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -33,6 +34,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
   onEdit,
   onDelete
 }) => {
+  const { t } = useTranslation();
   return (
     <Card
       onClick={() => onView(id)}
@@ -60,7 +62,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
         </Typography>
       </CardContent>
       <CardActions sx={{ justifyContent: 'space-between', p: 0.5, px: 1 }}>
-        <Button size="small" startIcon={<VisibilityIcon />} onClick={(e) => { e.stopPropagation(); onView(id); }} sx={{ fontSize: '0.75rem' }}>צפה</Button>
+        <Button size="small" startIcon={<VisibilityIcon />} onClick={(e) => { e.stopPropagation(); onView(id); }} sx={{ fontSize: '0.75rem' }}>{t('common.view')}</Button>
         <Box>
           <IconButton size="small" onClick={(e) => { e.stopPropagation(); onEdit(id); }} sx={{ p: 0.5 }}><EditIcon fontSize="small" /></IconButton>
           <IconButton size="small" onClick={(e) => { e.stopPropagation(); onDelete(id); }} sx={{ p: 0.5 }}><DeleteIcon fontSize="small" /></IconButton>

@@ -2,6 +2,7 @@
 import { useState, useCallback } from 'react';
 import type { IFullRecipeData } from '../types/Recipe';
 import { API_BASE_URL } from '../apiClient';
+import i18n from '../i18n';
 
 export const useAIRecipeGeneration = (setFormData: (data: IFullRecipeData) => void) => {
   const [aiCriteria, setAiCriteria] = useState<string>('');
@@ -12,7 +13,7 @@ export const useAIRecipeGeneration = (setFormData: (data: IFullRecipeData) => vo
 
   const handleRequestRecipeFromAI = useCallback(async () => {
     if (!aiCriteria.trim()) {
-      setAiError('אנא הזן קריטריונים לבקשת מתכון מה-AI (לדוגמה: מרכיבים, סוג ארוחה).');
+      setAiError(i18n.t('ai.criteriaRequired'));
       return;
     }
 
@@ -98,7 +99,7 @@ export const useAIRecipeGeneration = (setFormData: (data: IFullRecipeData) => vo
           prevPartial = partialData;
 
           setFormData({
-            title: partialData.title || (fullResponseText.length > 10 ? 'מתכון בהכנה...' : ''),
+            title: partialData.title || (fullResponseText.length > 10 ? i18n.t('ai.preparing') : ''),
             description: partialData.description || '',
             ingredients: Array.isArray(partialData.ingredients)
               ? partialData.ingredients.map((ing: any) => ({
@@ -123,7 +124,7 @@ export const useAIRecipeGeneration = (setFormData: (data: IFullRecipeData) => vo
       try {
         const finalData = JSON.parse(fullResponseText);
         setFormData({
-          title: finalData.title || 'מתכון מה-AI',
+          title: finalData.title || i18n.t('ai.aiRecipe'),
           description: finalData.description || '',
           ingredients: Array.isArray(finalData.ingredients)
             ? finalData.ingredients.map((ing: any) => ({
@@ -141,7 +142,7 @@ export const useAIRecipeGeneration = (setFormData: (data: IFullRecipeData) => vo
           cuisine: finalData.cuisine || '',
           dietaryRestrictions: Array.isArray(finalData.dietaryRestrictions) ? finalData.dietaryRestrictions : [],
         });
-        alert('מתכון הוצע על ידי ה-AI בהצלחה! אנא בדוק וערוך לפני השמירה.');
+        alert(i18n.t('ai.aiSuccess'));
       } catch (e) {
         console.error("Final JSON parse failed, but stream finished.", e);
         // If partial updates worked, we might be fine, or show an error only if it's garbage.
@@ -153,7 +154,7 @@ export const useAIRecipeGeneration = (setFormData: (data: IFullRecipeData) => vo
 
     } catch (err: any) {
       console.error('Error requesting recipe from AI:', err);
-      setAiError(err.response?.data?.message || err.message || 'אירעה שגיאה בבקשת מתכון מה-AI.');
+      setAiError(err.response?.data?.message || err.message || i18n.t('ai.aiError'));
     } finally {
       setIsGeneratingAiRecipe(false);
       setActiveFieldId(null);

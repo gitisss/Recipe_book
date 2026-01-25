@@ -7,6 +7,7 @@ import {
   IconButton,
   Box
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import CategoryIcon from '@mui/icons-material/Category';
 import CloseIcon from '@mui/icons-material/Close';
 import CategoryGrid from './CategoryGrid';
@@ -18,6 +19,7 @@ interface CategoryDialogProps {
 }
 
 const CategoryDialog: React.FC<CategoryDialogProps> = ({ open, onClose, onSelectCategory }) => {
+  const { t } = useTranslation();
   const handleSelectCategory = (category: string) => {
     onSelectCategory(category);
     onClose();
@@ -28,7 +30,7 @@ const CategoryDialog: React.FC<CategoryDialogProps> = ({ open, onClose, onSelect
       <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <CategoryIcon />
-          בחר קטגוריה
+          {t('category.dialogTitle')}
         </Box>
         <IconButton onClick={onClose} size="small">
           <CloseIcon />

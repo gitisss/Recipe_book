@@ -1,6 +1,7 @@
 // client/src/components/recipeForm/TimeFields.tsx
 import React from 'react';
 import { TextField } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import type { IFullRecipeData } from '../../types/Recipe';
 
 interface TimeFieldsProps {
@@ -9,12 +10,13 @@ interface TimeFieldsProps {
 }
 
 const TimeFields: React.FC<TimeFieldsProps> = ({ formData, handleChange }) => {
+  const { t } = useTranslation();
   return (
     <>
       <TextField
         fullWidth
         id="recipe-prepTime"
-        label="זמן הכנה (לדוגמה: 30 דקות)"
+        label={t('recipe.prepTime')}
         name="prepTime"
         value={formData.prepTime}
         onChange={handleChange}
@@ -23,7 +25,7 @@ const TimeFields: React.FC<TimeFieldsProps> = ({ formData, handleChange }) => {
       <TextField
         fullWidth
         id="recipe-cookTime"
-        label="זמן בישול (לדוגמה: שעה)"
+        label={t('recipe.cookTime')}
         name="cookTime"
         value={formData.cookTime}
         onChange={handleChange}
@@ -32,7 +34,7 @@ const TimeFields: React.FC<TimeFieldsProps> = ({ formData, handleChange }) => {
       <TextField
         fullWidth
         id="recipe-servings"
-        label="מספר מנות"
+        label={t('recipe.servings')}
         name="servings"
         value={formData.servings}
         onChange={handleChange}

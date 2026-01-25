@@ -1,0 +1,186 @@
+# Extracted Frontend Strings for Multi-language Support
+
+## [App.tsx](file:///c:/Users/hartk/OneDrive/Desktop/Recipe_book/client/src/App.tsx)
+- "טוען אפליקציה..."
+- "404 - עמוד לא נמצא"
+- "העמוד שחיפשת אינו קיים. "
+- "חזור לדאשבורד"
+
+## [LoginPage.tsx](file:///c:/Users/hartk/OneDrive/Desktop/Recipe_book/client/src/pages/LoginPage.tsx)
+- "התחברת בהצלחה"
+- "התחברות נכשלה. נתונים שגויים מהשרת."
+- "שגיאה בהתחברות. אנא נסה שוב."
+- "שגיאת רשת: השרת אינו זמין. אנא וודא שהשרת פועל."
+- "שגיאה בלתי צפויה. אנא נסה שוב."
+- "התחברות"
+- "שם משתמש"
+- "סיסמה"
+- "מתחבר..."
+- "התחבר"
+- "אין לך חשבון? "
+- "הירשם כאן"
+
+## [SignUpPage.tsx](file:///c:/Users/hartk/OneDrive/Desktop/Recipe_book/client/src/pages/SignUpPage.tsx)
+- "הרשמה"
+- "הסיסמאות אינן תואמות."
+- "הסיסמה חייבת להכיל לפחות 6 תווים."
+- "ההרשמה בוצעה בהצלחה!"
+- "אירעה שגיאה בתהליך ההרשמה."
+- "אירעה שגיאה לא צפויה בתהליך ההרשמה."
+- "אימות סיסמה"
+- "שולח..."
+- "הירשם"
+- "כבר יש לך חשבון? "
+- "התחבר כאן"
+
+## [DashboardPage.tsx](file:///c:/Users/hartk/OneDrive/Desktop/Recipe_book/client/src/pages/DashboardPage.tsx)
+- "מתכון נוצר בהצלחה!"
+- "אירעה שגיאה ביצירת המתכון."
+- "אירעה שגיאה בטעינת פרטי המתכון."
+- "אירעה שגיאה בטעינת המתכון לעריכה."
+- "מתכון עודכן בהצלחה!"
+- "אירעה שגיאה בעדכון המתכון."
+- "האם אתה בטוח שברצונך למחוק מתכון זה?"
+- "מתכון נמחק בהצלחה!"
+- "אירעה שגיאה במחיקת המתכון."
+- "הוסף מתכון"
+- "קטגוריה: "
+- "חיפוש: "
+- "מתכונים בקטגוריה: "
+- "טוען מתכונים..."
+- "שגיאה: "
+- "לא נמצאו מתכונים עבור החיפוש/קטגוריה הנוכחיים."
+- "עדיין לא הוספת מתכונים. התחל על ידי הוספת מתכון חדש!"
+
+## [AppHeader.tsx](file:///c:/Users/hartk/OneDrive/Desktop/Recipe_book/client/src/components/AppHeader.tsx)
+- "בהיר"
+- "כהה"
+- "אוקיינוס"
+- "שקיעה"
+- "סגול"
+- "ספר המתכונים שלי"
+- "בחר ערכת נושא"
+- "ערכת נושא: "
+- "התנתק"
+- "התחבר"
+- "הירשם"
+
+## [AddRecipeModal.tsx](file:///c:/Users/hartk/OneDrive/Desktop/Recipe_book/client/src/components/AddRecipeModal.tsx)
+- "כותרת המתכון הינה שדה חובה."
+- "יש להזין לפחות מרכיב אחד למתכון."
+- "אירעה שגיאה בשמירת המתכון."
+- "ערוך מתכון"
+- "הוסף מתכון חדש"
+- "כתובת URL לתמונה"
+- "שמור שינויים"
+- "הוסף מתכון"
+- "בטל"
+
+## [AiRecipeRequestSection.tsx](file:///c:/Users/hartk/OneDrive/Desktop/Recipe_book/client/src/components/AiRecipeRequestSection.tsx)
+- "מתחמם במטבח..."
+- "מחפש מצרכים במזווה הווירטואלי..."
+- "מנסה לתפוס את שף ה-AI שלנו לשיחה קצרה..."
+- "קוצץ בצל (בלי לבכות, מבטיח)..."
+- "מרתיח מים לתוצאות מושלמות..."
+- "מתלבט בין מלח לתימין..."
+- "טועם ומתקן תיבול..."
+- "מסדר את הצלחת יפה בשבילך..."
+- "מעיין בספרי בישול עתיקים..."
+- "בודק מה השכנים מבשלים..."
+- "מנקה את המשטח לעבודה נקייה..."
+- "מחדד את הסכינים (זהירות!)..."
+- "שואל את אמא של ה-AI למתכון הסודי..."
+- "מחפש חלופה טבעונית לביצה דמיונית..."
+- "מנסה להבין אם פטרוזיליה וכוסברה זה באמת אותו דבר..."
+- "מוודא שהתנור בטמפרטורה הנכונה..."
+- "מסדר את התבלינים לפי ה-א' ב'..."
+- "עוד רגע והשף מוציא את המנה..."
+- "שף AI אישי בהזמנה"
+- "מה נבשל היום? (למשל: פסטה לילדים, משהו עם חצילים...)"
+- "בקש מהשף מתכון"
+- "בכדי לשמור על מקסימום פרטיות המודל רץ מקוממית על המחשב שלך. זה ייקח כמה רגעים"
+
+## [IngredientsSection.tsx](file:///c:/Users/hartk/OneDrive/Desktop/Recipe_book/client/src/components/IngredientsSection.tsx)
+- "מרכיבים"
+- "שם המרכיב"
+- "כמות"
+- "יחידה (גרם, כוסות, וכו')"
+- "יש להזין לפחות מרכיב אחד."
+- "הוסף מרכיב"
+
+## [RecipeCard.tsx](file:///c:/Users/hartk/OneDrive/Desktop/Recipe_book/client/src/components/RecipeCard.tsx)
+- "צפה"
+
+## [BasicInfoFields.tsx](file:///c:/Users/hartk/OneDrive/Desktop/Recipe_book/client/src/components/recipeForm/BasicInfoFields.tsx)
+- "כותרת המתכון"
+- "תיאור"
+
+## [CategoryFields.tsx](file:///c:/Users/hartk/OneDrive/Desktop/Recipe_book/client/src/components/recipeForm/CategoryFields.tsx)
+- "קטגוריה"
+- "_בחר קטגוריה_"
+- "עיקרית"
+- "קינוח"
+- "ארוחת בוקר"
+- "מרק"
+- "סלט"
+- "מאפה"
+- "מטבח"
+- "_בחר מטבח_"
+- "ישראלי"
+- "איטלקי"
+- "אסייתי"
+- "מזרח תיכוני"
+- "אמריקאי"
+- "הגבלות תזונתיות"
+- "טבעוני"
+- "צמחוני"
+- "ללא גלוטן"
+- "ללא לקטוז"
+- "כשר"
+
+## [TimeFields.tsx](file:///c:/Users/hartk/OneDrive/Desktop/Recipe_book/client/src/components/recipeForm/TimeFields.tsx)
+- "זמן הכנה (לדוגמה: 30 דקות)"
+- "זמן בישול (לדוגמה: שעה)"
+- "מספר מנות"
+
+## [RecipeList.tsx](file:///c:/Users/hartk/OneDrive/Desktop/Recipe_book/client/src/components/RecipeList.tsx)
+- "טוען מתכונים..."
+- "עדיין לא הוספת מתכונים."
+- "הוסף את המתכון הראשון שלך!"
+
+## [SearchDialog.tsx](file:///c:/Users/hartk/OneDrive/Desktop/Recipe_book/client/src/components/SearchDialog.tsx)
+- "חיפוש מתכונים"
+- "חפש מתכונים..."
+- "נקה"
+- "סיום"
+
+## [AppFooter.tsx](file:///c:/Users/hartk/OneDrive/Desktop/Recipe_book/client/src/components/AppFooter.tsx)
+- "ספר המתכונים שלי"
+
+## [CategoryDialog.tsx](file:///c:/Users/hartk/OneDrive/Desktop/Recipe_book/client/src/components/CategoryDialog.tsx)
+- "בחר קטגוריה"
+
+## [ViewRecipeModal.tsx](file:///c:/Users/hartk/OneDrive/Desktop/Recipe_book/client/src/components/ViewRecipeModal.tsx)
+- "פרטי מתכון: "
+- "סגור"
+
+## [InstructionsSection.tsx](file:///c:/Users/hartk/OneDrive/Desktop/Recipe_book/client/src/components/InstructionsSection.tsx)
+- "הוראות הכנה"
+- "שלב "
+- "הוסף שלב"
+
+## [CategoryGrid.tsx](file:///c:/Users/hartk/OneDrive/Desktop/Recipe_book/client/src/components/CategoryGrid.tsx)
+- "עיקרית"
+- "קינוח"
+- "ארוחת בוקר"
+- "מרק"
+- "סלט"
+- "מאפה"
+- "ללא קטגוריה"
+
+## [useAIRecipeGeneration.ts](file:///c:/Users/hartk/OneDrive/Desktop/Recipe_book/client/src/hooks/useAIRecipeGeneration.ts)
+- "אנא הזן קריטריונים לבקשת מתכון מה-AI (לדוגמה: מרכיבים, סוג ארוחה)."
+- "מתכון בהכנה..."
+- "מתכון מה-AI"
+- "מתכון הוצע על ידי ה-AI בהצלחה! אנא בדוק וערוך לפני השמירה."
+- "אירעה שגיאה בבקשת מתכון מה-AI."

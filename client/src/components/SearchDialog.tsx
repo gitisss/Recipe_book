@@ -11,6 +11,7 @@ import {
   IconButton,
   Box
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 
@@ -22,6 +23,7 @@ interface SearchDialogProps {
 }
 
 const SearchDialog: React.FC<SearchDialogProps> = ({ open, onClose, searchQuery, onSearchChange }) => {
+  const { t } = useTranslation();
   const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery);
 
   useEffect(() => {
@@ -51,7 +53,7 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onClose, searchQuery,
       <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <SearchIcon />
-          חיפוש מתכונים
+          {t('search.dialogTitle')}
         </Box>
         <IconButton onClick={onClose} size="small">
           <CloseIcon />
@@ -61,7 +63,7 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onClose, searchQuery,
         <TextField
           autoFocus
           fullWidth
-          label="חפש מתכונים..."
+          label={t('search.inputPlaceholder')}
           variant="outlined"
           value={localSearchQuery}
           onChange={(e) => setLocalSearchQuery(e.target.value)}
@@ -84,10 +86,10 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onClose, searchQuery,
       </DialogContent>
       <DialogActions sx={{ px: 3, pb: 2 }}>
         <Button onClick={handleClear} color="secondary">
-          נקה
+          {t('search.clear')}
         </Button>
         <Button onClick={onClose} variant="contained" color="primary">
-          סיום
+          {t('search.done')}
         </Button>
       </DialogActions>
     </Dialog>

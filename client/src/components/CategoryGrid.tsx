@@ -1,6 +1,7 @@
 // client/src/components/CategoryGrid.tsx
 import React from 'react';
 import { Box, Card, CardContent, Typography, ButtonBase, Avatar } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 import RestaurantIcon from '@mui/icons-material/Restaurant';
 import CakeIcon from '@mui/icons-material/Cake';
@@ -16,17 +17,18 @@ interface CategoryGridProps {
   onSelectCategory: (category: string) => void;
 }
 
-const categories = [
-  { name: 'עיקרית', icon: RestaurantIcon },
-  { name: 'קינוח', icon: CakeIcon },
-  { name: 'ארוחת בוקר', icon: LocalCafeIcon },
-  { name: 'מרק', icon: SoupKitchenIcon },
-  { name: 'סלט', icon: LocalDiningIcon },
-  { name: 'מאפה', icon: BakeryDiningIcon },
-  { name: 'ללא קטגוריה', icon: CategoryIcon },
-];
-
 const CategoryGrid: React.FC<CategoryGridProps> = ({ onSelectCategory }) => {
+  const { t } = useTranslation();
+
+  const categories = [
+    { name: 'עיקרית', label: t('categories.mainCourse'), icon: RestaurantIcon },
+    { name: 'קינוח', label: t('categories.dessert'), icon: CakeIcon },
+    { name: 'ארוחת בוקר', label: t('categories.breakfast'), icon: LocalCafeIcon },
+    { name: 'מרק', label: t('categories.soup'), icon: SoupKitchenIcon },
+    { name: 'סלט', label: t('categories.salad'), icon: LocalDiningIcon },
+    { name: 'מאפה', label: t('categories.pastry'), icon: BakeryDiningIcon },
+    { name: 'ללא קטגוריה', label: t('categories.none'), icon: CategoryIcon },
+  ];
   return (
     <Box sx={{ my: 2 }}>
       <Grid container spacing={2} justifyContent="center">
@@ -66,7 +68,7 @@ const CategoryGrid: React.FC<CategoryGridProps> = ({ onSelectCategory }) => {
                   </Avatar>
                   <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
                     <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
-                      {cat.name}
+                      {cat.label}
                     </Typography>
                   </CardContent>
                 </Card>

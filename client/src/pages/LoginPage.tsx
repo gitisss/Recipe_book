@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Box, Paper, TextField, Button, Typography, Alert } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { useTranslation } from 'react-i18next';
 import apiClient from '../apiClient';
 
 // הגדרת מבנה לנתוני משתמש, כדי שהטיפוס יהיה ברור יותר
@@ -65,6 +66,7 @@ const StyledFormLink = styled(Typography)(({ theme }) => ({
 }));
 
 const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
+  const { t } = useTranslation();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState(''); // הודעות למשתמש (הצלחה/שגיאה)
@@ -84,50 +86,50 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
 
       // אם ההתחברות הצליחה וקיבלנו טוקן
       if (response.data && response.data.token && response.data.user) {
-        setMessage('התחברת בהצלחה');
+        setMessage(t('auth.loginSuccess'));
         // שמירת הטוקן ופרטי המשתמש ב-localStorage
         localStorage.setItem('authToken', response.data.token); // המפתח 'authToken' צריך להיות תואם למה ש-apiClient מצפה לו
         localStorage.setItem('currentUser', JSON.stringify(response.data.user));
-        
+
         // קריאה לפונקציית ההצלחה שהועברה כ-prop מ-App.tsx
         onLoginSuccess(response.data.token, response.data.user);
-        
+
         // ניווט לדף לוח הבקרה לאחר התחברות מוצלחת
         navigate('/dashboard');
       } else {
         // אם השרת החזיר תגובה ללא טוקן או משתמש, אך ללא שגיאה מפורשת
-        setMessage('התחברות נכשלה. נתונים שגויים מהשרת.');
+        setMessage(t('auth.loginFailed'));
       }
     } catch (error: any) {
       // טיפול בשגיאות מה-API (לדוגמה, שגיאות 400, 401, שגיאות רשת)
       console.error('Login error:', error);
       if (error.response) {
         // שגיאה מהשרת עם תגובה ספציפית
-        setMessage(error.response.data.message || 'שגיאה בהתחברות. אנא נסה שוב.');
+        setMessage(error.response.data.message || t('auth.unexpectedError'));
       } else if (error.request) {
         // הבקשה נשלחה אך לא התקבלה תגובה (למשל, השרת לא זמין)
-        setMessage('שגיאת רשת: השרת אינו זמין. אנא וודא שהשרת פועל.');
+        setMessage(t('auth.networkError'));
       } else {
         // שגיאות אחרות
-        setMessage('שגיאה בלתי צפויה. אנא נסה שוב.');
+        setMessage(t('auth.unexpectedError'));
       }
     } finally {
       setIsLoading(false); // כבה מצב טעינה
     }
   };
 
-  const isError = message.includes('שגיא') || message.includes('נכשלה');
+  const isError = message === t('auth.loginFailed') || message === t('auth.networkError') || message === t('auth.unexpectedError');
 
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', bgcolor: 'background.default' }}>
       <StyledFormContainer elevation={3}>
         <Typography variant="h4" component="h2" gutterBottom>
-          התחברות
+          {t('auth.login')}
         </Typography>
         <StyledForm onSubmit={handleSubmit}>
           <Box className="form-group">
             <StyledFormControl
-              label="שם משתמש"
+              label={t('auth.username')}
               id="username"
               type="text"
               value={username}
@@ -139,7 +141,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
           </Box>
           <Box className="form-group">
             <StyledFormControl
-              label="סיסמה"
+              label={t('auth.password')}
               id="password"
               type="password"
               value={password}
@@ -155,7 +157,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
             color="primary"
             disabled={isLoading}
           >
-            {isLoading ? 'מתחבר...' : 'התחבר'}
+            {isLoading ? t('auth.loggingIn') : t('auth.loginButton')}
           </StyledSubmitButton>
         </StyledForm>
         {message && (
@@ -164,7 +166,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
           </Alert>
         )}
         <StyledFormLink>
-          אין לך חשבון? <Link to="/signup">הירשם כאן</Link>
+          {t('auth.noAccount')} <Link to="/signup">{t('auth.registerHere')}</Link>
         </StyledFormLink>
       </StyledFormContainer>
     </Box>

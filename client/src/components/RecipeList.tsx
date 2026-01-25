@@ -7,6 +7,7 @@ import {
   Paper,
   Button
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import RecipeCard from './RecipeCard'; // ייבוא קומפוננטת RecipeCard
 
@@ -31,11 +32,12 @@ const RecipeList: React.FC<RecipeListProps> = ({
   onEditRecipe,
   onDeleteRecipe
 }) => {
+  const { t } = useTranslation();
   if (isLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}>
         <CircularProgress />
-        <Typography sx={{ ml: 2 }}>טוען מתכונים...</Typography>
+        <Typography sx={{ ml: 2 }}>{t('dashboard.loadingRecipes')}</Typography>
       </Box>
     );
   }
@@ -44,9 +46,9 @@ const RecipeList: React.FC<RecipeListProps> = ({
     return (
       <Paper elevation={2} sx={{ p: 3, textAlign: 'center', backgroundColor: 'grey.100' }}>
         <Typography variant="body1" color="text.secondary">
-          עדיין לא הוספת מתכונים.
-          <Button variant="text" startIcon={<AddCircleOutlineIcon />} sx={{ml:1}} onClick={onOpenAddRecipeModal}>
-            הוסף את המתכון הראשון שלך!
+          {t('dashboard.noRecipesYet')}
+          <Button variant="text" startIcon={<AddCircleOutlineIcon />} sx={{ ml: 1 }} onClick={onOpenAddRecipeModal}>
+            {t('dashboard.addFirstRecipe')}
           </Button>
         </Typography>
       </Paper>

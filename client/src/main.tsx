@@ -1,6 +1,7 @@
 import { createRoot } from 'react-dom/client'
 import { styled } from '@mui/material/styles'
 import App from './App.tsx'
+import './i18n'
 
 // Global styles using styled components
 const GlobalStyles = styled('div')(({ theme }) => ({
