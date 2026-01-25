@@ -101,33 +101,58 @@ export const darkTheme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: blue[400],
-      light: blue[300],
-      dark: blue[600],
+      main: '#90caf9', // Softer blue
+      light: '#e3f2fd',
+      dark: '#42a5f5',
+      contrastText: 'rgba(0, 0, 0, 0.87)',
     },
     secondary: {
-      main: teal[400],
-      light: teal[300],
-      dark: teal[600],
+      main: '#4db6ac', // Softer teal
+      light: '#b2dfdb',
+      dark: '#00897b',
+      contrastText: 'rgba(0, 0, 0, 0.87)',
     },
     background: {
-      default: '#121212',
-      paper: '#1e1e1e',
+      default: '#0a1929', // Deep navy background instead of pitch black
+      paper: '#101f33',   // Slightly lighter navy for cards
     },
+    text: {
+      primary: '#ffffff',
+      secondary: 'rgba(255, 255, 255, 0.7)',
+    },
+    divider: 'rgba(255, 255, 255, 0.12)',
   },
   components: {
     ...baseTheme.components,
     MuiAppBar: {
       styleOverrides: {
         root: {
-          backgroundColor: '#1e1e1e',
+          backgroundColor: '#101f33',
+          backgroundImage: 'none',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.5)',
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          ...baseTheme.components.MuiCard.styleOverrides.root,
+          backgroundColor: '#172a3d',
+          border: '1px solid rgba(255, 255, 255, 0.05)',
+        },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundImage: 'none',
         },
       },
     },
     MuiAvatar: {
       styleOverrides: {
         root: {
-          backgroundColor: teal[400],
+          backgroundColor: '#4db6ac',
         },
       },
     },
@@ -136,7 +161,10 @@ export const darkTheme = createTheme({
         root: {
           '& .MuiOutlinedInput-root': {
             borderRadius: 8,
-            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+            backgroundColor: 'rgba(255, 255, 255, 0.03)',
+            '&:hover': {
+              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+            },
           },
         },
       },

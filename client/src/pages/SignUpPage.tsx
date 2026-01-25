@@ -132,7 +132,14 @@ const SignUpPage: React.FC = () => {
         position: 'relative',
         zIndex: 1,
         backdropFilter: 'blur(10px)',
-        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        backgroundColor: (theme) =>
+          theme.palette.mode === 'dark'
+            ? 'rgba(16, 31, 51, 0.8)'
+            : 'rgba(255, 255, 255, 0.9)',
+        border: (theme) =>
+          theme.palette.mode === 'dark'
+            ? '1px solid rgba(255, 255, 255, 0.1)'
+            : 'none',
         transition: 'all 0.3s ease',
         '&:hover': {
           transform: 'scale(1.01)',

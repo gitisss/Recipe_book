@@ -44,10 +44,25 @@ const RecipeList: React.FC<RecipeListProps> = ({
 
   if (recipes.length === 0) {
     return (
-      <Paper elevation={2} sx={{ p: 3, textAlign: 'center', backgroundColor: 'grey.100' }}>
+      <Paper
+        elevation={0}
+        sx={{
+          p: 4,
+          textAlign: 'center',
+          backgroundColor: 'background.paper',
+          border: '1px dashed',
+          borderColor: 'divider',
+          borderRadius: 4
+        }}
+      >
         <Typography variant="body1" color="text.secondary">
           {t('dashboard.noRecipesYet')}
-          <Button variant="text" startIcon={<AddCircleOutlineIcon />} sx={{ ml: 1 }} onClick={onOpenAddRecipeModal}>
+          <Button
+            variant="text"
+            startIcon={<AddCircleOutlineIcon />}
+            sx={{ ml: 1, fontWeight: 600 }}
+            onClick={onOpenAddRecipeModal}
+          >
             {t('dashboard.addFirstRecipe')}
           </Button>
         </Typography>

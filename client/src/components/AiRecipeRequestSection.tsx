@@ -46,7 +46,16 @@ const AiRecipeRequestSection: React.FC<AiRecipeRequestSectionProps> = ({
   }, [isGeneratingAiRecipe]);
 
   return (
-    <Box sx={{ mb: 3, p: 2, border: '1px solid #e0e0e0', borderRadius: 2, bgcolor: '#f9f9f9', position: 'relative', overflow: 'hidden' }}>
+    <Box sx={(theme) => ({
+      mb: 3,
+      p: 2,
+      border: '1px solid',
+      borderColor: 'divider',
+      borderRadius: 2,
+      bgcolor: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.03)' : '#f9f9f9',
+      position: 'relative',
+      overflow: 'hidden'
+    })}>
 
       {/* פס התקדמות עליון שמופיע רק בזמן ג'ינרוט */}
       {isGeneratingAiRecipe && (
@@ -67,7 +76,10 @@ const AiRecipeRequestSection: React.FC<AiRecipeRequestSectionProps> = ({
         variant="outlined"
         value={aiCriteria}
         onChange={(e) => setAiCriteria(e.target.value)}
-        sx={{ mb: 2, bgcolor: 'white' }}
+        sx={{
+          mb: 2,
+          bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'white'
+        }}
         disabled={isGeneratingAiRecipe}
       />
 
@@ -96,7 +108,18 @@ const AiRecipeRequestSection: React.FC<AiRecipeRequestSectionProps> = ({
       </Button>
 
       {aiError && (
-        <Typography color="error" variant="body2" sx={{ mt: 1.5, textAlign: 'center', bgcolor: '#ffebee', p: 1, borderRadius: 1 }}>
+        <Typography
+          color="error"
+          variant="body2"
+          sx={(theme) => ({
+            mt: 1.5,
+            textAlign: 'center',
+            bgcolor: theme.palette.mode === 'dark' ? 'rgba(211, 47, 47, 0.1)' : '#ffebee',
+            p: 1,
+            borderRadius: 1,
+            border: theme.palette.mode === 'dark' ? '1px solid rgba(211, 47, 47, 0.3)' : 'none'
+          })}
+        >
           {aiError}
         </Typography>
       )}

@@ -196,24 +196,28 @@ const DashboardPage: React.FC = () => {
             {(selectedCategory || searchQuery) && (
               <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', ml: 'auto' }}>
                 {selectedCategory && (
-                  <Typography variant="body2" sx={{
+                  <Typography variant="body2" sx={(theme) => ({
                     px: 1.5,
                     py: 0.5,
-                    bgcolor: 'primary.light',
+                    bgcolor: theme.palette.mode === 'dark' ? 'rgba(144, 202, 249, 0.15)' : 'primary.light',
+                    border: theme.palette.mode === 'dark' ? '1px solid rgba(144, 202, 249, 0.3)' : 'none',
                     borderRadius: 1,
-                    color: 'primary.contrastText'
-                  }}>
+                    color: theme.palette.mode === 'dark' ? 'primary.main' : 'primary.contrastText',
+                    fontWeight: 500
+                  })}>
                     {t('dashboard.category')} {selectedCategory}
                   </Typography>
                 )}
                 {searchQuery && (
-                  <Typography variant="body2" sx={{
+                  <Typography variant="body2" sx={(theme) => ({
                     px: 1.5,
                     py: 0.5,
-                    bgcolor: 'primary.light',
+                    bgcolor: theme.palette.mode === 'dark' ? 'rgba(77, 182, 172, 0.15)' : 'primary.light',
+                    border: theme.palette.mode === 'dark' ? '1px solid rgba(77, 182, 172, 0.3)' : 'none',
                     borderRadius: 1,
-                    color: 'primary.contrastText'
-                  }}>
+                    color: theme.palette.mode === 'dark' ? 'secondary.main' : 'primary.contrastText',
+                    fontWeight: 500
+                  })}>
                     {t('dashboard.search')} {searchQuery}
                   </Typography>
                 )}

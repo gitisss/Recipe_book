@@ -16,77 +16,83 @@ interface UserData {
 }
 
 
-const StyledRootBox = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  minHeight: '100vh',
-  width: '100%',
-  backgroundColor: theme.palette.background.default,
-  backgroundImage: theme.palette.mode === 'dark'
-    ? `linear-gradient(135deg, ${theme.palette.background.default} 0%, rgba(0,0,0,0.9) 100%)`
-    : `linear-gradient(135deg, ${theme.palette.background.default} 0%, rgba(30,136,229,0.1) 100%)`,
-  backgroundAttachment: 'fixed',
-  animation: 'color-shift 30s infinite alternate linear', // NEW: Global color shift
-  fontFamily: theme.typography.fontFamily,
-  WebkitFontSmoothing: 'antialiased',
-  MozOsxFontSmoothing: 'grayscale',
-  position: 'relative',
-  overflow: 'hidden',
-  '&::before': {
-    content: '""',
-    position: 'fixed',
-    top: '-50%',
-    left: '-50%',
-    width: '200%',
-    height: '200%',
-    background: `radial-gradient(circle at center, ${theme.palette.mode === 'dark' ? 'rgba(30,136,229,0.2)' : 'rgba(30,136,229,0.15)'} 0%, transparent 70%)`,
-    animation: 'pulse 25s infinite ease-in-out',
-    zIndex: 0,
-    pointerEvents: 'none',
-  },
-  '&::after': {
-    content: '""',
-    position: 'fixed',
-    top: '-50%',
-    left: '-50%',
-    width: '200%',
-    height: '200%',
-    background: `radial-gradient(circle at 70% 30%, ${theme.palette.mode === 'dark' ? 'rgba(156,39,176,0.15)' : 'rgba(156,39,176,0.12)'} 0%, transparent 60%)`,
-    animation: 'pulse-slow 35s infinite ease-in-out alternate',
-    zIndex: 0,
-    pointerEvents: 'none',
-  },
-  '@keyframes pulse': {
-    '0%': { transform: 'scale(1) rotate(0deg)' },
-    '50%': { transform: 'scale(1.2) rotate(180deg)' },
-    '100%': { transform: 'scale(1) rotate(360deg)' },
-  },
-  '@keyframes pulse-slow': {
-    '0%': { transform: 'scale(1) translate(-5%, -5%)' },
-    '100%': { transform: 'scale(1.3) translate(5%, 5%)' },
-  },
-  '@keyframes color-shift': {
-    '0%': { filter: 'hue-rotate(0deg)' },
-    '100%': { filter: 'hue-rotate(45deg)' }, // Subtle but noticeable color shift
-  }
-}));
+const StyledRootBox = styled(Box)(({ theme }) => {
+  const isDark = theme.palette.mode === 'dark';
+  return {
+    display: 'flex',
+    flexDirection: 'column',
+    minHeight: '100vh',
+    width: '100%',
+    backgroundColor: theme.palette.background.default,
+    backgroundImage: isDark
+      ? `linear-gradient(135deg, ${theme.palette.background.default} 0%, #050a10 100%)`
+      : `linear-gradient(135deg, ${theme.palette.background.default} 0%, rgba(30,136,229,0.1) 100%)`,
+    backgroundAttachment: 'fixed',
+    animation: 'color-shift 60s infinite alternate linear', // Slower animation
+    fontFamily: theme.typography.fontFamily,
+    WebkitFontSmoothing: 'antialiased',
+    MozOsxFontSmoothing: 'grayscale',
+    position: 'relative',
+    overflow: 'hidden',
+    '&::before': {
+      content: '""',
+      position: 'fixed',
+      top: '-50%',
+      left: '-50%',
+      width: '200%',
+      height: '200%',
+      background: `radial-gradient(circle at center, ${isDark ? 'rgba(144,202,249,0.08)' : 'rgba(30,136,229,0.15)'} 0%, transparent 70%)`,
+      animation: 'pulse 25s infinite ease-in-out',
+      zIndex: 0,
+      pointerEvents: 'none',
+    },
+    '&::after': {
+      content: '""',
+      position: 'fixed',
+      top: '-50%',
+      left: '-50%',
+      width: '200%',
+      height: '200%',
+      background: `radial-gradient(circle at 70% 30%, ${isDark ? 'rgba(77,182,172,0.05)' : 'rgba(156,39,176,0.12)'} 0%, transparent 60%)`,
+      animation: 'pulse-slow 35s infinite ease-in-out alternate',
+      zIndex: 0,
+      pointerEvents: 'none',
+    },
+    '@keyframes pulse': {
+      '0%': { transform: 'scale(1) rotate(0deg)' },
+      '50%': { transform: 'scale(1.1) rotate(180deg)' },
+      '100%': { transform: 'scale(1) rotate(360deg)' },
+    },
+    '@keyframes pulse-slow': {
+      '0%': { transform: 'scale(1) translate(-5%, -5%)' },
+      '100%': { transform: 'scale(1.2) translate(5%, 5%)' },
+    },
+    '@keyframes color-shift': {
+      '0%': { filter: 'hue-rotate(0deg)' },
+      '100%': { filter: 'hue-rotate(30deg)' }, // Even more subtle
+    }
+  };
+});
 
 // Added a third moving layer for extra "WOW" factor
-const AnimatedBackgroundLayer = styled(Box)(({ theme }) => ({
-  position: 'fixed',
-  top: '-50%',
-  left: '-50%',
-  width: '200%',
-  height: '200%',
-  background: `radial-gradient(circle at 20% 80%, ${theme.palette.mode === 'dark' ? 'rgba(76,175,80,0.12)' : 'rgba(76,175,80,0.1)'} 0%, transparent 50%)`,
-  animation: 'pulse-extra 40s infinite ease-in-out alternate',
-  zIndex: 0,
-  pointerEvents: 'none',
-  '@keyframes pulse-extra': {
-    '0%': { transform: 'scale(1) translate(5%, -5%)' },
-    '100%': { transform: 'scale(1.2) translate(-5%, 5%)' },
-  }
-}));
+const AnimatedBackgroundLayer = styled(Box)(({ theme }) => {
+  const isDark = theme.palette.mode === 'dark';
+  return {
+    position: 'fixed',
+    top: '-50%',
+    left: '-50%',
+    width: '200%',
+    height: '200%',
+    background: `radial-gradient(circle at 20% 80%, ${isDark ? 'rgba(77,182,172,0.04)' : 'rgba(76,175,80,0.1)'} 0%, transparent 50%)`,
+    animation: 'pulse-extra 40s infinite ease-in-out alternate',
+    zIndex: 0,
+    pointerEvents: 'none',
+    '@keyframes pulse-extra': {
+      '0%': { transform: 'scale(1) translate(5%, -5%)' },
+      '100%': { transform: 'scale(1.1) translate(-5%, 5%)' },
+    }
+  };
+});
 
 const StyledLoadingBox = styled(Box)(({ theme }) => ({
   textAlign: 'center',

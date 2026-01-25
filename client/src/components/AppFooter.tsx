@@ -22,32 +22,41 @@ const GitHubIcon: React.FC<{ size?: number }> = ({ size = 16 }) => (
 const AppFooter: React.FC = () => {
   const { t } = useTranslation();
   return (
-    <Box sx={(theme) => ({
-      background: `linear-gradient(90deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
-      color: 'white',
-      p: 1,
-      position: 'fixed',
-      bottom: 0,
-      left: 0,
-      right: 0,
-      zIndex: 1100,
-      boxShadow: '0 -2px 10px rgba(0,0,0,0.1)',
-      '&::before': {
-        content: '""',
-        position: 'absolute',
-        top: 0,
+    <Box sx={(theme) => {
+      const isDark = theme.palette.mode === 'dark';
+      return {
+        background: isDark
+          ? `rgba(16, 31, 51, 0.8)` // Glassmorphism for dark mode
+          : `linear-gradient(90deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+        backdropFilter: isDark ? 'blur(10px)' : 'none',
+        borderTop: isDark ? `1px solid rgba(255, 255, 255, 0.1)` : 'none',
+        color: isDark ? theme.palette.text.primary : 'white',
+        p: 1,
+        position: 'fixed',
+        bottom: 0,
         left: 0,
         right: 0,
-        bottom: 0,
-        background: 'radial-gradient(circle at 80% 50%, rgba(255,255,255,0.05) 0%, transparent 50%)',
-        animation: 'pulse-footer 12s infinite linear',
-      },
-      '@keyframes pulse-footer': {
-        '0%': { opacity: 0.3 },
-        '50%': { opacity: 0.6 },
-        '100%': { opacity: 0.3 },
-      }
-    })}>
+        zIndex: 1100,
+        boxShadow: isDark ? '0 -2px 10px rgba(0,0,0,0.3)' : '0 -2px 10px rgba(0,0,0,0.1)',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: isDark
+            ? 'radial-gradient(circle at 80% 50%, rgba(144, 202, 249, 0.05) 0%, transparent 50%)'
+            : 'radial-gradient(circle at 80% 50%, rgba(255,255,255,0.05) 0%, transparent 50%)',
+          animation: 'pulse-footer 12s infinite linear',
+        },
+        '@keyframes pulse-footer': {
+          '0%': { opacity: 0.3 },
+          '50%': { opacity: 0.6 },
+          '100%': { opacity: 0.3 },
+        }
+      };
+    }}>
       <Container maxWidth="lg">
         <Typography variant="body2" align="center" sx={{ fontSize: '0.875rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5 }}>
           {' © '}
