@@ -57,8 +57,9 @@ const baseTheme = {
 };
 
 // Light theme
-export const lightTheme = createTheme({
+export const lightTheme = (direction: 'rtl' | 'ltr' = 'ltr') => createTheme({
   ...baseTheme,
+  direction,
   palette: {
     mode: 'light',
     primary: {
@@ -96,8 +97,9 @@ export const lightTheme = createTheme({
 });
 
 // Dark theme
-export const darkTheme = createTheme({
+export const darkTheme = (direction: 'rtl' | 'ltr' = 'ltr') => createTheme({
   ...baseTheme,
+  direction,
   palette: {
     mode: 'dark',
     primary: {
@@ -177,8 +179,9 @@ const theme = lightTheme;
 export default theme;
 
 // Ocean theme (כחול-ירוק)
-export const oceanTheme = createTheme({
+export const oceanTheme = (direction: 'rtl' | 'ltr' = 'ltr') => createTheme({
   ...baseTheme,
+  direction,
   palette: {
     mode: 'light',
     primary: {
@@ -216,8 +219,9 @@ export const oceanTheme = createTheme({
 });
 
 // Sunset theme (כתום-ורוד)
-export const sunsetTheme = createTheme({
+export const sunsetTheme = (direction: 'rtl' | 'ltr' = 'ltr') => createTheme({
   ...baseTheme,
+  direction,
   palette: {
     mode: 'light',
     primary: {
@@ -255,8 +259,9 @@ export const sunsetTheme = createTheme({
 });
 
 // סגול theme
-export const parpleTheme = createTheme({
+export const purpleTheme = (direction: 'rtl' | 'ltr' = 'ltr') => createTheme({
   ...baseTheme,
+  direction,
   palette: {
     mode: 'light',
     primary: {
@@ -294,18 +299,18 @@ export const parpleTheme = createTheme({
 });
 
 // Helper function to get theme based on mode
-export const getTheme = (mode: ThemeMode) => {
+export const getTheme = (mode: ThemeMode, direction: 'rtl' | 'ltr' = 'ltr') => {
   switch (mode) {
     case 'dark':
-      return darkTheme;
+      return darkTheme(direction);
     case 'ocean':
-      return oceanTheme;
+      return oceanTheme(direction);
     case 'sunset':
-      return sunsetTheme;
+      return sunsetTheme(direction);
     case 'theoretical':
-      return parpleTheme;
+      return purpleTheme(direction);
     default:
-      return lightTheme;
+      return lightTheme(direction);
   }
 };
 

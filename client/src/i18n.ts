@@ -24,6 +24,19 @@ i18n
             order: ['localStorage', 'navigator'],
             caches: ['localStorage'],
         },
+    }, (err) => {
+        if (!err) {
+            document.dir = i18n.dir();
+            document.documentElement.lang = i18n.language;
+        }
     });
+
+// Listen for language changes
+i18n.on('languageChanged', (lng) => {
+    document.dir = i18n.dir(lng);
+    document.documentElement.lang = lng;
+});
+
+export const isRTL = () => i18n.dir() === 'rtl';
 
 export default i18n;

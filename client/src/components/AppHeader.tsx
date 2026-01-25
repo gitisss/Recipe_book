@@ -78,30 +78,33 @@ const AppHeader: React.FC<AppHeaderProps> = ({ currentUser, onLogout }) => {
   };
 
   return (
-    <AppBar position="fixed" sx={(theme) => ({
-      top: 0,
-      left: 0,
-      right: 0,
-      zIndex: 1100,
-      background: `linear-gradient(90deg, ${theme.palette.primary.dark} 0%, ${theme.palette.primary.main} 100%)`,
-      boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-      '&::before': {
-        content: '""',
-        position: 'absolute',
+    <AppBar
+      position="fixed"
+      dir="ltr"
+      sx={(theme) => ({
         top: 0,
         left: 0,
         right: 0,
-        bottom: 0,
-        background: 'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%)',
-        animation: 'pulse-header 10s infinite linear',
-      },
-      '@keyframes pulse-header': {
-        '0%': { opacity: 0.5 },
-        '50%': { opacity: 0.8 },
-        '100%': { opacity: 0.5 },
-      }
-    })}>
-      <Toolbar sx={{ minHeight: '48px !important', py: 0.5, gap: 1 }}>
+        zIndex: 1100,
+        background: `linear-gradient(90deg, ${theme.palette.primary.dark} 0%, ${theme.palette.primary.main} 100%)`,
+        boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%)',
+          animation: 'pulse-header 10s infinite linear',
+        },
+        '@keyframes pulse-header': {
+          '0%': { opacity: 0.5 },
+          '50%': { opacity: 0.8 },
+          '100%': { opacity: 0.5 },
+        }
+      })}>
+      <Toolbar dir="ltr" sx={{ minHeight: '48px !important', py: 0.5, gap: 1 }}>
         <IconButton
           component={Link}
           to="/"
