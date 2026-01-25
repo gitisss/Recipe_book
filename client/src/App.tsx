@@ -7,6 +7,8 @@ import HomePage from './pages/HomePage';
 import { Box, styled } from '@mui/material';
 import { ThemeContextProvider } from './contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
+import AppHeader from './components/AppHeader';
+import AppFooter from './components/AppFooter';
 
 interface UserData {
   id: string;
@@ -177,7 +179,19 @@ function App() {
       <StyledRootBox>
         <AnimatedBackgroundLayer />
         <Router>
-          <Box sx={{ flexGrow: 1, position: 'relative', zIndex: 1 }}>
+          <AppHeader currentUser={currentUser} onLogout={handleLogout} />
+          <Box component="main" sx={{
+            flexGrow: 1,
+            height: '100vh',
+            display: 'flex',
+            flexDirection: 'column',
+            position: 'relative',
+            zIndex: 1,
+            pt: '48px',
+            pb: '40px',
+            boxSizing: 'border-box',
+            overflow: 'hidden' // Ensure children manage their own scrolling
+          }}>
             <Routes>
               <Route
                 path="/login"
@@ -189,7 +203,7 @@ function App() {
               />
               <Route
                 path="/dashboard"
-                element={isAuthenticated ? <DashboardPage currentUser={currentUser} onLogout={handleLogout} /> : <Navigate to="/login" replace />}
+                element={isAuthenticated ? <DashboardPage /> : <Navigate to="/login" replace />}
               />
               <Route
                 path="/"
@@ -207,6 +221,7 @@ function App() {
               } />
             </Routes>
           </Box>
+          <AppFooter />
         </Router>
       </StyledRootBox>
     </ThemeContextProvider>

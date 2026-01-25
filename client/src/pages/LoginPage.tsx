@@ -122,7 +122,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
 
   return (
     <Box sx={{
-      minHeight: '100vh',
+      minHeight: 'calc(100vh - 88px)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',

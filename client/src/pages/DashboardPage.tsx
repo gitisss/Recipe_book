@@ -14,11 +14,9 @@ import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 import CategoryIcon from '@mui/icons-material/Category';
 
-import AppHeader from '../components/AppHeader';
 import AddRecipeModal from '../components/AddRecipeModal';
 import ViewRecipeModal from '../components/ViewRecipeModal';
 import RecipeList from '../components/RecipeList';
-import AppFooter from '../components/AppFooter';
 import SearchDialog from '../components/SearchDialog';
 import CategoryDialog from '../components/CategoryDialog';
 import type { IFullRecipeData } from '../types/Recipe';
@@ -27,17 +25,8 @@ import { useRecipes } from '../hooks/useRecipes';
 import { useRecipeModals } from '../hooks/useRecipeModals';
 import { useRecipeFilters } from '../hooks/useRecipeFilters';
 
-interface UserData {
-  id: string;
-  username: string;
-}
 
-interface DashboardPageProps {
-  currentUser: UserData | null;
-  onLogout: () => void;
-}
-
-const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) => {
+const DashboardPage: React.FC = () => {
   const { t } = useTranslation();
   const {
     recipes,
@@ -132,20 +121,9 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) 
 
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
-      <AppHeader currentUser={currentUser} onLogout={onLogout} />
-      <Box sx={{
-        flexGrow: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-        pt: '48px', // גובה ההדר
-        pb: '60px' // גובה הפוטר
-      }}>
-        {<Container maxWidth="lg" sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, overflow: 'hidden', pt: 2, pb: 2, position: 'relative' }}>
-          {/* <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center', mb: 2 }}>
-            המתכונים שלי
-          </Typography> */}
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+      <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <Container maxWidth="lg" sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, pt: 2, pb: 2, position: 'relative', overflow: 'hidden' }}>
           <Divider sx={{ mb: 2 }} />
 
           {/* כפתורים עגולים למעלה */}
@@ -251,7 +229,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) 
           )}
 
           {/* אזור גלילה לכרטיסים */}
-          <Box sx={{ flexGrow: 1, overflowY: 'auto', pr: 1 }}>
+          <Box sx={{ flexGrow: 1, overflowY: 'auto', pr: 1, minHeight: 0 }}>
             {isLoadingRecipes ? (
               <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}>
                 <CircularProgress />
@@ -280,11 +258,10 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) 
               </Typography>
             )}
           </Box>
-        </Container>}
+        </Container>
       </Box>
-      <AppFooter />
 
-      {/* מודל חיפוש */}
+      {/* מודלים */}
       <SearchDialog
         open={searchDialogOpen}
         onClose={() => setSearchDialogOpen(false)}
@@ -292,7 +269,6 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) 
         onSearchChange={setSearchQueryDirect}
       />
 
-      {/* מודל קטגוריות */}
       <CategoryDialog
         open={categoryDialogOpen}
         onClose={() => setCategoryDialogOpen(false)}
@@ -325,6 +301,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ currentUser, onLogout }) 
         />
       )}
     </Box>
+
   );
 };
 

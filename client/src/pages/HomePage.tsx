@@ -21,7 +21,7 @@ const HomePage: React.FC<{ isAuthenticated: boolean }> = ({ isAuthenticated }) =
 
     return (
         <Box sx={{
-            height: 'calc(100vh - 100px)', // Precise fit for one screen (Header approx 56px, Footer approx 44px)
+            height: '100%',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden'
