@@ -49,6 +49,7 @@ const AppFooter: React.FC = () => {
             ? 'radial-gradient(circle at 80% 50%, rgba(144, 202, 249, 0.05) 0%, transparent 50%)'
             : 'radial-gradient(circle at 80% 50%, rgba(255,255,255,0.05) 0%, transparent 50%)',
           animation: 'pulse-footer 12s infinite linear',
+          pointerEvents: 'none', // Allow clicks to pass through
         },
         '@keyframes pulse-footer': {
           '0%': { opacity: 0.3 },
@@ -57,29 +58,31 @@ const AppFooter: React.FC = () => {
         }
       };
     }}>
-      <Container maxWidth="lg">
-        <Typography variant="body2" align="center" sx={{ fontSize: '0.875rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5 }}>
-          {' © '}
+      <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
+        <Typography variant="body2" align="center" sx={{ fontSize: '0.875rem' }}>
           <Link
             color="inherit"
             href="https://github.com/gitisss/Recipe_book"
             target="_blank"
             rel="noopener noreferrer"
             sx={{
-              display: 'inline-flex',
+              display: 'flex',
               alignItems: 'center',
+              justifyContent: 'center',
+              gap: 0.5,
               textDecoration: 'none',
               '&:hover': {
                 textDecoration: 'underline'
               }
             }}
           >
+            {' © '}
             {t('header.appTitle')}
             <GitHubIcon size={18} />
+            {' '}
+            {new Date().getFullYear()}
+            {'.'}
           </Link>
-          {' '}
-          {new Date().getFullYear()}
-          {'.'}
         </Typography>
       </Container>
     </Box>
