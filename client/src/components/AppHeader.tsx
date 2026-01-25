@@ -1,8 +1,8 @@
-// client/src/components/AppHeader.tsx
 import React, { useState } from 'react';
-import { AppBar, Toolbar, Typography, Button, Box, Menu, MenuItem, Tooltip, Avatar, Divider } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, Box, Menu, MenuItem, Tooltip, Avatar, Divider, IconButton } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import LogoutIcon from '@mui/icons-material/Logout';
+import HomeIcon from '@mui/icons-material/Home';
 import { Link } from 'react-router-dom';
 import PaletteIcon from '@mui/icons-material/Palette';
 import { useThemeMode } from '../contexts/ThemeContext';
@@ -78,9 +78,42 @@ const AppHeader: React.FC<AppHeaderProps> = ({ currentUser, onLogout }) => {
   };
 
   return (
-    <AppBar position="fixed" sx={{ top: 0, left: 0, right: 0, zIndex: 1100 }}>
-      <Toolbar sx={{ minHeight: '48px !important', py: 0.5 }}>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontSize: '1.1rem' }}>
+    <AppBar position="fixed" sx={(theme) => ({
+      top: 0,
+      left: 0,
+      right: 0,
+      zIndex: 1100,
+      background: `linear-gradient(90deg, ${theme.palette.primary.dark} 0%, ${theme.palette.primary.main} 100%)`,
+      boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+      '&::before': {
+        content: '""',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: 'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%)',
+        animation: 'pulse-header 10s infinite linear',
+      },
+      '@keyframes pulse-header': {
+        '0%': { opacity: 0.5 },
+        '50%': { opacity: 0.8 },
+        '100%': { opacity: 0.5 },
+      }
+    })}>
+      <Toolbar sx={{ minHeight: '48px !important', py: 0.5, gap: 1 }}>
+        <IconButton
+          component={Link}
+          to="/"
+          color="inherit"
+          size="small"
+          edge="start"
+          sx={{ mr: 1, '&:hover': { transform: 'scale(1.1)' }, transition: 'all 0.2s' }}
+        >
+          <HomeIcon fontSize="small" />
+        </IconButton>
+
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontSize: '1.1rem', fontWeight: 700 }}>
           <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
             {t('header.appTitle')}
           </Link>

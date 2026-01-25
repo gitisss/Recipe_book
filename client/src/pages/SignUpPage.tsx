@@ -102,8 +102,43 @@ const SignUpPage: React.FC = () => {
   const isError = message !== t('auth.signupSuccess');
 
   return (
-    <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', bgcolor: 'background.default' }}>
-      <StyledFormContainer elevation={3}>
+    <Box sx={{
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      position: 'relative',
+      overflow: 'hidden',
+      background: (theme) => `linear-gradient(135deg, ${theme.palette.primary.main}11 0%, ${theme.palette.primary.dark}22 100%)`,
+      '&::before': {
+        content: '""',
+        position: 'absolute',
+        bottom: '-20%',
+        left: '-10%',
+        width: '60%',
+        height: '60%',
+        background: 'radial-gradient(circle, rgba(76,175,80,0.1) 0%, transparent 70%)',
+        borderRadius: '50%',
+        animation: 'float-up 20s infinite ease-in-out',
+        zIndex: 0,
+      },
+      '@keyframes float-up': {
+        '0%': { transform: 'translate(0, 0) scale(1)' },
+        '50%': { transform: 'translate(5%, -10%) scale(1.05)' },
+        '100%': { transform: 'translate(0, 0) scale(1)' },
+      }
+    }}>
+      <StyledFormContainer elevation={3} sx={{
+        position: 'relative',
+        zIndex: 1,
+        backdropFilter: 'blur(10px)',
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        transition: 'all 0.3s ease',
+        '&:hover': {
+          transform: 'scale(1.01)',
+          boxShadow: (theme) => `0 12px 40px ${theme.palette.primary.main}22`,
+        }
+      }}>
         <Typography variant="h4" component="h2" gutterBottom>
           {t('auth.signup')}
         </Typography>

@@ -8,7 +8,7 @@ export type ThemeMode = 'light' | 'dark' | 'ocean' | 'sunset' | 'theoretical';
 // Base theme configuration (shared between light and dark)
 const baseTheme = {
   typography: {
-    fontFamily: '"Heebo", "Arial", "Helvetica", sans-serif',
+    fontFamily: '"Assistant", "Heebo", "Arial", "Helvetica", sans-serif',
     button: {
       textTransform: 'none' as const,
       fontWeight: 500,

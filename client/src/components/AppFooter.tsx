@@ -22,7 +22,32 @@ const GitHubIcon: React.FC<{ size?: number }> = ({ size = 16 }) => (
 const AppFooter: React.FC = () => {
   const { t } = useTranslation();
   return (
-    <Box sx={{ bgcolor: 'primary.main', color: 'white', p: 1.5, position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 1100 }}>
+    <Box sx={(theme) => ({
+      background: `linear-gradient(90deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+      color: 'white',
+      p: 1,
+      position: 'fixed',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      zIndex: 1100,
+      boxShadow: '0 -2px 10px rgba(0,0,0,0.1)',
+      '&::before': {
+        content: '""',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: 'radial-gradient(circle at 80% 50%, rgba(255,255,255,0.05) 0%, transparent 50%)',
+        animation: 'pulse-footer 12s infinite linear',
+      },
+      '@keyframes pulse-footer': {
+        '0%': { opacity: 0.3 },
+        '50%': { opacity: 0.6 },
+        '100%': { opacity: 0.3 },
+      }
+    })}>
       <Container maxWidth="lg">
         <Typography variant="body2" align="center" sx={{ fontSize: '0.875rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5 }}>
           {' © '}

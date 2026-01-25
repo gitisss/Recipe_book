@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-ro
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import SignUpPage from './pages/SignUpPage';
+import HomePage from './pages/HomePage';
 import { Box, styled } from '@mui/material';
 import { ThemeContextProvider } from './contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +12,105 @@ interface UserData {
   id: string;
   username: string;
 }
+
+
+const StyledRootBox = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  minHeight: '100vh',
+  width: '100%',
+  backgroundColor: theme.palette.background.default,
+  backgroundImage: theme.palette.mode === 'dark'
+    ? `linear-gradient(135deg, ${theme.palette.background.default} 0%, rgba(0,0,0,0.9) 100%)`
+    : `linear-gradient(135deg, ${theme.palette.background.default} 0%, rgba(30,136,229,0.1) 100%)`,
+  backgroundAttachment: 'fixed',
+  animation: 'color-shift 30s infinite alternate linear', // NEW: Global color shift
+  fontFamily: theme.typography.fontFamily,
+  WebkitFontSmoothing: 'antialiased',
+  MozOsxFontSmoothing: 'grayscale',
+  position: 'relative',
+  overflow: 'hidden',
+  '&::before': {
+    content: '""',
+    position: 'fixed',
+    top: '-50%',
+    left: '-50%',
+    width: '200%',
+    height: '200%',
+    background: `radial-gradient(circle at center, ${theme.palette.mode === 'dark' ? 'rgba(30,136,229,0.2)' : 'rgba(30,136,229,0.15)'} 0%, transparent 70%)`,
+    animation: 'pulse 25s infinite ease-in-out',
+    zIndex: 0,
+    pointerEvents: 'none',
+  },
+  '&::after': {
+    content: '""',
+    position: 'fixed',
+    top: '-50%',
+    left: '-50%',
+    width: '200%',
+    height: '200%',
+    background: `radial-gradient(circle at 70% 30%, ${theme.palette.mode === 'dark' ? 'rgba(156,39,176,0.15)' : 'rgba(156,39,176,0.12)'} 0%, transparent 60%)`,
+    animation: 'pulse-slow 35s infinite ease-in-out alternate',
+    zIndex: 0,
+    pointerEvents: 'none',
+  },
+  '@keyframes pulse': {
+    '0%': { transform: 'scale(1) rotate(0deg)' },
+    '50%': { transform: 'scale(1.2) rotate(180deg)' },
+    '100%': { transform: 'scale(1) rotate(360deg)' },
+  },
+  '@keyframes pulse-slow': {
+    '0%': { transform: 'scale(1) translate(-5%, -5%)' },
+    '100%': { transform: 'scale(1.3) translate(5%, 5%)' },
+  },
+  '@keyframes color-shift': {
+    '0%': { filter: 'hue-rotate(0deg)' },
+    '100%': { filter: 'hue-rotate(45deg)' }, // Subtle but noticeable color shift
+  }
+}));
+
+// Added a third moving layer for extra "WOW" factor
+const AnimatedBackgroundLayer = styled(Box)(({ theme }) => ({
+  position: 'fixed',
+  top: '-50%',
+  left: '-50%',
+  width: '200%',
+  height: '200%',
+  background: `radial-gradient(circle at 20% 80%, ${theme.palette.mode === 'dark' ? 'rgba(76,175,80,0.12)' : 'rgba(76,175,80,0.1)'} 0%, transparent 50%)`,
+  animation: 'pulse-extra 40s infinite ease-in-out alternate',
+  zIndex: 0,
+  pointerEvents: 'none',
+  '@keyframes pulse-extra': {
+    '0%': { transform: 'scale(1) translate(5%, -5%)' },
+    '100%': { transform: 'scale(1.2) translate(-5%, 5%)' },
+  }
+}));
+
+const StyledLoadingBox = styled(Box)(({ theme }) => ({
+  textAlign: 'center',
+  marginTop: '50px',
+  fontSize: '1.2rem',
+  color: theme.palette.text.primary,
+}));
+
+const StyledNotFoundBox = styled(Box)(({ theme }) => ({
+  textAlign: 'center',
+  marginTop: '2rem',
+  color: theme.palette.text.primary,
+  '& h1': {
+    color: theme.palette.text.primary,
+  },
+  '& p': {
+    color: theme.palette.text.secondary,
+  },
+  '& a': {
+    color: theme.palette.primary.main,
+    textDecoration: 'none',
+    '&:hover': {
+      textDecoration: 'underline',
+    },
+  },
+}));
 
 function App() {
   const { t } = useTranslation();
@@ -43,7 +143,6 @@ function App() {
     localStorage.setItem('currentUser', JSON.stringify(userData));
     setIsAuthenticated(true);
     setCurrentUser(userData);
-    console.log("Login successful, token and user data stored.");
   }, []);
 
   const handleLogout = useCallback(() => {
@@ -51,7 +150,6 @@ function App() {
     localStorage.removeItem('currentUser');
     setIsAuthenticated(false);
     setCurrentUser(null);
-    console.log("User logged out.");
   }, []);
 
   useEffect(() => {
@@ -66,43 +164,6 @@ function App() {
     };
   }, [handleLogout]);
 
-  const StyledRootBox = styled(Box)(({ theme }) => ({
-    display: 'flex',
-    flexDirection: 'column',
-    minHeight: '100vh',
-    width: '100%',
-    backgroundColor: theme.palette.background.default,
-    fontFamily: theme.typography.fontFamily,
-    WebkitFontSmoothing: 'antialiased',
-    MozOsxFontSmoothing: 'grayscale',
-  }));
-
-  const StyledLoadingBox = styled(Box)(({ theme }) => ({
-    textAlign: 'center',
-    marginTop: '50px',
-    fontSize: '1.2rem',
-    color: theme.palette.text.primary,
-  }));
-
-  const StyledNotFoundBox = styled(Box)(({ theme }) => ({
-    textAlign: 'center',
-    marginTop: '2rem',
-    color: theme.palette.text.primary,
-    '& h1': {
-      color: theme.palette.text.primary,
-    },
-    '& p': {
-      color: theme.palette.text.secondary,
-    },
-    '& a': {
-      color: theme.palette.primary.main,
-      textDecoration: 'none',
-      '&:hover': {
-        textDecoration: 'underline',
-      },
-    },
-  }));
-
   if (isLoadingAuth) {
     return (
       <ThemeContextProvider>
@@ -114,8 +175,9 @@ function App() {
   return (
     <ThemeContextProvider>
       <StyledRootBox>
+        <AnimatedBackgroundLayer />
         <Router>
-          <Box sx={{ flexGrow: 1 }}>
+          <Box sx={{ flexGrow: 1, position: 'relative', zIndex: 1 }}>
             <Routes>
               <Route
                 path="/login"
@@ -131,7 +193,7 @@ function App() {
               />
               <Route
                 path="/"
-                element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />}
+                element={<HomePage isAuthenticated={isAuthenticated} />}
               />
               <Route path="*" element={
                 isAuthenticated
