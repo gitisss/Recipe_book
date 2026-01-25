@@ -115,7 +115,7 @@
         ]
     },
     "header": {
-        "appTitle": "My Recipe Book",
+        "appTitle": "CookBook",
         "selectTheme": "Select Theme",
         "theme": "Theme: ",
         "themes": {
@@ -166,7 +166,7 @@
         "getStarted": "Get Started",
         "exploreDashboard": "Explore Your Dashboard",
         "features": {
-            "title": "Why Choose My Recipe Book?",
+            "title": "Why Choose CookBook?",
             "aiChef": "AI Powered",
             "aiChefDesc": "Our personal AI chef helps you create perfect recipes on demand.",
             "organize": "Stay Organized",

@@ -112,7 +112,7 @@
         ]
     },
     "header": {
-        "appTitle": "ספר המתכונים שלי",
+        "appTitle": "CookBook",
         "selectTheme": "בחר ערכת נושא",
         "theme": "ערכת נושא: ",
         "themes": {
@@ -161,7 +161,7 @@
         "getStarted": "בואו נתחיל",
         "exploreDashboard": "עבור לדאשבורד שלי",
         "features": {
-            "title": "למה לבחור בספר המתכונים שלי?",
+            "title": "למה לבחור ב-CookBook?",
             "aiChef": "מבוסס AI",
             "aiChefDesc": "שף ה-AI האישי שלנו עוזר לך ליצור מתכונים מושלמים לפי דרישה.",
             "organize": "הישאר מאורגן",

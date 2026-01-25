@@ -62,7 +62,7 @@ const AppFooter: React.FC = () => {
         <Typography variant="body2" align="center" sx={{ fontSize: '0.875rem' }}>
           <Link
             color="inherit"
-            href="https://github.com/gitisss/Recipe_book"
+            href="https://github.com/gitisss/CookBook"
             target="_blank"
             rel="noopener noreferrer"
             sx={{
