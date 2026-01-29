@@ -7,9 +7,10 @@ import type { IFullRecipeData } from '../../types/Recipe';
 interface TimeFieldsProps {
   formData: IFullRecipeData;
   handleChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  activeFieldId: string | null;
 }
 
-const TimeFields: React.FC<TimeFieldsProps> = ({ formData, handleChange }) => {
+const TimeFields: React.FC<TimeFieldsProps> = ({ formData, handleChange, activeFieldId }) => {
   const { t } = useTranslation();
   return (
     <>

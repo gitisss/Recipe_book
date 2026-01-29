@@ -16,6 +16,7 @@ interface InstructionsSectionProps {
   handleInstructionChange: (index: number, value: string) => void;
   addInstructionField: () => void;
   removeInstructionField: (index: number) => void;
+  activeFieldId: string | null;
 }
 
 const InstructionsSection: React.FC<InstructionsSectionProps> = ({
@@ -23,6 +24,7 @@ const InstructionsSection: React.FC<InstructionsSectionProps> = ({
   handleInstructionChange,
   addInstructionField,
   removeInstructionField,
+  activeFieldId,
 }) => {
   const { t } = useTranslation();
   return (

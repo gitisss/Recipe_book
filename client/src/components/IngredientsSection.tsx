@@ -18,6 +18,7 @@ interface IngredientsSectionProps {
   addIngredientField: () => void;
   removeIngredientField: (index: number) => void;
   submitError: string | null;
+  activeFieldId: string | null;
 }
 
 const IngredientsSection: React.FC<IngredientsSectionProps> = ({
@@ -26,6 +27,7 @@ const IngredientsSection: React.FC<IngredientsSectionProps> = ({
   addIngredientField,
   removeIngredientField,
   submitError,
+  activeFieldId,
 }) => {
   const { t } = useTranslation();
   return (

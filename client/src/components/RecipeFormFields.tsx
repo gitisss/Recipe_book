@@ -12,12 +12,14 @@ interface RecipeFormFieldsProps {
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string | string[]>
   ) => void;
   submitError: string | null;
+  activeFieldId: string | null;
 }
 
 const RecipeFormFields: React.FC<RecipeFormFieldsProps> = ({
   formData,
   handleChange,
   submitError,
+  activeFieldId,
 }) => {
   return (
     <>
@@ -25,14 +27,17 @@ const RecipeFormFields: React.FC<RecipeFormFieldsProps> = ({
         formData={formData}
         handleChange={handleChange as (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void}
         submitError={submitError}
+        activeFieldId={activeFieldId}
       />
       <TimeFields
         formData={formData}
         handleChange={handleChange as (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void}
+        activeFieldId={activeFieldId}
       />
       <CategoryFields
         formData={formData}
         handleChange={handleChange as (event: SelectChangeEvent<string | string[]>) => void}
+        activeFieldId={activeFieldId}
       />
     </>
   );

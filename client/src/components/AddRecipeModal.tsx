@@ -158,6 +158,7 @@ const AddRecipeModal: React.FC<AddRecipeModalProps> = ({
             formData={formData}
             handleChange={handleChange}
             submitError={submitError}
+            activeFieldId={activeFieldId}
           />
 
           <IngredientsSection
@@ -166,6 +167,7 @@ const AddRecipeModal: React.FC<AddRecipeModalProps> = ({
             addIngredientField={addIngredientField}
             removeIngredientField={removeIngredientField}
             submitError={submitError}
+            activeFieldId={activeFieldId}
           />
 
           <InstructionsSection
@@ -173,6 +175,7 @@ const AddRecipeModal: React.FC<AddRecipeModalProps> = ({
             handleInstructionChange={handleInstructionChange}
             addInstructionField={addInstructionField}
             removeInstructionField={removeInstructionField}
+            activeFieldId={activeFieldId}
           />
 
           <TextField

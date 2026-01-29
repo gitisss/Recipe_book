@@ -8,12 +8,14 @@ interface BasicInfoFieldsProps {
   formData: IFullRecipeData;
   handleChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   submitError: string | null;
+  activeFieldId: string | null;
 }
 
 const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
   formData,
   handleChange,
   submitError,
+  activeFieldId,
 }) => {
   const { t } = useTranslation();
   return (

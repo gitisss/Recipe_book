@@ -13,15 +13,18 @@ import type { IFullRecipeData } from '../../types/Recipe';
 interface CategoryFieldsProps {
   formData: IFullRecipeData;
   handleChange: (event: SelectChangeEvent<string | string[]>) => void;
+  activeFieldId: string | null;
 }
 
-const CategoryFields: React.FC<CategoryFieldsProps> = ({ formData, handleChange }) => {
+const CategoryFields: React.FC<CategoryFieldsProps> = ({ formData, handleChange, activeFieldId }) => {
   const { t } = useTranslation();
   return (
     <>
       <FormControl fullWidth margin="normal">
-        <InputLabel>{t('recipe.category')}</InputLabel>
+        <InputLabel id="category-label">{t('recipe.category')}</InputLabel>
         <Select
+          labelId="category-label"
+          id="recipe-category"
           name="category"
           value={formData.category}
           onChange={handleChange}
@@ -38,8 +41,10 @@ const CategoryFields: React.FC<CategoryFieldsProps> = ({ formData, handleChange 
       </FormControl>
 
       <FormControl fullWidth margin="normal">
-        <InputLabel>{t('recipe.cuisine')}</InputLabel>
+        <InputLabel id="cuisine-label">{t('recipe.cuisine')}</InputLabel>
         <Select
+          labelId="cuisine-label"
+          id="recipe-cuisine"
           name="cuisine"
           value={formData.cuisine}
           onChange={handleChange}
@@ -55,8 +60,10 @@ const CategoryFields: React.FC<CategoryFieldsProps> = ({ formData, handleChange 
       </FormControl>
 
       <FormControl fullWidth margin="normal">
-        <InputLabel>{t('recipe.dietaryRestrictions')}</InputLabel>
+        <InputLabel id="dietary-restrictions-label">{t('recipe.dietaryRestrictions')}</InputLabel>
         <Select
+          labelId="dietary-restrictions-label"
+          id="recipe-dietaryRestrictions"
           name="dietaryRestrictions"
           multiple
           value={formData.dietaryRestrictions}
