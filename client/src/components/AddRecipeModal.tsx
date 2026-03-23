@@ -7,7 +7,12 @@ import {
   TextField,
   Button,
   IconButton,
-  CircularProgress
+  CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import CloseIcon from '@mui/icons-material/Close';
@@ -53,8 +58,11 @@ const AddRecipeModal: React.FC<AddRecipeModalProps> = ({
     isGeneratingAiRecipe,
     aiError,
     handleRequestRecipeFromAI,
-    activeFieldId // Get active field ID
-  } = useAIRecipeGeneration(setFormData);
+    activeFieldId, // Get active field ID
+    isAiConfirmModalOpen,
+    handleAcceptAiRecipe,
+    handleCancelAiRecipe
+  } = useAIRecipeGeneration(formData, setFormData);
 
   // Auto-scroll effect
   React.useEffect(() => {
@@ -111,105 +119,133 @@ const AddRecipeModal: React.FC<AddRecipeModalProps> = ({
 
 
   return (
-    <Modal open={open} onClose={onClose}>
-      <Box
-        sx={{
-          position: 'absolute' as 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: { xs: '90%', md: '70%', lg: '60%' },
-          maxHeight: '90vh',
-          overflowY: 'auto',
-          bgcolor: 'background.paper',
-          boxShadow: 24,
-          p: 4,
-          borderRadius: 2,
-        }}
-      >
-        <IconButton
-          aria-label="close"
-          onClick={onClose}
+    <>
+      <Modal open={open} onClose={onClose}>
+        <Box
           sx={{
-            position: 'absolute',
-            right: 8,
-            top: 8,
-            color: (theme) => theme.palette.grey[500],
+            position: 'absolute' as 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: { xs: '90%', md: '70%', lg: '60%' },
+            maxHeight: '90vh',
+            overflowY: 'auto',
+            bgcolor: 'background.paper',
+            boxShadow: 24,
+            p: 4,
+            borderRadius: 2,
           }}
         >
-          <CloseIcon />
-        </IconButton>
-        <Typography variant="h5" component="h2" gutterBottom sx={{ mb: 3 }}>
-          {initialRecipeData ? t('recipe.editTitle') : t('recipe.addTitle')}
-        </Typography>
+          <IconButton
+            aria-label="close"
+            onClick={onClose}
+            sx={{
+              position: 'absolute',
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+          <Typography variant="h5" component="h2" gutterBottom sx={{ mb: 3 }}>
+            {initialRecipeData ? t('recipe.editTitle') : t('recipe.addTitle')}
+          </Typography>
 
-        {!initialRecipeData && (
-          <AiRecipeRequestSection
-            aiCriteria={aiCriteria}
-            setAiCriteria={setAiCriteria}
-            handleRequestRecipeFromAI={handleRequestRecipeFromAI}
-            isGeneratingAiRecipe={isGeneratingAiRecipe}
-            aiError={aiError}
-          />
-        )}
-
-        <form onSubmit={handleSubmit}>
-          <RecipeFormFields
-            formData={formData}
-            handleChange={handleChange}
-            submitError={submitError}
-            activeFieldId={activeFieldId}
-          />
-
-          <IngredientsSection
-            ingredients={formData.ingredients}
-            handleIngredientChange={handleIngredientChange}
-            addIngredientField={addIngredientField}
-            removeIngredientField={removeIngredientField}
-            submitError={submitError}
-            activeFieldId={activeFieldId}
-          />
-
-          <InstructionsSection
-            instructions={formData.instructions}
-            handleInstructionChange={handleInstructionChange}
-            addInstructionField={addInstructionField}
-            removeInstructionField={removeInstructionField}
-            activeFieldId={activeFieldId}
-          />
-
-          <TextField
-            fullWidth
-            label={t('recipe.imageUrl')}
-            name="imageUrl"
-            value={formData.imageUrl}
-            onChange={handleChange}
-            margin="normal"
-            sx={{ mb: 2 }}
-          />
-
-          {submitError && (
-            <Typography color="error" sx={{ mt: 2, textAlign: 'center' }}>
-              {submitError}
-            </Typography>
+          {!initialRecipeData && (
+            <AiRecipeRequestSection
+              aiCriteria={aiCriteria}
+              setAiCriteria={setAiCriteria}
+              handleRequestRecipeFromAI={handleRequestRecipeFromAI}
+              isGeneratingAiRecipe={isGeneratingAiRecipe}
+              aiError={aiError}
+            />
           )}
 
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3, gap: 2 }}>
-            <Button
-              variant="contained"
-              color="primary"
-              type="submit"
-              disabled={isSubmitting || isGeneratingAiRecipe}
-            >
-              {isSubmitting ? <CircularProgress size={24} color="inherit" /> : initialRecipeData ? t('recipe.saveChanges') : t('dashboard.addRecipe')}
-            </Button>
-            <Button variant="outlined" onClick={onClose} disabled={isSubmitting || isGeneratingAiRecipe}>
-              {t('common.cancel')}
-            </Button>
-          </Box>
-        </form>
-      </Box>
-    </Modal>
+          <form onSubmit={handleSubmit}>
+            <RecipeFormFields
+              formData={formData}
+              handleChange={handleChange}
+              submitError={submitError}
+              activeFieldId={activeFieldId}
+            />
+
+            <IngredientsSection
+              ingredients={formData.ingredients}
+              handleIngredientChange={handleIngredientChange}
+              addIngredientField={addIngredientField}
+              removeIngredientField={removeIngredientField}
+              submitError={submitError}
+              activeFieldId={activeFieldId}
+            />
+
+            <InstructionsSection
+              instructions={formData.instructions}
+              handleInstructionChange={handleInstructionChange}
+              addInstructionField={addInstructionField}
+              removeInstructionField={removeInstructionField}
+              activeFieldId={activeFieldId}
+            />
+
+            <TextField
+              fullWidth
+              label={t('recipe.imageUrl')}
+              name="imageUrl"
+              value={formData.imageUrl}
+              onChange={handleChange}
+              margin="normal"
+              sx={{ mb: 2 }}
+            />
+
+            {submitError && (
+              <Typography color="error" sx={{ mt: 2, textAlign: 'center' }}>
+                {submitError}
+              </Typography>
+            )}
+
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3, gap: 2 }}>
+              <Button
+                variant="contained"
+                color="primary"
+                type="submit"
+                disabled={isSubmitting || isGeneratingAiRecipe}
+              >
+                {isSubmitting ? <CircularProgress size={24} color="inherit" /> : initialRecipeData ? t('recipe.saveChanges') : t('dashboard.addRecipe')}
+              </Button>
+              <Button variant="outlined" onClick={onClose} disabled={isSubmitting || isGeneratingAiRecipe}>
+                {t('common.cancel')}
+              </Button>
+            </Box>
+          </form>
+        </Box>
+      </Modal>
+
+      {/* AI Confirm Dialog */}
+      <Dialog
+        open={isAiConfirmModalOpen}
+        onClose={handleCancelAiRecipe}
+        aria-labelledby="ai-confirm-dialog-title"
+        aria-describedby="ai-confirm-dialog-description"
+        sx={{ zIndex: 1400 }} // Ensure it appears above the Modal
+      >
+        <DialogTitle id="ai-confirm-dialog-title">
+          {t('ai.confirmTitle', 'הוצע מתכון')}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="ai-confirm-dialog-description">
+            {t('ai.confirmDescription', 'הוצע מתכון, בדוק אותו לפני אישור')}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelAiRecipe} color="error">
+            {t('common.cancel')}
+          </Button>
+          <Button onClick={handleAcceptAiRecipe} color="primary" autoFocus>
+            {t('common.approve', 'אשר')}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };
 

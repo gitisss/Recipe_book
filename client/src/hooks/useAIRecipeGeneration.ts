@@ -4,10 +4,13 @@ import type { IFullRecipeData } from '../types/Recipe';
 import { API_BASE_URL } from '../apiClient';
 import i18n from '../i18n';
 
-export const useAIRecipeGeneration = (setFormData: (data: IFullRecipeData) => void) => {
+export const useAIRecipeGeneration = (formData: IFullRecipeData, setFormData: (data: IFullRecipeData) => void) => {
   const [aiCriteria, setAiCriteria] = useState<string>('');
   const [isGeneratingAiRecipe, setIsGeneratingAiRecipe] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
+  
+  const [isAiConfirmModalOpen, setIsAiConfirmModalOpen] = useState(false);
+  const [prevFormData, setPrevFormData] = useState<IFullRecipeData | null>(null);
 
   const [activeFieldId, setActiveFieldId] = useState<string | null>(null);
 
@@ -20,6 +23,7 @@ export const useAIRecipeGeneration = (setFormData: (data: IFullRecipeData) => vo
     setIsGeneratingAiRecipe(true);
     setAiError(null);
     setActiveFieldId(null);
+    setPrevFormData(formData); // Save current form state
 
     // Dynamic import for the parser to avoid circular dependency issues if any
     const { parsePartialJson } = await import('../utils/partialJsonParser');
@@ -56,7 +60,15 @@ export const useAIRecipeGeneration = (setFormData: (data: IFullRecipeData) => vo
         }
 
         const chunk = decoder.decode(value, { stream: true });
-        fullResponseText += chunk;
+        
+        // Artificial typing effect: slice chunk into small pieces
+        const charArray = Array.from(chunk);
+        for (let i = 0; i < charArray.length; i += 3) { // Process 3 characters at a time for smooth typing
+          fullResponseText += charArray.slice(i, i + 3).join('');
+
+          // We don't want to parse on literally every character to save CPU,
+          // but doing it on every character is fine if strings are small.
+          // Let's parse on every character so the typing is visible.
 
         // Try to parse partial JSON and update UI
         const partialData = parsePartialJson(fullResponseText);
@@ -117,8 +129,12 @@ export const useAIRecipeGeneration = (setFormData: (data: IFullRecipeData) => vo
             cuisine: partialData.cuisine || '',
             dietaryRestrictions: Array.isArray(partialData.dietaryRestrictions) ? partialData.dietaryRestrictions : [],
           });
+          
+          // Small delay to simulate typing speed
+          await new Promise(r => setTimeout(r, 5));
         }
-      }
+        } // close for loop
+      } // close while loop
 
       // Final consistency check
       try {
@@ -142,11 +158,11 @@ export const useAIRecipeGeneration = (setFormData: (data: IFullRecipeData) => vo
           cuisine: finalData.cuisine || '',
           dietaryRestrictions: Array.isArray(finalData.dietaryRestrictions) ? finalData.dietaryRestrictions : [],
         });
-        alert(i18n.t('ai.aiSuccess'));
+        setIsAiConfirmModalOpen(true);
       } catch (e) {
         console.error("Final JSON parse failed, but stream finished.", e);
-        // If partial updates worked, we might be fine, or show an error only if it's garbage.
-        // We rely on the last successful partial update.
+        // Even if final parse fails, if we got here we show modal so user can review the partial data.
+        setIsAiConfirmModalOpen(true);
       }
 
       setAiCriteria('');
@@ -159,12 +175,26 @@ export const useAIRecipeGeneration = (setFormData: (data: IFullRecipeData) => vo
       setIsGeneratingAiRecipe(false);
       setActiveFieldId(null);
     }
-  }, [aiCriteria, setFormData]);
+  }, [aiCriteria, setFormData, formData]);
+
+  const handleAcceptAiRecipe = useCallback(() => {
+    setIsAiConfirmModalOpen(false);
+    setPrevFormData(null);
+  }, []);
+
+  const handleCancelAiRecipe = useCallback(() => {
+    if (prevFormData) {
+      setFormData(prevFormData);
+    }
+    setIsAiConfirmModalOpen(false);
+    setPrevFormData(null);
+  }, [prevFormData, setFormData]);
 
   const resetAIState = useCallback(() => {
     setAiCriteria('');
     setAiError(null);
     setActiveFieldId(null);
+    setIsAiConfirmModalOpen(false);
   }, []);
 
   return {
@@ -174,7 +204,10 @@ export const useAIRecipeGeneration = (setFormData: (data: IFullRecipeData) => vo
     aiError,
     handleRequestRecipeFromAI,
     resetAIState,
-    activeFieldId
+    activeFieldId,
+    isAiConfirmModalOpen,
+    handleAcceptAiRecipe,
+    handleCancelAiRecipe
   };
 };
 
