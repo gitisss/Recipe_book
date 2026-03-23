@@ -15,7 +15,6 @@ const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
   formData,
   handleChange,
   submitError,
-  activeFieldId,
 }) => {
   const { t } = useTranslation();
   return (

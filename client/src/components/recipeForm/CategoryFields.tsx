@@ -16,7 +16,7 @@ interface CategoryFieldsProps {
   activeFieldId: string | null;
 }
 
-const CategoryFields: React.FC<CategoryFieldsProps> = ({ formData, handleChange, activeFieldId }) => {
+const CategoryFields: React.FC<CategoryFieldsProps> = ({ formData, handleChange }) => {
   const { t } = useTranslation();
   return (
     <>

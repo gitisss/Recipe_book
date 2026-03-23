@@ -10,7 +10,7 @@ interface TimeFieldsProps {
   activeFieldId: string | null;
 }
 
-const TimeFields: React.FC<TimeFieldsProps> = ({ formData, handleChange, activeFieldId }) => {
+const TimeFields: React.FC<TimeFieldsProps> = ({ formData, handleChange }) => {
   const { t } = useTranslation();
   return (
     <>

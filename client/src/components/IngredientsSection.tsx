@@ -27,7 +27,6 @@ const IngredientsSection: React.FC<IngredientsSectionProps> = ({
   addIngredientField,
   removeIngredientField,
   submitError,
-  activeFieldId,
 }) => {
   const { t } = useTranslation();
   return (

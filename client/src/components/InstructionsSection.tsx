@@ -24,7 +24,6 @@ const InstructionsSection: React.FC<InstructionsSectionProps> = ({
   handleInstructionChange,
   addInstructionField,
   removeInstructionField,
-  activeFieldId,
 }) => {
   const { t } = useTranslation();
   return (
