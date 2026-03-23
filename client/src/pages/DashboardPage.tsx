@@ -7,7 +7,9 @@ import {
   Divider,
   CircularProgress,
   IconButton,
-  Fab
+  Fab,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import AddIcon from '@mui/icons-material/Add';
@@ -60,6 +62,20 @@ const DashboardPage: React.FC = () => {
   const [searchDialogOpen, setSearchDialogOpen] = useState(false);
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
 
+  const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
+    open: false,
+    message: '',
+    severity: 'success'
+  });
+
+  const showSnackbar = useCallback((message: string, severity: 'success' | 'error' = 'success') => {
+    setSnackbar({ open: true, message, severity });
+  }, []);
+
+  const handleCloseSnackbar = () => {
+    setSnackbar(prev => ({ ...prev, open: false }));
+  };
+
   useEffect(() => {
     fetchRecipes(selectedCategory || undefined, searchQuery);
   }, [fetchRecipes, selectedCategory, searchQuery]);
@@ -67,56 +83,56 @@ const DashboardPage: React.FC = () => {
   const handleAddNewRecipe = useCallback(async (recipeData: IFullRecipeData) => {
     try {
       await apiClient.post('/recipes', recipeData);
-      alert(t('dashboard.createSuccess'));
+      showSnackbar(t('dashboard.createSuccess'), 'success');
       handleCloseAddRecipeModal();
       fetchRecipes(selectedCategory || undefined, searchQuery);
     } catch (err: any) {
       console.error('Error creating recipe:', err);
-      alert(err.response?.data?.message || t('recipe.saveError'));
+      showSnackbar(err.response?.data?.message || t('recipe.saveError'), 'error');
     }
-  }, [fetchRecipes, selectedCategory, searchQuery, handleCloseAddRecipeModal]);
+  }, [fetchRecipes, selectedCategory, searchQuery, handleCloseAddRecipeModal, showSnackbar, t]);
 
   const handleViewRecipe = useCallback(async (id: string) => {
     try {
       const recipe = await getRecipeById(id);
       handleViewRecipeModal(recipe);
     } catch (err: any) {
-      alert(err.message || t('dashboard.recipeLoadError'));
+      showSnackbar(err.message || t('dashboard.recipeLoadError'), 'error');
     }
-  }, [getRecipeById, handleViewRecipeModal]);
+  }, [getRecipeById, handleViewRecipeModal, showSnackbar, t]);
 
   const handleEditRecipe = useCallback(async (id: string) => {
     try {
       const recipe = await getRecipeById(id);
       handleEditRecipeModal(recipe);
     } catch (err: any) {
-      alert(err.message || t('dashboard.recipeEditLoadError'));
+      showSnackbar(err.message || t('dashboard.recipeEditLoadError'), 'error');
     }
-  }, [getRecipeById, handleEditRecipeModal]);
+  }, [getRecipeById, handleEditRecipeModal, showSnackbar, t]);
 
   const handleUpdateRecipe = useCallback(async (id: string, recipeData: IFullRecipeData) => {
     try {
       await apiClient.put(`/recipes/${id}`, recipeData);
-      alert(t('dashboard.updateSuccess'));
+      showSnackbar(t('dashboard.updateSuccess'), 'success');
       handleCloseEditRecipeModal();
       fetchRecipes(selectedCategory || undefined, searchQuery);
     } catch (err: any) {
       console.error('Error updating recipe:', err);
-      alert(err.response?.data?.message || t('recipe.saveError'));
+      showSnackbar(err.response?.data?.message || t('recipe.saveError'), 'error');
     }
-  }, [fetchRecipes, selectedCategory, searchQuery, handleCloseEditRecipeModal]);
+  }, [fetchRecipes, selectedCategory, searchQuery, handleCloseEditRecipeModal, showSnackbar, t]);
 
   const handleDeleteRecipe = useCallback(async (id: string) => {
     if (window.confirm(t('dashboard.deleteConfirm'))) {
       try {
         await deleteRecipe(id);
-        alert(t('dashboard.deleteSuccess'));
+        showSnackbar(t('dashboard.deleteSuccess'), 'success');
         fetchRecipes(selectedCategory || undefined, searchQuery);
       } catch (err: any) {
-        alert(err.message || t('dashboard.deleteError'));
+        showSnackbar(err.message || t('dashboard.deleteError'), 'error');
       }
     }
-  }, [deleteRecipe, fetchRecipes, selectedCategory, searchQuery]);
+  }, [deleteRecipe, fetchRecipes, selectedCategory, searchQuery, showSnackbar, t]);
 
 
 
@@ -304,6 +320,33 @@ const DashboardPage: React.FC = () => {
           recipe={selectedRecipe}
         />
       )}
+
+      {/* Snackbar for alerts */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        sx={{ top: { xs: 80, sm: 100 } }}
+      >
+        <Alert 
+          onClose={handleCloseSnackbar} 
+          severity={snackbar.severity} 
+          variant="filled"
+          sx={{ 
+            width: '100%', 
+            minWidth: { xs: '300px', sm: '400px' },
+            fontSize: '1.1rem',
+            boxShadow: 6,
+            alignItems: 'center',
+            '& .MuiAlert-icon': {
+              fontSize: '2rem'
+            }
+          }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
 
   );

@@ -4,8 +4,24 @@ import type { IFullRecipeData } from '../types/Recipe';
 import { API_BASE_URL } from '../apiClient';
 import i18n from '../i18n';
 
+export interface IAICriteria {
+  ingredients: string;
+  diet: string;
+  cuisine: string;
+  mealType: string;
+  mood: string;
+  freeText: string;
+}
+
 export const useAIRecipeGeneration = (formData: IFullRecipeData, setFormData: (data: IFullRecipeData) => void) => {
-  const [aiCriteria, setAiCriteria] = useState<string>('');
+  const [aiCriteria, setAiCriteria] = useState<IAICriteria>({
+    ingredients: '',
+    diet: '',
+    cuisine: '',
+    mealType: '',
+    mood: '',
+    freeText: ''
+  });
   const [isGeneratingAiRecipe, setIsGeneratingAiRecipe] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
   
@@ -15,7 +31,9 @@ export const useAIRecipeGeneration = (formData: IFullRecipeData, setFormData: (d
   const [activeFieldId, setActiveFieldId] = useState<string | null>(null);
 
   const handleRequestRecipeFromAI = useCallback(async () => {
-    if (!aiCriteria.trim()) {
+    // We don't necessarily require freeText if other fields are filled, but let's check if at least one is filled.
+    const hasAnyCriteria = Object.values(aiCriteria).some(val => val.trim().length > 0);
+    if (!hasAnyCriteria) {
       setAiError(i18n.t('ai.criteriaRequired'));
       return;
     }
@@ -37,7 +55,12 @@ export const useAIRecipeGeneration = (formData: IFullRecipeData, setFormData: (d
           ...(token ? { 'Authorization': `Bearer ${token}` } : {})
         },
         body: JSON.stringify({
-          ingredients: aiCriteria,
+          ingredients: aiCriteria.ingredients || aiCriteria.freeText, // fallback for backward compatibility conceptually
+          diet: aiCriteria.diet,
+          cuisine: aiCriteria.cuisine,
+          mealType: aiCriteria.mealType,
+          mood: aiCriteria.mood,
+          freeText: aiCriteria.freeText
         }),
       });
 
@@ -165,7 +188,7 @@ export const useAIRecipeGeneration = (formData: IFullRecipeData, setFormData: (d
         setIsAiConfirmModalOpen(true);
       }
 
-      setAiCriteria('');
+      setAiCriteria({ ingredients: '', diet: '', cuisine: '', mealType: '', mood: '', freeText: '' });
       setActiveFieldId(null);
 
     } catch (err: any) {
@@ -191,7 +214,7 @@ export const useAIRecipeGeneration = (formData: IFullRecipeData, setFormData: (d
   }, [prevFormData, setFormData]);
 
   const resetAIState = useCallback(() => {
-    setAiCriteria('');
+    setAiCriteria({ ingredients: '', diet: '', cuisine: '', mealType: '', mood: '', freeText: '' });
     setAiError(null);
     setActiveFieldId(null);
     setIsAiConfirmModalOpen(false);
