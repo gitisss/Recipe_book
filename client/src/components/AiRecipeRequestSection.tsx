@@ -10,8 +10,7 @@ import {
   FormControl,
   InputLabel,
   Select,
-  MenuItem,
-  Divider
+  MenuItem
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
